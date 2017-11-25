@@ -127,8 +127,9 @@ function Add-SPRelyingPartyTrust {
         ### Om namn finns utan swamid, låt det vara
         ### Om namn finns med swamid, lägg till siffra
 
-        $NamePrefix = "Swamid:"        
-        $NameWithPrefix = "$NamePrefix $Name"
+        $NamePrefix = $Settings.configuration.MetadataPrefix 
+        $Sep= $Settings.configuration.MetadataPrefixSeparator      
+        $NameWithPrefix = "$NamePrefix$Sep$Name"
 
         if ((Get-ADFSRelyingPartyTrust -Name $NameWithPrefix) -ne $null)
         {
