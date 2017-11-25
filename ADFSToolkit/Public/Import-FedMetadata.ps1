@@ -71,14 +71,17 @@ function Import-FedMetadata
 
     #endregion
 
+
     #region Get SP Hash
     if ([string]::IsNullOrEmpty($Settings.configuration.SPHashFile))
     {
-        $SPHashFile = $Settings.configuration.SPHashFile
+         Write-Error -message "Halting: Missing SPHashFile setting from  $ConfigFile" 
+        throw "SPHashFile missing from configfile"
     }
     else
     {
-        $SPHashFile = (Join-Path $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\cache\') SPHashFile.xml) #Just a fallback
+        $SPHashFile = Join-Path $Settings.configuration.WorkingPath -ChildPath $Settings.configuration.CacheDir | Join-Path -ChildPath $Settings.configuration.SPHashFile
+            Write-Log "Setting SPHashFile to: $SPHashFile"
     }
 
     if (Test-Path $SPHashFile)
@@ -107,7 +110,11 @@ function Import-FedMetadata
     #region Getting Metadata
 
     #Cached Metadata file
-    $CachedMetadataFile = Join-Path $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\cache\') SwamidMetadata.cache.xml
+    $CachedMetadataFile = Join-Path $Settings.configuration.WorkingPath -ChildPath $Settings.configuration.CacheDir | Join-Path -ChildPath $Settings.configuration.MetadataCacheFile
+    #Join-Path $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\cache\') SwamidMetadata.cache.xml
+Write-Log "Setting CachedMetadataFile to: $CachedMetadataFile"
+
+
     #$CachedMetadataXML = $null
 
     #Load the cached Metadata if it exists
@@ -177,29 +184,34 @@ function Import-FedMetadata
 
         if (!$UseCachedMetadata)
         {
-            Write-VerboseLog "Downloading Metadata from SWAMID..." -EntryType Information
             
             #Get Metadata URL from config
             if ([string]::IsNullOrEmpty($Settings.configuration.metadataURL))
             {
-                $metadataURL = 'https://mds.swamid.se/md/swamid-2.0.xml' #Just for fallback
+                $metadataURL = 'https://localhost/metadata.xml' #Just for fallback
             }
             else
             {
                 $metadataURL = $Settings.configuration.metadataURL
             }
 
+            Write-VerboseLog "Downloading Metadata from $metadataURL " -EntryType Information
+            
             try
             {
+               
+
+            Write-VerboseLog "Downloading From: $metadataURL to file $CachedMetadataFile" -EntryType Information
+               
                 #$Metadata = Invoke-WebRequest $metadataURL -OutFile $CachedMetadataFile -PassThru
                 $webClient = New-Object System.Net.WebClient 
                 $webClient.DownloadFile($metadataURL, $CachedMetadataFile) 
                 
-                Write-VerboseLog "Successfully downloaded Metadata from SWAMID!" -EntryType Information
+                Write-VerboseLog "Successfully downloaded Metadata from $metadataURL" -EntryType Information
             }
             catch
             {
-                Write-Log "Could not download Metadata from SWAMID!" -MajorFault
+                Write-Log "Could not download Metadata from $metadataURL" -MajorFault
             }
         
             try
@@ -209,11 +221,11 @@ function Import-FedMetadata
                 $MetadataXML.PreserveWhitespace = $true
                 $MetadataXML.Load($CachedMetadataFile)            
                 #$MetadataXML = [xml]$Metadata.Content
-                Write-VerboseLog "Successfully parsed downloaded Metadata XML!" -EntryType Information
+                Write-VerboseLog "Successfully parsed downloaded Metadata from $metadataURL" -EntryType Information
             }
             catch
             {
-                Write-Log "Could not parse downloaded Metadata from SWAMID!" -MajorFault
+                Write-Log "Could not parse downloaded Metadata from $metadataURL" -MajorFault
             }
         }
     }
