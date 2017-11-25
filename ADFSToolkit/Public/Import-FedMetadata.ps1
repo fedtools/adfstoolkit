@@ -230,6 +230,20 @@ Write-Log "Setting CachedMetadataFile to: $CachedMetadataFile"
         }
     }
 
+    # Assert that the metadata we are about to process is not zero bytes after all this
+
+
+    if (Test-Path $CachedMetadataFile) {
+
+            $MyFileSize=(Get-Item $CachedMetadataFile).length 
+            if ((Get-Item $CachedMetadataFile).length -gt 0kb) {
+            Write-Log "Metadata file size is $MyFileSize"
+            } else {
+    
+            Write-Log "Note: $CachedMetadataFile  is 0 bytes" 
+        
+         }
+    }
     #endregion
 
     #Verify Metadata Signing Cert
@@ -257,11 +271,24 @@ Write-Log "Setting CachedMetadataFile to: $CachedMetadataFile"
     #region Read/Create file with 
 
 
+
+
     if ($ProcessWholeMetadata)
     {
         Write-Log "Processing whole Metadata file..." -EntryType Information
 
-        $AllSPs = $MetadataXML.EntitiesDescriptor.EntityDescriptor | ? {$_.SPSSODescriptor -ne $null -and $_.Extensions -ne $null}
+        $RawAllSPs = $MetadataXML.EntitiesDescriptor.EntityDescriptor | ? {$_.SPSSODescriptor -ne $null}
+        $myRawAllSPsCount= $RawALLSps.count
+        Write-VerboseLog "Total number of Sps: $myRawAllSPsCount"
+
+
+        $AllSPs = $MetadataXML.EntitiesDescriptor.EntityDescriptor | ? {$_.SPSSODescriptor -ne $null}
+
+#        $AllSPs = $MetadataXML.EntitiesDescriptor.EntityDescriptor | ? {$_.SPSSODescriptor -ne $null -and $_.Extensions -ne $null}
+
+        $myAllSPsCount= $ALLSPs.count
+        Write-VerboseLog "Total number of Sps: $myAllSPsCount"
+
 
         Write-VerboseLog "Calculating changes..."
         $AllSPs | % {
