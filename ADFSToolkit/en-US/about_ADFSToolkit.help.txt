@@ -1,0 +1,14 @@
+PSTOPIC
+about_ADFSToolkit
+
+SHORT DESCRIPTION
+    ADFSToolkit allows you to work with various SAML federation metadata through PowerShell functions
+
+LONG DESCRIPTION
+    ADFSToolkit allows you to work with various SAML federation metadata through PowerShell functions
+
+    You can find API documentation here:
+        https://adfstoolkit.org/docs
+
+DETAILED DESCRIPTION
+    This is a  module that interacts with ADFS to load a federation aggregate 
