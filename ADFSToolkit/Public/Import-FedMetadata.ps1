@@ -14,6 +14,7 @@ function Import-FedMetadata
             ValueFromPipelineByPropertyName=$true,
             Position=1)]
         $EntityBase,
+        [string]$ConfigFile,
         [string]$LocalMetadataFile,
         [string[]]$ForcedEntityCategories,
         [Parameter(ParameterSetName='AllSPs')]
@@ -39,33 +40,6 @@ function Import-FedMetadata
 
     try {
 
-     
-    $CmdLet =  Load-CmdLet Write-Log
-    . $CmdLet
-    $CmdLet =  Load-CmdLet Get-Answer
-    . $CmdLet
-    $CmdLet =  Load-CmdLet Compare-Object
-    . $CmdLet
-    $CmdLet =  Load-CmdLet Split-Collection
-    . $CmdLet
-
-
-    if (Test-Path 'C:\Powershell Scripts\ADFS\Import-SWAMIDEntityCategoryBuilder.ps1')
-    {
-    . 'C:\Powershell Scripts\ADFS\Import-SWAMIDEntityCategoryBuilder.ps1'
-    }
-    elseif (Test-Path 'C:\Powershell Scripts\Import-SWAMIDEntityCategoryBuilder.ps1')
-    {
-    . 'C:\Powershell Scripts\Import-SWAMIDEntityCategoryBuilder.ps1'
-    }
-    elseif(Test-Path (Join-Path $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') Import-SWAMIDEntityCategoryBuilder.ps1))
-    {
-    . (Join-Path $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') Import-SWAMIDEntityCategoryBuilder.ps1)
-    }
-    else
-    {
-        Write-Log "Could not import Import-SWAMIDEntityCategoryBuilder.ps1! Is it missing?" -Majorfault
-    }
 
     # Add some variables
     $md5 = new-object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
@@ -76,17 +50,23 @@ function Import-FedMetadata
         Write-Log -SetLogFilePath $LogToPath
     }
 
-    Write-VerboseLog "Script started" -EntryType Information
+    Write-VerboseLog "Import-FedMetadata Script started" -EntryType Information
 
     #region Get static values from configuration file
+    $mypath= $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\')
 
-    if (!(Test-Path (Join-Path $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') Import-SWAMIDMetadata.config.xml)))
+    Write-Log "Import-FedMetadata started with path: $mypath"
+
+    #if (!(Test-Path ( Join-Path $PScriptRoot\config Import-FedMetadata.config.xml )))
+    if (!(Test-Path ( $ConfigFile )))
     {
-        throw "Could not find 'Import-SWAMIDMetadata.config.xml'. Please put the file in the same directory as Import-SWAMIDMetadata.ps1"
+   
+        Write-Error -message "Msg: Path:$mypath configFile: $ConfigFile" 
+        throw "throwing. Path:$mypath configfile:$ConfigFile" 
     }
     else
     {
-        [xml]$Settings=Get-Content (Join-Path $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') Import-SWAMIDMetadata.config.xml)
+        [xml]$Settings=Get-Content ($ConfigFile)
     }
 
     #endregion
@@ -98,7 +78,7 @@ function Import-FedMetadata
     }
     else
     {
-        $SPHashFile = (Join-Path $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') SPHashFile.xml) #Just a fallback
+        $SPHashFile = (Join-Path $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\cache\') SPHashFile.xml) #Just a fallback
     }
 
     if (Test-Path $SPHashFile)
@@ -127,7 +107,7 @@ function Import-FedMetadata
     #region Getting Metadata
 
     #Cached Metadata file
-    $CachedMetadataFile = Join-Path $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') SwamidMetadata.cache.xml
+    $CachedMetadataFile = Join-Path $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\cache\') SwamidMetadata.cache.xml
     #$CachedMetadataXML = $null
 
     #Load the cached Metadata if it exists
