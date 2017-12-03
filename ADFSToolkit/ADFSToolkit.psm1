@@ -2,6 +2,8 @@
     $Public  = @( Get-ChildItem -Path $PSScriptRoot\Public\*.ps1  )
     $Private = @( Get-ChildItem -Path $PSScriptRoot\Private\*.ps1 )
 
+   # $UserManaged = @( Get-ChildItem -Path $PSScriptRoot\config\*.ps1 )
+
 # $Public  = @( Get-ChildItem -Path $PSScriptRoot\Public\*.ps1 -ErrorAction SilentlyContinue )
  #   $Private = @( Get-ChildItem -Path $PSScriptRoot\Private\*.ps1 -ErrorAction SilentlyContinue )
 
@@ -11,7 +13,7 @@
 Write-Verbose -Message "ADFSToolkit Public: $Public"
 Write-Verbose -Message "ADFSToolkit Private: $Private"
 
-    Foreach($import in @($Private + $Public))
+    Foreach($import in @($Private + $Public ))
     {
         Try
         {
@@ -29,4 +31,10 @@ Write-Verbose -Message "ADFSToolkit Private: $Private"
     # Export Public functions ($Public.BaseName) for WIP modules
     # Set variables visible to the module and its functions only
 
-Export-ModuleMember -Function $Public.Basename
+
+#Export-ModuleMember -Function $Public.Basename
+
+Export-ModuleMember -Function  Import-FedMetadata
+
+# uncomment to test the config tester: Export-ModuleMember -Function  Import-FedMetadata,Test-ADFSTkConfiguration
+

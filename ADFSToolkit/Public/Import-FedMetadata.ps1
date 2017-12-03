@@ -115,28 +115,10 @@ function Import-FedMetadata
 Write-Log "Setting CachedMetadataFile to: $CachedMetadataFile"
 
 
-    #$CachedMetadataXML = $null
-
-    #Load the cached Metadata if it exists
-    #if (Test-Path $CachedMetadataFile)
-    #{
-    #    try 
-    #    {
-    #        Write-VerboseLog "Parsing cached Metadata XML..." -EntryType Information
-    #        [xml]$CachedMetadataXML = Get-Content $CachedMetadataFile
-    #        Write-VerboseLog "Successfully parsed cached Metadata XML!" -EntryType Information
-    #    }
-    #    catch 
-    #    {
-    #        Write-Log "Could not parse cached Metadata!" 
-    #    }
-    #}
-
     if ($LocalMetadataFile)
     {
         try
         {
-            #[xml]$MetadataXML = Get-Content $LocalMetadataFile
             $MetadataXML = new-object Xml.XmlDocument
             $MetadataXML.PreserveWhitespace = $true
             $MetadataXML.Load($LocalMetadataFile)
@@ -335,13 +317,15 @@ Write-Log "Setting CachedMetadataFile to: $CachedMetadataFile"
 
             # Checking if any Swamid Relying Party Trusts show be removed
             
-            Write-Log "Checking for Relying Parties removed from Swamid Metadata..."
+           
 
         $NamePrefix = $Settings.configuration.MetadataPrefix 
-        $Sep= $Settings.configuration.MetadataPrefix      
+        $Sep= $Settings.configuration.MetadataPrefixSeparator      
         $FilterString="$NamePrefix$Sep"
 
-            $CurrentSwamidSPs = Get-ADFSRelyingPartyTrust | ? {$_.Name -like "$FilterString *"} | select -ExpandProperty Identifier
+            Write-Log "Checking for Relying Parties removed from Metadata using Filter:$FilterString* ..." 
+
+            $CurrentSwamidSPs = Get-ADFSRelyingPartyTrust | ? {$_.Name -like "$FilterString*"} | select -ExpandProperty Identifier
 
             #$RemoveSPs = Compare-Object $CurrentSwamidSPs $SwamidSPs | ? SideIndicator -eq "<=" | select -ExpandProperty InputObject
             $CompareSets = Compare-Object -FirstSet $CurrentSwamidSPs -SecondSet $SwamidSPs -CompareType InFirstSetOnly
