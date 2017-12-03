@@ -1,0 +1,1 @@
+files in here are used for statefulness of what was processed last and to detect changes in entities to be efficient. The directory needs to exist.

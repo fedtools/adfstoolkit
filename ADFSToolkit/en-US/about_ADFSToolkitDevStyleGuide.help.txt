@@ -1,0 +1,26 @@
+PSTOPIC
+about_ADFSToolkitDevStyleGuide
+
+SHORT DESCRIPTION
+	Developer style Guide for ADFSToolkit - see long description for full style guide
+
+LONG DESCRIPTION
+	DEVELOPER STYLE GUIDE
+
+	Coding Conventions
+		Use Standard Powershell CamelCase
+		Follow Verb-Noun MSFT and mainstream styls
+		Mask Private functions as much as possible in the 'Private folder'
+		Only Public functions for that which is major functional items in module
+
+	Naming Conventions
+		ADFSTK is the prefix to all functions to distinguish any ADFS Toolkit functionality regardless of private/public
+		(eg. write-ADFSTKLog)
+
+
+
+    You can find this and more documentation here:
+        https://github.com/fedtools/adfstoolkit
+
+DETAILED DESCRIPTION
+    This is a  module that interacts with ADFS to load a federation aggregate 
