@@ -317,13 +317,15 @@ Write-Log "Setting CachedMetadataFile to: $CachedMetadataFile"
 
             # Checking if any Swamid Relying Party Trusts show be removed
             
-            Write-Log "Checking for Relying Parties removed from Metadata..."
+           
 
         $NamePrefix = $Settings.configuration.MetadataPrefix 
-        $Sep= $Settings.configuration.MetadataPrefix      
+        $Sep= $Settings.configuration.MetadataPrefixSeparator      
         $FilterString="$NamePrefix$Sep"
 
-            $CurrentSwamidSPs = Get-ADFSRelyingPartyTrust | ? {$_.Name -like "$FilterString *"} | select -ExpandProperty Identifier
+            Write-Log "Checking for Relying Parties removed from Metadata using Filter:$FilterString* ..." 
+
+            $CurrentSwamidSPs = Get-ADFSRelyingPartyTrust | ? {$_.Name -like "$FilterString*"} | select -ExpandProperty Identifier
 
             #$RemoveSPs = Compare-Object $CurrentSwamidSPs $SwamidSPs | ? SideIndicator -eq "<=" | select -ExpandProperty InputObject
             $CompareSets = Compare-Object -FirstSet $CurrentSwamidSPs -SecondSet $SwamidSPs -CompareType InFirstSetOnly
