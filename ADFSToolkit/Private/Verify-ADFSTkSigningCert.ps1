@@ -1,4 +1,4 @@
-function Verify-SigningCert {
+function Verify-ADFSTkSigningCert {
 param (
     [string]$signingCertString
 )

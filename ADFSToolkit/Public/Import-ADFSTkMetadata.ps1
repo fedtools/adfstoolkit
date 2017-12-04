@@ -230,7 +230,7 @@ Write-Log "Setting CachedMetadataFile to: $CachedMetadataFile"
 
     #Verify Metadata Signing Cert
     Write-VerboseLog "Verifying metadata signing cert..." -EntryType Information
-    if (Verify-SigningCert $MetadataXML.EntitiesDescriptor.Signature.KeyInfo.X509Data.X509Certificate)
+    if (Verify-ADFSTkSigningCert $MetadataXML.EntitiesDescriptor.Signature.KeyInfo.X509Data.X509Certificate)
     {
         Write-VerboseLog "Successfully verified metadata signing cert!" -EntryType Information
     }
