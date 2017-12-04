@@ -280,7 +280,7 @@ Write-Log "Setting CachedMetadataFile to: $CachedMetadataFile"
             Write-VerboseLog "Working with `'$($_.EntityID)`'..."
 
             $SwamidSPs += $_.EntityId
-            if (Check-SPHasChanged $_)
+            if (Check-ADFSTkSPHasChanged $_)
             {
                 $SwamidSPsToProcess += $_
             }
@@ -379,7 +379,7 @@ Write-Log "Setting CachedMetadataFile to: $CachedMetadataFile"
         $SPsToProcess = @()
         do
         {
-            if (Check-SPHasChanged $AllSPsInMetadata[$i])
+            if (Check-ADFSTkSPHasChanged $AllSPsInMetadata[$i])
             {
                 $SPsToProcess += $AllSPsInMetadata[$i]
                 $n++
