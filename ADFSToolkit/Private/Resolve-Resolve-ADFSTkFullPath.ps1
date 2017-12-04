@@ -1,5 +1,5 @@
 # based off of http://mnaoumov.wordpress.com/2013/08/21/powershell-resolve-path-safe/
-function Resolve-FullPath{
+function Resolve-ADFSTkFullPath{
     [cmdletbinding()]
     param
     (
