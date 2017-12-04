@@ -112,7 +112,7 @@ function Add-ADFSTkSPRelyingPartyTrust {
         Write-ADFSTkVerboseLog "Added Forced Entity Categories: $($ForcedEntityCategories -join ',')"
     }
 
-    $IssuanceTransformRules = Get-IssuanceTransformRules $EntityCategories -EntityId $entityID -RequestedAttribute $sp.SPSSODescriptor.AttributeConsumingService.RequestedAttribute
+    $IssuanceTransformRules = Get-ADFSTkIssuanceTransformRules $EntityCategories -EntityId $entityID -RequestedAttribute $sp.SPSSODescriptor.AttributeConsumingService.RequestedAttribute
 
     $IssuanceAuthorityRule =
 @"
