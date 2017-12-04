@@ -20,7 +20,7 @@ param (
 $AllAttributes = Import-ADFSTkAllAttributes
 $AllTransformRules = Import-ADFSTkAllTransformRules
 
-$IssuanceTransformRuleCategories = Import-IssuanceTransformRuleCategories -RequestedAttribute $RequestedAttribute
+$IssuanceTransformRuleCategories = Import-ADFSTkIssuanceTransformRuleCategories -RequestedAttribute $RequestedAttribute
 $IssuanceTransformRulesManualSP = get-ADFSTkManualSPSettings
 
 
