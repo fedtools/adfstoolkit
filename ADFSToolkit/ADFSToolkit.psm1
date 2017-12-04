@@ -2,7 +2,7 @@
     $Public  = @( Get-ChildItem -Path $PSScriptRoot\Public\*.ps1  )
     $Private = @( Get-ChildItem -Path $PSScriptRoot\Private\*.ps1 )
 
-   # $UserManaged = @( Get-ChildItem -Path $PSScriptRoot\config\*.ps1 )
+   $UserManaged = @( Get-ChildItem -Path $PSScriptRoot\config\*.ps1 )
 
 # $Public  = @( Get-ChildItem -Path $PSScriptRoot\Public\*.ps1 -ErrorAction SilentlyContinue )
  #   $Private = @( Get-ChildItem -Path $PSScriptRoot\Private\*.ps1 -ErrorAction SilentlyContinue )
@@ -13,7 +13,7 @@
 Write-Verbose -Message "ADFSToolkit Public: $Public"
 Write-Verbose -Message "ADFSToolkit Private: $Private"
 
-    Foreach($import in @($Private + $Public ))
+    Foreach($import in @($Private + $Public + $UserManaged ))
     {
         Try
         {
