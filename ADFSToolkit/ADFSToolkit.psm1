@@ -34,7 +34,7 @@ Write-Verbose -Message "ADFSToolkit Private: $Private"
 
 #Export-ModuleMember -Function $Public.Basename
 
-Export-ModuleMember -Function  Import-FedMetadata
+Export-ModuleMember -Function  Import-ADFSTkMetadata
 
 # uncomment to test the config tester: Export-ModuleMember -Function  Import-FedMetadata,Test-ADFSTkConfiguration
 

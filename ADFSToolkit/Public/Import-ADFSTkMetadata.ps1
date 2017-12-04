@@ -1,4 +1,4 @@
-function Import-FedMetadata 
+function Import-ADFSTkMetadata 
 {
 
     [CmdletBinding(DefaultParameterSetName='AllSPs',
@@ -50,14 +50,14 @@ function Import-FedMetadata
         Write-Log -SetLogFilePath $LogToPath
     }
 
-    Write-VerboseLog "Import-FedMetadata Script started" -EntryType Information
+    Write-VerboseLog "Import-ADFSTkMetadata Script started" -EntryType Information
 
     #region Get static values from configuration file
     $mypath= $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\')
 
-    Write-Log "Import-FedMetadata started with path: $mypath"
+    Write-Log "Import-ADFSTkMetadata started with path: $mypath"
 
-    #if (!(Test-Path ( Join-Path $PScriptRoot\config Import-FedMetadata.config.xml )))
+    #if (!(Test-Path ( Join-Path $PScriptRoot\config Import-ADFSTkMetadata.config.xml )))
     if (!(Test-Path ( $ConfigFile )))
     {
    
