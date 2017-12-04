@@ -1,4 +1,4 @@
-function Add-SPRelyingPartyTrust {
+function Add-ADFSTkSPRelyingPartyTrust {
     param (
         [Parameter(Mandatory=$true,
                    Position=0)]
@@ -163,18 +163,18 @@ function Add-SPRelyingPartyTrust {
                                     -ErrorAction Stop
 
                 Write-Log "Successfully added `'$entityId`'!" -EntryType Information
-                Add-EntityHash -EntityID $entityId
+                Add-ADFSTkEntityHash -EntityID $entityId
             }
             catch
             {
                 Write-Log "Could not add $entityId as SP! Error: $_" -EntryType Error
-                Add-EntityHash -EntityID $entityId
+                Add-ADFSTkEntityHash -EntityID $entityId
             }
         }
         else
         {
             #There were some error with certificate or endpoints with this SP. Let's only try again if it changes... 
-            Add-EntityHash -EntityID $entityId
+            Add-ADFSTkEntityHash -EntityID $entityId
         }
     }
     else

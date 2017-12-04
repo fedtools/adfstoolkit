@@ -6,7 +6,7 @@ param (
     if ((Get-ADFSRelyingPartyTrust -Identifier $sp.EntityID) -eq $null)
     {
         Write-VerboseLog "'$($sp.EntityID)' not in ADFS database."
-        Add-SPRelyingPartyTrust $sp
+        Add-ADFSTkSPRelyingPartyTrust $sp
     }
     else
     {
@@ -17,7 +17,7 @@ param (
             if ((Get-ADFSRelyingPartyTrust -Name $Name) -ne $null)
             {
                 Write-Log "'$($sp.EntityID)' added manual in ADFS database, aborting force update!" -EntryType Warning
-                Add-EntityHash -EntityID $sp.EntityID
+                Add-ADFSTkEntityHash -EntityID $sp.EntityID
             }
             else
             {
@@ -28,7 +28,7 @@ param (
                 {
                     Remove-ADFSRelyingPartyTrust -TargetIdentifier $sp.EntityID -Confirm:$false -ErrorAction Stop
                     Write-VerboseLog "Deleting $($sp.EntityID) done!"
-                    Add-SPRelyingPartyTrust $sp
+                    Add-ADFSTkSPRelyingPartyTrust $sp
                 }
                 catch
                 {
@@ -64,7 +64,7 @@ param (
                     {
                         Remove-ADFSRelyingPartyTrust -TargetIdentifier $sp.EntityID -Confirm:$false -ErrorAction Stop
                         Write-VerboseLog "Deleting '$($sp.EntityID)' done!"
-                        Add-SPRelyingPartyTrust $sp
+                        Add-ADFSTkSPRelyingPartyTrust $sp
                     }
                     catch
                     {
