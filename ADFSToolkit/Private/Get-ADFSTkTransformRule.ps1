@@ -1,4 +1,4 @@
-function Get-TransformRule {
+function Get-ADFSTkTransformRule {
 param (
     $Type,
     $Oid,

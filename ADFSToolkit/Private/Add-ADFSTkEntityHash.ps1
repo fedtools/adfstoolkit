@@ -1,4 +1,4 @@
-function Add-EntityHash {
+function Add-ADFSTkEntityHash {
 param (
     [Parameter(Mandatory=$true, Position=0)]
     $EntityID,
