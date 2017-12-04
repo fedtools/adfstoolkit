@@ -1,4 +1,4 @@
-function Check-SPHasChanged {
+function Check-ADFSTkSPHasChanged {
 param (
     [Parameter(Mandatory=$true, Position=0)]
     $SP
@@ -19,7 +19,7 @@ param (
     }
     catch
     {
-        Write-VerboseLog "Could not get cached entity or compute the hash for it..."
+        Write-ADFSTkVerboseLog "Could not get cached entity or compute the hash for it..."
     }
     
     #if (![string]::IsNullOrEmpty($SP))
@@ -35,7 +35,7 @@ param (
     #    }
     #    else
     #    {
-    #        Add-EntityHash $SP -spHash $currentSPHash
+    #        Add-ADFSTkEntityHash $SP -spHash $currentSPHash
     #        return $true
     #    }
     #
@@ -43,7 +43,7 @@ param (
     #}
     #else
     #{
-    #    Add-EntityHash $SP -spHash $currentSPHash
+    #    Add-ADFSTkEntityHash $SP -spHash $currentSPHash
     #    return $true #EntityID didn't exist ie it has changed
     #}
 }
