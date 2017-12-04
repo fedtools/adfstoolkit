@@ -5,7 +5,7 @@ param (
 
     if ((Get-ADFSRelyingPartyTrust -Identifier $sp.EntityID) -eq $null)
     {
-        Write-VerboseLog "'$($sp.EntityID)' not in ADFS database."
+        Write-ADFSTkVerboseLog "'$($sp.EntityID)' not in ADFS database."
         Add-ADFSTkSPRelyingPartyTrust $sp
     }
     else
@@ -16,23 +16,23 @@ param (
         {
             if ((Get-ADFSRelyingPartyTrust -Name $Name) -ne $null)
             {
-                Write-Log "'$($sp.EntityID)' added manual in ADFS database, aborting force update!" -EntryType Warning
+                Write-ADFSTkLog "'$($sp.EntityID)' added manual in ADFS database, aborting force update!" -EntryType Warning
                 Add-ADFSTkEntityHash -EntityID $sp.EntityID
             }
             else
             {
-                Write-VerboseLog "'$($sp.EntityID)' in ADFS database, forcing update!"
+                Write-ADFSTkVerboseLog "'$($sp.EntityID)' in ADFS database, forcing update!"
                 #Update-SPRelyingPartyTrust $_
-                Write-VerboseLog "Deleting '$($sp.EntityID)'..."
+                Write-ADFSTkVerboseLog "Deleting '$($sp.EntityID)'..."
                 try
                 {
                     Remove-ADFSRelyingPartyTrust -TargetIdentifier $sp.EntityID -Confirm:$false -ErrorAction Stop
-                    Write-VerboseLog "Deleting $($sp.EntityID) done!"
+                    Write-ADFSTkVerboseLog "Deleting $($sp.EntityID) done!"
                     Add-ADFSTkSPRelyingPartyTrust $sp
                 }
                 catch
                 {
-                    Write-Log "Could not delete '$($sp.EntityID)'... Error: $_" -EntryType Error
+                    Write-ADFSTkLog "Could not delete '$($sp.EntityID)'... Error: $_" -EntryType Error
                 }
             }
         }
@@ -40,7 +40,7 @@ param (
         {
             if ($AddRemoveOnly -eq $true)
             {
-                Write-VerboseLog "Skipping RP due to -AddRemoveOnly switch..."
+                Write-ADFSTkVerboseLog "Skipping RP due to -AddRemoveOnly switch..."
             }
             elseif (Get-Answer "'$($sp.EntityID)' already exists. Do you want to update it?")
             {
@@ -56,19 +56,19 @@ param (
                 if ($Continue)
                 {
                         
-                    Write-VerboseLog "'$($sp.EntityID)' in ADFS database, updating!"
+                    Write-ADFSTkVerboseLog "'$($sp.EntityID)' in ADFS database, updating!"
                 
                     #Update-SPRelyingPartyTrust $_
-                    Write-VerboseLog "Deleting '$($sp.EntityID)'..."
+                    Write-ADFSTkVerboseLog "Deleting '$($sp.EntityID)'..."
                     try
                     {
                         Remove-ADFSRelyingPartyTrust -TargetIdentifier $sp.EntityID -Confirm:$false -ErrorAction Stop
-                        Write-VerboseLog "Deleting '$($sp.EntityID)' done!"
+                        Write-ADFSTkVerboseLog "Deleting '$($sp.EntityID)' done!"
                         Add-ADFSTkSPRelyingPartyTrust $sp
                     }
                     catch
                     {
-                        Write-Log "Could not delete '$($sp.EntityID)'... Error: $_" -EntryType Error
+                        Write-ADFSTkLog "Could not delete '$($sp.EntityID)'... Error: $_" -EntryType Error
                     }
                 }
             }

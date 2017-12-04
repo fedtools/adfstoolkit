@@ -19,7 +19,7 @@ param (
     }
     catch
     {
-        Write-VerboseLog "Could not get cached entity or compute the hash for it..."
+        Write-ADFSTkVerboseLog "Could not get cached entity or compute the hash for it..."
     }
     
     #if (![string]::IsNullOrEmpty($SP))
