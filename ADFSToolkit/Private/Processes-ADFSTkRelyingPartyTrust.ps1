@@ -1,4 +1,4 @@
-function Processes-RelyingPartyTrust {
+function Processes-ADFSTkRelyingPartyTrust {
 param (
     $sp
 )

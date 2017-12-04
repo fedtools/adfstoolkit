@@ -310,7 +310,7 @@ Write-Log "Setting CachedMetadataFile to: $CachedMetadataFile"
                 else
                 {
                     $SwamidSPsToProcess | % {
-                        Processes-RelyingPartyTrust $_
+                        Processes-ADFSTkRelyingPartyTrust $_
                     }
                 }
             }
@@ -393,7 +393,7 @@ Write-Log "Setting CachedMetadataFile to: $CachedMetadataFile"
         until ($n -ge $MaxSPAdditions -or $i -ge $m)
 
         $SPsToProcess | % {
-            Processes-RelyingPartyTrust $_
+            Processes-ADFSTkRelyingPartyTrust $_
         }
     }
     else
@@ -415,7 +415,7 @@ Write-Log "Setting CachedMetadataFile to: $CachedMetadataFile"
             Write-Log "No SP found!" -MajorFault
         }
         else {
-            Processes-RelyingPartyTrust $sp
+            Processes-ADFSTkRelyingPartyTrust $sp
         }
     }
 
