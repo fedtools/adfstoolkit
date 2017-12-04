@@ -1,4 +1,4 @@
-function Verify-MetadataSignature {
+function Verify-ADFSTkMetadataSignature {
 param (
     [xml]$xmlMetadata
 )

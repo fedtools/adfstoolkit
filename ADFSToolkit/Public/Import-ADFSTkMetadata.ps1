@@ -241,7 +241,7 @@ Write-Log "Setting CachedMetadataFile to: $CachedMetadataFile"
 
     #Verify Metadata Signature
     Write-VerboseLog "Verifying metadata signature..." -EntryType Information
-    if (Verify-MetadataSignature $MetadataXML)
+    if (Verify-ADFSTkMetadataSignature $MetadataXML)
     {
         Write-VerboseLog "Successfully verified metadata signature!" -EntryType Information
     }
