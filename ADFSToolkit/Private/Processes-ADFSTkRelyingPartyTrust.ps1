@@ -42,11 +42,11 @@ param (
             {
                 Write-ADFSTkVerboseLog "Skipping RP due to -AddRemoveOnly switch..."
             }
-            elseif (Get-Answer "'$($sp.EntityID)' already exists. Do you want to update it?")
+            elseif (Get-ADFSTkAnswer "'$($sp.EntityID)' already exists. Do you want to update it?")
             {
                 if ((Get-ADFSRelyingPartyTrust -Name $Name) -ne $null)
                 {
-                    $Continue = Get-Answer "'$($sp.EntityID)' added manual in ADFS database, still forcing update?"
+                    $Continue = Get-ADFSTkAnswer "'$($sp.EntityID)' added manual in ADFS database, still forcing update?"
                 }
                 else
                 {
