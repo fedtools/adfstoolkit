@@ -253,24 +253,20 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
     #region Read/Create file with 
 
 
+     $RawAllSPs = $MetadataXML.EntitiesDescriptor.EntityDescriptor | ? {$_.SPSSODescriptor -ne $null}
+        $myRawAllSPsCount= $RawALLSps.count
+        Write-ADFSTkVerboseLog "Total number of Sps observed: $myRawAllSPsCount"
 
 
     if ($ProcessWholeMetadata)
     {
         Write-ADFSTkLog "Processing whole Metadata file..." -EntryType Information
-
-        $RawAllSPs = $MetadataXML.EntitiesDescriptor.EntityDescriptor | ? {$_.SPSSODescriptor -ne $null}
-        $myRawAllSPsCount= $RawALLSps.count
-        Write-ADFSTkVerboseLog "Total number of Sps: $myRawAllSPsCount"
-
-
+   
         $AllSPs = $MetadataXML.EntitiesDescriptor.EntityDescriptor | ? {$_.SPSSODescriptor -ne $null}
-
 #        $AllSPs = $MetadataXML.EntitiesDescriptor.EntityDescriptor | ? {$_.SPSSODescriptor -ne $null -and $_.Extensions -ne $null}
 
         $myAllSPsCount= $ALLSPs.count
-        Write-ADFSTkVerboseLog "Total number of Sps: $myAllSPsCount"
-
+        Write-ADFSTkVerboseLog "Total number of Sps observed post filter selection: $myAllSPsCount"
 
         Write-ADFSTkVerboseLog "Calculating changes..."
         $AllSPs | % {
@@ -303,7 +299,7 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
                     for ($i = 1; $i -le $batches; $i++)
                     {
                         Write-ADFSTkLog "Working with batch $($i)/$batches"
-                        Start-Process -WorkingDirectory $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') -FilePath "$env:SystemRoot\system32\WindowsPowerShell\v1.0\powershell.exe" -ArgumentList "-NoExit", "-Command & {.\Import-SWAMIDMetadata.ps1 -MaxSPAdditions 50 -CacheTime -1 -ForceUpdate -LogToPath '$LogToPath';Exit}" -Wait -NoNewWindow
+                        Start-Process -WorkingDirectory $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') -FilePath "$env:SystemRoot\system32\WindowsPowerShell\v1.0\powershell.exe" -ArgumentList "-NoExit", "-Command & {Import-Module .\ADFSToolkit; Import-ADFSTkMetadata -MaxSPAdditions 50 -CacheTime -1 -ForceUpdate -ConfigFile '$ConfigFile' -LogToPath '$LogToPath';Exit}" -Wait -NoNewWindow
                         Write-ADFSTkLog "Done!"
                     }
                 }
@@ -350,8 +346,8 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
             }
             else
             {
-                # $RemoveSPs | Get-Answer -Caption "Do you want to remove Relying Party trust that are not in Swamid metadata?" | Remove-ADFSRelyingPartyTrust -Confirm:$false 
-                foreach ($rp in ($CompareSets.CompareSet | Get-Answer -Caption "Do you want to remove Relying Party trust that are not in Swamid metadata?"))
+                # $RemoveSPs | Get-ADFSTkAnswer -Caption "Do you want to remove Relying Party trust that are not in Swamid metadata?" | Remove-ADFSRelyingPartyTrust -Confirm:$false 
+                foreach ($rp in ($CompareSets.CompareSet | Get-ADFSTkAnswer -Caption "Do you want to remove Relying Party trust that are not in Swamid metadata?"))
                 {
                     Write-ADFSTkVerboseLog "Removing `'$($rp)`'..."
                     try 
@@ -370,8 +366,9 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
     elseif($PSBoundParameters.ContainsKey('MaxSPAdditions') -and $MaxSPAdditions -gt 0)
     {
         Write-ADFSTkLog "Processing $MaxSPAdditions SPs..." -EntryType Information
-        
-        $AllSPsInMetadata = $MetadataXML.EntitiesDescriptor.EntityDescriptor | ? {$_.SPSSODescriptor -ne $null -and $_.Extensions -ne $null}
+       
+        $AllSPsInMetadata = $MetadataXML.EntitiesDescriptor.EntityDescriptor | ? {$_.SPSSODescriptor -ne $null }
+#        $AllSPsInMetadata = $MetadataXML.EntitiesDescriptor.EntityDescriptor | ? {$_.SPSSODescriptor -ne $null -and $_.Extensions -ne $null}
 
         $i = 0
         $n = 0
@@ -396,9 +393,10 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
             Processes-ADFSTkRelyingPartyTrust $_
         }
     }
-    else
+    elseif(! ([string]::IsNullOrEmpty($EntityBase) ) )
     {
-    #Lägg in så att SP:N kollas mot hashen och frågar om man vill tvinga uppdatering. Lägg in i hashen!
+    #Enter so that SP: N is checked against the can and ask if you want to force update. Insert the hash!
+
         Write-ADFSTkVerboseLog "Working with `'$EntityID`'..."
         if ([string]::IsNullOrEmpty($EntityBase)) {
             $sp = $MetadataXML.EntitiesDescriptor.EntityDescriptor | ? {$_.entityId -eq $EntityId}
@@ -408,7 +406,7 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
         }
 
         if ($sp.count -gt 1) {
-            $sp = $sp[0] #Fult som fan, jag vet, men vad ska jag göra?!?!
+            $sp = $sp[0] #Why, but necessary!?!
         }
 
         if ([string]::IsNullOrEmpty($sp)){
@@ -417,6 +415,8 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
         else {
             Processes-ADFSTkRelyingPartyTrust $sp
         }
+    }else {
+        Write-ADFSTkVerboseLog "Invoked without -ProcessWholeMetadata <no args> , -EntityID <with quoted URL>, nothing to do, exiting"
     }
 
     Write-ADFSTkVerboseLog "Script ended!"
