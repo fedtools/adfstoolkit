@@ -45,19 +45,7 @@ function Import-ADFSTkMetadata
     $md5 = new-object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
     $utf8 = new-object -TypeName System.Text.UTF8Encoding
 
-
-    if (![string]::IsNullOrEmpty($LogToPath)) {
-        Write-ADFSTkLog -SetLogFilePath $LogToPath
-    }
-
-    Write-ADFSTkVerboseLog "Import-ADFSTkMetadata Script started" -EntryType Information
-
-    #region Get static values from configuration file
-    $mypath= $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\')
-
-    Write-ADFSTkLog "Import-ADFSTkMetadata started with path: $mypath"
-
-    #if (!(Test-Path ( Join-Path $PScriptRoot\config Import-ADFSTkMetadata.config.xml )))
+    # load configuration file
     if (!(Test-Path ( $ConfigFile )))
     {
    
@@ -68,6 +56,36 @@ function Import-ADFSTkMetadata
     {
         [xml]$Settings=Get-Content ($ConfigFile)
     }
+
+
+    # set appropriate logging 
+
+    if (![string]::IsNullOrEmpty($LogToPath)) {
+
+        #logpath is not null, so it exists and means it will log both to file and MAYBE eventlog
+        if (Verify-ADFSTkEventLogUsage)
+        {
+            #If we evaluated as true, the eventlog is now set up and we link the WriteADFSTklog to it
+            Write-ADFSTkLog  -SetLogFilePath $LogToPath -SetEventLogName $Settings.configuration.logging.LogName -SetEventLogSource $Settings.configuration.logging.Source
+
+        }
+        else {
+                # LogToPath is non empty and EventLogging configuration is absent
+                # No Event logging is enabled, just this one to a file
+            Write-ADFSTkLog -SetLogFilePath $LogToPath 
+        }
+
+    }
+    else {
+            Throw "Halted: Missing eventlog in config, or LogToPath switch"   
+    
+    }
+
+    #region Get static values from configuration file
+    $mypath= $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\')
+
+    Write-ADFSTkVerboseLog "Import-ADFSTkMetadata Script started" -EntryType Information
+    Write-ADFSTkLog "Import-ADFSTkMetadata path: $mypath"
 
     #endregion
 

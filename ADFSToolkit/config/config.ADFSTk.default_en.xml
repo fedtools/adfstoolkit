@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<configuration>
+    <ConfigVersion>0.9</ConfigVersion>
+    <WorkingPath>\\globemaster\HomeFolders\cphillips\Documents\gitcontrolled\adfstoolkit\ADFSToolkit</WorkingPath>
+    <ConfigDir>/config</ConfigDir>
+    <CacheDir>/cache</CacheDir>
+    <SPHashFile>SPHash.xml</SPHashFile>
+    <MetadataCacheFile>metadata.cached.xml</MetadataCacheFile>
+
+    <MetadataPrefix>CANARIE</MetadataPrefix>
+    <MetadataPrefixSeparator>:</MetadataPrefixSeparator>
+    <Logging useEventLog="true">
+      <LogName>ADFSToolkit</LogName>
+      <Source>Import-ADFSTkMetadata</Source>
+    </Logging>   
+
+    <!-- <metadataURL>file://globemaster/HomeFolders/cphillips/Documents/gitcontrolled/adfstoolkit/ADFSToolkit/cache/md.xml</metadataURL> -->
+<metadataURL>https://caf-shib2ops.ca/CoreServices/caf_metadata_signed_sha256.xml</metadataURL> 
+    <signCertFingerprint>36CFD8090A88B8D75264E790FEA1B6F7ECBECF42C881AAF6F459D3AE3B459304</signCertFingerprint>
+	  <claimsProviders>
+        <!--<claimsProvider>Active Directory</claimsProvider>-->
+        <!--<claimsProvider>eduID</claimsProvider>-->
+    </claimsProviders>
+    <staticValues>
+		<o>CANARIE Inc.</o>
+		<c>CA</c>
+		<co>Canada</co>
+		<schacHomeOrganization>canarie.ca</schacHomeOrganization>
+		<norEduOrgAcronym>CANARIE</norEduOrgAcronym>
+		<schacHomeOrganizationType>urn:schac:homeOrganizationType:eu:educationInstitution</schacHomeOrganizationType>
+		<!-- This value is for EU higher education institution, other allowed values are:
+			urn:schac:homeOrganizationType:eu:educationInstitution
+			urn:schac:homeOrganizationType:int:NREN
+			urn:schac:homeOrganizationType:int:universityHospital
+			urn:schac:homeOrganizationType:int:NRENAffiliate
+			urn:schac:homeOrganizationType:int:other
+		-->
+		<ADFSExternalDNS>adfsgw.canarie.ca</ADFSExternalDNS>
+	</staticValues>
+    <storeConfig>
+        <stores>
+            <store name="Active Directory" issuer="AD AUTHORITY" type="http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname" order="1" />
+            <store name="Custom Store"     issuer="AD AUTHORITY" type="http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname" order="2" />
+            <!--<store name="SQL" issuer="SQL" type="http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname" order="3" />-->
+      </stores>
+        <attributes>
+         <!-- <attribute type="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" store="Static">
+                <value>Johan</value>
+                <value>Kalle</value>
+            </attribute> -->
+        
+            <attribute type="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" store="Active Directory" name="givenname" />
+            <attribute type="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname" store="Active Directory" name="surname" />
+            <attribute type="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/displayname" store="Active Directory" name="displayname" />
+            <attribute type="http://schemas.xmlsoap.org/claims/CommonName" store="Active Directory" name="cn" />
+            <attribute type="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name" store="Active Directory" name="name" />
+            <attribute type="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress" store="Active Directory" name="mail" />
+            <attribute type="urn:mace:dir:attribute-def:eduPersonScopedAffiliation" store="Active Directory" name="eduPersonScopedAffiliation" >
+            <restrictedvalue>faculty@liu.se</restrictedvalue>
+              <restrictedvalue>employee@liu.se</restrictedvalue>
+              <restrictedvalue>student@liu.se</restrictedvalue>
+              <restrictedvalue>alum@liu.se</restrictedvalue>
+              <restrictedvalue>affiliate@liu.se</restrictedvalue>
+              <restrictedvalue>member@liu.se</restrictedvalue>
+              <restrictedvalue>library-walk-in@liu.se</restrictedvalue>
+            </attribute>
+            <!-- <attribute type="urn:mace:dir:attribute-def:eduPersonAffiliation" store="Active Directory" name="eduPersonAffiliation" useGroups="true">
+                <group name="all-faculty" value="faculty"/>
+                <group name="all-staff" value="staff"/>
+                <group name="all-employee" value="employee"/>
+                <group name="all-student" value="student"/>
+                <group name="all-alum" value="alum"/>
+                <group name="all-affiliate" value="affiliate"/>
+                <group name="all-member" value="member"/>
+                <group name="all-library-walk-in" value="library-walk-in"/>
+            </attribute> -->
+            <!-- <attribute type="urn:mace:dir:attribute-def:eduPersonScopedAffiliation" store="Active Directory" name="eduPersonScopedAffiliation">
+              <restrictedvalue>faculty@liu.se</restrictedvalue>
+              <restrictedvalue>staff@liu.se</restrictedvalue>
+              <restrictedvalue>employee@liu.se</restrictedvalue>
+              <restrictedvalue>student@liu.se</restrictedvalue>
+              <restrictedvalue>alum@liu.se</restrictedvalue>
+              <restrictedvalue>affiliate@liu.se</restrictedvalue>
+              <restrictedvalue>member@liu.se</restrictedvalue>
+              <restrictedvalue>library-walk-in@liu.se</restrictedvalue>
+            </attribute> -->
+            <attribute type="urn:mace:dir:attribute-def:eduPersonAffiliation" store="Active Directory" name="eduPersonAffiliation">
+              <restrictedvalue>faculty</restrictedvalue>
+              <restrictedvalue>staff</restrictedvalue>
+              <restrictedvalue>employee</restrictedvalue>
+              <restrictedvalue>student</restrictedvalue>
+              <restrictedvalue>alum</restrictedvalue>
+              <restrictedvalue>affiliate</restrictedvalue>
+              <restrictedvalue>member</restrictedvalue>
+              <restrictedvalue>library-walk-in</restrictedvalue>
+            </attribute>
+            <attribute type="urn:mace:dir:attribute-def:norEduPersonNIN" store="Active Directory" name="norEduPersonNIN" />
+            <attribute type="urn:mace:dir:attribute-def:norEduPersonLIN" store="Active Directory" name="norEduPersonLIN" />
+            <attribute type="urn:mace:dir:attribute-def:eduPersonEntitlement" store="Active Directory" name="edupersonentitlement" useGroups="true">
+                <group name="employee-liu.se" value="urn:mace:terena.org:tcs:personal-user" />
+                <group name="employee-liu.se" value="urn:mace:terena.org:tcs:escience-user" />
+                <group name="Terena Personal Certificate Admin" value="urn:mace:terena.org:tcs:personal-admin" />
+                <group name="Terena Personal Certificate Admin" value="urn:mace:terena.org:tcs:escience-admin" />
+            </attribute>
+            <attribute type="urn:mace:dir:attribute-def:eduPersonAssurance" store="Static">
+                <value>http://www.swamid.se/policy/assurance/al1</value>
+                <value>http://www.swamid.se/policy/assurance/al2</value>
+            </attribute>
+            <attribute type="http://schemas.xmlsoap.org/claims/samaccountname" store="Active Directory" name="samaccountname" />
+            <attribute type="http://schemas.xmlsoap.org/claims/Group" store="Active Directory" name="tokenGroups" />
+        </attributes>
+ </storeConfig>
+</configuration>
