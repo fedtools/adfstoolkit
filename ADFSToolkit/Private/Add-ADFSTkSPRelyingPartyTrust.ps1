@@ -1,3 +1,4 @@
+﻿
 function Add-ADFSTkSPRelyingPartyTrust {
     param (
         [Parameter(Mandatory=$true,
