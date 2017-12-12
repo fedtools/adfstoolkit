@@ -26,15 +26,6 @@ Write-Verbose -Message "ADFSToolkit Private: $Private"
         }
     }
 
-# Here I might...
-    # Read in or create an initial config file and variable
-    # Export Public functions ($Public.BaseName) for WIP modules
-    # Set variables visible to the module and its functions only
-
-
-#Export-ModuleMember -Function $Public.Basename
 
 Export-ModuleMember -Function  Import-ADFSTkMetadata
-
-# uncomment to test the config tester: Export-ModuleMember -Function  Import-FedMetadata,Test-ADFSTkConfiguration
 
