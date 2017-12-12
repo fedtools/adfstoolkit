@@ -1,4 +1,3 @@
-﻿
 function Add-ADFSTkSPRelyingPartyTrust {
     param (
         [Parameter(Mandatory=$true,
@@ -16,7 +15,6 @@ function Add-ADFSTkSPRelyingPartyTrust {
     ### Name, DisplayName
     $Name = (Split-Path $sp.entityID -NoQualifier).TrimStart('/') -split '/' | select -First 1
 
-
     ### SwamID 2.0
     #$Swamid2 = ($sp.base | Split-Path -Parent) -eq "swamid-2.0"
 
@@ -32,7 +30,7 @@ function Add-ADFSTkSPRelyingPartyTrust {
     
     try
     {
-        #Kan finnas flera certifikat! Se till att kolla det och kör foreach. Välj det giltiga cert som har längst giltighetstid
+        #May be more certificates! Be sure to check it out and drive foreach. Select the valid certificate with the highest validity period
         Write-ADFSTkVerboseLog "Converting Token Encryption Certificate string to Certificate..."
         $CertificateBytes  = [system.Text.Encoding]::UTF8.GetBytes($CertificateString)
         $EncryptionCertificate.Import($CertificateBytes)
@@ -124,9 +122,7 @@ function Add-ADFSTkSPRelyingPartyTrust {
 
     if ((Get-ADFSRelyingPartyTrust -Identifier $entityID) -eq $null)
     {
-        ### Lägg till swamid: före namnet.
-        ### Om namn finns utan swamid, låt det vara
-        ### Om namn finns med swamid, lägg till siffra
+        
 
         $NamePrefix = $Settings.configuration.MetadataPrefix 
         $Sep= $Settings.configuration.MetadataPrefixSeparator      
