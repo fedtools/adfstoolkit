@@ -1,4 +1,3 @@
-
 function Get-ADFSTkAnswer {
 [CmdletBinding(DefaultParameterSetName='NonPipeline')]
 
