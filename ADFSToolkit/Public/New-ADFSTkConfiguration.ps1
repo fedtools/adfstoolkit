@@ -10,55 +10,6 @@
 
 
 
-function Set-ConfigItem {
-param (
-    $XPath,
-    $ExampleValue,
-    $DefaultValue
-)
-
-    $ConfigPath = Select-Xml -Xml $config -XPath $XPath
-
-    Write-Host -ForegroundColor Yellow "$($ConfigPath.Node.Name)`: " -NoNewline
-    Write-Host -ForegroundColor Gray $ConfigPath.Node.'#text' -NoNewline
-
-    if (![string]::IsNullOrEmpty($ExampleValue)) 
-    {
-        Write-Host -ForegroundColor Gray " (" -NoNewline    
-        Write-Host -ForegroundColor Gray $ExampleValue -NoNewline
-        Write-Host -ForegroundColor Gray ")" -noNewline
-    }
-    
-    Write-Host -ForegroundColor Gray "."
-    
-    $text = "Please provide a value for $($ConfigPath.Node.Name)"
-    
-    if (![string]::IsNullOrEmpty($DefaultValue))
-    {
-        $text += " ($DefaultValue)" 
-    }
-
-    do 
-    {
-        $inputValue = Read-Host $text
-
-        if ([string]::IsNullOrEmpty($inputValue))
-        {
-            if (![string]::IsNullOrEmpty($DefaultValue))
-            {
-                $inputValue = $DefaultValue
-            }
-            else
-            {
-                Write-Warning "You have to provide a value."
-            }
-        }
-    }
-    until (![string]::IsNullOrEmpty($inputValue))
-
-    $ConfigPath.Node.'#text' = [string]$inputValue
-}
-
 function New-ADFSTkConfiguration {
 
 $myModule = Get-Module ADFSToolkit
@@ -134,32 +85,32 @@ elseif (([string[]]$configFoundLanguages)[$result] -eq "sv-SE")
 [xml]$config = Get-Content $defaultConfigFile.FullName
 
 
-Set-ConfigItem -XPath "configuration/metadataURL" `
+Set-ADFSTkConfigItem -XPath "configuration/metadataURL" `
                -ExampleValue 'https://federationurl.edu/metadata.xml'
 
-Set-ConfigItem -XPath "configuration/signCertFingerprint" `
+Set-ADFSTkConfigItem -XPath "configuration/signCertFingerprint" `
                -ExampleValue '0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF'
 
-Set-ConfigItem -XPath "configuration/MetadataPrefix" `
+Set-ADFSTkConfigItem -XPath "configuration/MetadataPrefix" `
                -ExampleValue 'ADFSTk/SWAMID/CANARIE/INCOMMON' `
                -DefaultValue 'ADFSTk'
 
-Set-ConfigItem -XPath "configuration/staticValues/o" `
+Set-ADFSTkConfigItem -XPath "configuration/staticValues/o" `
                -ExampleValue 'University of Exelance'
 
-Set-ConfigItem -XPath "configuration/staticValues/co" `
+Set-ADFSTkConfigItem -XPath "configuration/staticValues/co" `
                -ExampleValue 'Narnia'
 
-Set-ConfigItem -XPath "configuration/staticValues/c" `
+Set-ADFSTkConfigItem -XPath "configuration/staticValues/c" `
                -ExampleValue 'NA'
 
-Set-ConfigItem -XPath "configuration/staticValues/schacHomeOrganization" `
+Set-ADFSTkConfigItem -XPath "configuration/staticValues/schacHomeOrganization" `
                -ExampleValue 'institution.edu'
 
-Set-ConfigItem -XPath "configuration/staticValues/norEduOrgAcronym" `
+Set-ADFSTkConfigItem -XPath "configuration/staticValues/norEduOrgAcronym" `
                -ExampleValue 'UE'
 
-Set-ConfigItem -XPath "configuration/staticValues/ADFSExternalDNS" `
+Set-ADFSTkConfigItem -XPath "configuration/staticValues/ADFSExternalDNS" `
                -ExampleValue 'login.ue.edu'
 
 
