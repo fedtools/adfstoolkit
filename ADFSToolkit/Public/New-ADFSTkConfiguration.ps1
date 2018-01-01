@@ -1,4 +1,4 @@
-﻿
+﻿#Requires -Version 5.1
 
 
 #New-ADFSTkConfiguration -WhatIf

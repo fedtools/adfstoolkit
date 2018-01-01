@@ -35,7 +35,7 @@ Copyright = '(c) 2017 Chris Phillips CANARIE, Johan Peterson SWAMID http://www.a
 Description = 'Module to handle SAML2 federation aggregates.'
 
 # Minimum version of the Windows PowerShell engine required by this module
-# PowerShellVersion = ''
+PowerShellVersion = '5.0'
 
 # Name of the Windows PowerShell host required by this module
 # PowerShellHostName = ''
