@@ -1,3 +1,5 @@
+#Requires -Version 5.1
+
 function Import-ADFSTkMetadata 
 {
 
@@ -24,7 +26,6 @@ function Import-ADFSTkMetadata
         [Parameter(ParameterSetName='AllSPs')]
         [switch]
         $AddRemoveOnly,
-        [string]$LogToPath,
         #The time in minutes the chached metadatafile live
         [int]
         $CacheTime = 60,
@@ -58,26 +59,18 @@ function Import-ADFSTkMetadata
     }
 
 
-    # set appropriate logging 
+    # set appropriate logging via EventLog mechanisms
 
-    if (![string]::IsNullOrEmpty($LogToPath)) {
-
-        #logpath is not null, so it exists and means it will log both to file and MAYBE eventlog
         if (Verify-ADFSTkEventLogUsage)
         {
             #If we evaluated as true, the eventlog is now set up and we link the WriteADFSTklog to it
-            Write-ADFSTkLog  -SetLogFilePath $LogToPath -SetEventLogName $Settings.configuration.logging.LogName -SetEventLogSource $Settings.configuration.logging.Source
+            Write-ADFSTkLog   -SetEventLogName $Settings.configuration.logging.LogName -SetEventLogSource $Settings.configuration.logging.Source
 
         }
         else {
-                # LogToPath is non empty and EventLogging configuration is absent
-                # No Event logging is enabled, just this one to a file
-            Write-ADFSTkLog -SetLogFilePath $LogToPath 
-        }
 
-    }
-    else {
-            Throw "Halted: Missing eventlog in config, or LogToPath switch"   
+            # No Event logging is enabled, just this one to a file
+            Throw "Missing eventlog settings in config,"   
     
     }
 
@@ -317,7 +310,7 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
                     for ($i = 1; $i -le $batches; $i++)
                     {
                         Write-ADFSTkLog "Working with batch $($i)/$batches"
-                        Start-Process -WorkingDirectory $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') -FilePath "$env:SystemRoot\system32\WindowsPowerShell\v1.0\powershell.exe" -ArgumentList "-NoExit", "-Command & {Import-Module .\ADFSToolkit; Import-ADFSTkMetadata -MaxSPAdditions 50 -CacheTime -1 -ForceUpdate -ConfigFile '$ConfigFile' -LogToPath '$LogToPath';Exit}" -Wait -NoNewWindow
+                        Start-Process -WorkingDirectory $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') -FilePath "$env:SystemRoot\system32\WindowsPowerShell\v1.0\powershell.exe" -ArgumentList "-NoExit", "-Command & {Import-Module .\ADFSToolkit; Import-ADFSTkMetadata -MaxSPAdditions $MaxSPAdditions -CacheTime -1 -ForceUpdate -ConfigFile '$ConfigFile' ;Exit}" -Wait -NoNewWindow
                         Write-ADFSTkLog "Done!"
                     }
                 }
