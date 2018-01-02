@@ -29,13 +29,13 @@ Author = 'Chris Phillips and Johan Peterson'
 CompanyName = 'CANARIE and SWAMID'
 
 # Copyright statement for this module
-Copyright = '(c) 2017 Chris Phillips, Johan Peterson http://www.apache.org/licenses/LICENSE-2.0'
+Copyright = '(c) 2017 Chris Phillips CANARIE, Johan Peterson SWAMID http://www.apache.org/licenses/LICENSE-2.0'
 
 # Description of the functionality provided by this module
 Description = 'Module to handle SAML2 federation aggregates.'
 
 # Minimum version of the Windows PowerShell engine required by this module
-# PowerShellVersion = ''
+PowerShellVersion = '5.0'
 
 # Name of the Windows PowerShell host required by this module
 # PowerShellHostName = ''
