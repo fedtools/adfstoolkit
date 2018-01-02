@@ -64,15 +64,15 @@ else
 if (([string[]]$configFoundLanguages)[$result] -eq "en-US")
 {
     Write-Host "You are about to create a new configuration file for ADFSToolkit." -ForegroundColor Cyan
-    Write-Host "You will be prompted with questions about your Institution, where the federated metadata is located" -ForegroundColor Cyan
-    Write-Host "and other question regarding where you have data stored." -ForegroundColor Cyan
+    Write-Host "You will be prompted with questions about metadata, signature fingerprint" -ForegroundColor Cyan
+    Write-Host "and other question about your institution." -ForegroundColor Cyan
     Write-Host " "
-    Write-Host "Please read the questions carefully! If you make a mistake or want to change a value after this cmdlet is run" -ForegroundColor Cyan
-    Write-Host "you can manually open the config file or use Set-ADFSTkConfiguration to change it." -ForegroundColor Cyan
+    Write-Host "If you make a mistake or want to change a value after this cmdlet is run" -ForegroundColor Cyan
+    Write-Host "you can manually open the config file or re-run this command." -ForegroundColor Cyan
 }
 elseif (([string[]]$configFoundLanguages)[$result] -eq "sv-SE")
 {
-    Write-Host "This is actually in Swedish! ;)" -ForegroundColor Cyan
+    Write-Host "This is actually in Swedish! ;)" -ForegrosundColor Cyan
     Write-Host "You are about to create a new configuration file for ADFSToolkit." -ForegroundColor Cyan
     Write-Host "You will be prompted with questions about your Institution, where the federated metadata is located" -ForegroundColor Cyan
     Write-Host "and other question regarding where you have data stored." -ForegroundColor Cyan
@@ -86,7 +86,7 @@ elseif (([string[]]$configFoundLanguages)[$result] -eq "sv-SE")
 
 
 Set-ADFSTkConfigItem -XPath "configuration/metadataURL" `
-               -ExampleValue 'https://federationurl.edu/metadata.xml'
+               -ExampleValue 'https://metadata.federationOperator.org/path/to/metadata.xml'
 
 Set-ADFSTkConfigItem -XPath "configuration/signCertFingerprint" `
                -ExampleValue '0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF'
@@ -96,22 +96,22 @@ Set-ADFSTkConfigItem -XPath "configuration/MetadataPrefix" `
                -DefaultValue 'ADFSTk'
 
 Set-ADFSTkConfigItem -XPath "configuration/staticValues/o" `
-               -ExampleValue 'University of Exelance'
+               -ExampleValue 'ABC University'
 
 Set-ADFSTkConfigItem -XPath "configuration/staticValues/co" `
-               -ExampleValue 'Narnia'
+               -ExampleValue 'Canada, Sweden'
 
 Set-ADFSTkConfigItem -XPath "configuration/staticValues/c" `
-               -ExampleValue 'NA'
+               -ExampleValue 'CA, SE'
 
 Set-ADFSTkConfigItem -XPath "configuration/staticValues/schacHomeOrganization" `
                -ExampleValue 'institution.edu'
 
 Set-ADFSTkConfigItem -XPath "configuration/staticValues/norEduOrgAcronym" `
-               -ExampleValue 'UE'
+               -ExampleValue 'CA'
 
 Set-ADFSTkConfigItem -XPath "configuration/staticValues/ADFSExternalDNS" `
-               -ExampleValue 'login.ue.edu'
+               -ExampleValue 'adfs.institution.edu'
 
 
 $epsa = $config.configuration.storeConfig.attributes.attribute | ? type -eq "urn:mace:dir:attribute-def:eduPersonScopedAffiliation"
@@ -139,7 +139,7 @@ if (([string[]]$configFoundLanguages)[$result] -eq "en-US")
     Write-Host $configFile -ForegroundColor Yellow
     Write-Host "To run the metadata import use the following command:" -ForegroundColor Cyan
     Write-Host $ADFSTkRunCommand -ForegroundColor Yellow
-    Write-Host "Do you want to create a scheduled task that executes this command every 15 minutes?" -ForegroundColor Cyan
+    Write-Host "Do you want to create a scheduled task that executes this command every hour?" -ForegroundColor Cyan
     Write-Host "The scheduled task will be disabled when created and you can change triggers as you like." -ForegroundColor Cyan
     $scheduledTaskQuestion = "Create scheduled task?"
     $scheduledTaskName = "Import Federated Metadata with ADFSToolkit"
@@ -152,7 +152,7 @@ elseif (([string[]]$configFoundLanguages)[$result] -eq "sv-SE")
     Write-Host $configFile -ForegroundColor Yellow
     Write-Host "To run the metadata import use the following command:" -ForegroundColor Cyan
     Write-Host $ADFSTkRunCommand -ForegroundColor Yellow
-    Write-Host "Do you want to create a scheduled task that executes this command every 15 minutes?" -ForegroundColor Cyan
+    Write-Host "Do you want to create a scheduled task that executes this command every hour?" -ForegroundColor Cyan
     Write-Host "The scheduled task will be disabled when created and you can change triggers as you like." -ForegroundColor Cyan
     $scheduledTaskQuestion = "Create scheduled task?"
     $scheduledTaskName = "Import Federated Metadata with ADFSToolkit"
