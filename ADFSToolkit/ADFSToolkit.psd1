@@ -71,7 +71,7 @@ PowerShellVersion = '5.0'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = '*'
+FunctionsToExport = 'Import-ADFSTkMetadata', 'New-ADFSTkConfiguration'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 #CmdletsToExport = @(Import-Metadata)
@@ -97,7 +97,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('ADFS','SAML2','SAML Aggregates', 'SAML Federation Aggregates','CANARIE','SWAMID','ADFSToolkit')
+        Tags = @('ADFS','SAML2','SAML', 'Federation' ,'Aggregates','CANARIE','CAF','FIMS','SWAMID','ADFSToolkit')
 
         # A URL to the license for this module.
          LicenseUri = 'http://www.apache.org/licenses/LICENSE-2.0'
