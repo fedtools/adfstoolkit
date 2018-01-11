@@ -242,13 +242,18 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
 
     #Verify Metadata Signing Cert
     Write-ADFSTkVerboseLog "Verifying metadata signing cert..." -EntryType Information
+  
+    Write-ADFSTkVerboseLog "Ensuring SHA256 Signature validation is present..." -EntryType Information
+    Update-SHA256AlgXmlDSigSupport
+
+
     if (Verify-ADFSTkSigningCert $MetadataXML.EntitiesDescriptor.Signature.KeyInfo.X509Data.X509Certificate)
     {
         Write-ADFSTkVerboseLog "Successfully verified metadata signing cert!" -EntryType Information
     }
     else
     {
-        Write-ADFSTkLog "Metadata signing cert is incorrect! Please check metadata URL or signtaure fingerprint in config." -MajorFault
+        Write-ADFSTkLog "Metadata signing cert is incorrect! Please check metadata URL or signature fingerprint in config." -MajorFault
     }
 
     #Verify Metadata Signature
