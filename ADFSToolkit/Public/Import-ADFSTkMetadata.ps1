@@ -78,7 +78,9 @@ function Import-ADFSTkMetadata
     #region Get static values from configuration file
     $mypath= $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\')
 
-    Write-ADFSTkVerboseLog "Import-ADFSTkMetadata Script started" -EntryType Information
+    $myVersion=(get-module ADFSToolkit).version.ToString()
+
+    Write-ADFSTkVerboseLog "Import-ADFSTkMetadata $myVersion started" -EntryType Information
     Write-ADFSTkLog "Import-ADFSTkMetadata path: $mypath"
 
     #endregion
@@ -315,8 +317,10 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
                 {
                     for ($i = 1; $i -le $batches; $i++)
                     {
-                        Write-ADFSTkLog "Working with batch $($i)/$batches"
-                        Start-Process -WorkingDirectory $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') -FilePath "$env:SystemRoot\system32\WindowsPowerShell\v1.0\powershell.exe" -ArgumentList "-NoExit", "-Command & {Import-Module .\ADFSToolkit; Import-ADFSTkMetadata -MaxSPAdditions $MaxSPAdditions -CacheTime -1 -ForceUpdate -ConfigFile '$ConfigFile' ;Exit}" -Wait -NoNewWindow
+                        $ADFSTkModuleBase= Join-Path (get-module ADFSToolkit).ModuleBase ADFSToolkit.psm1
+                        Write-ADFSTkLog "Working with batch $($i)/$batches with $ADFSTkModuleBase"
+                       
+                        Start-Process -WorkingDirectory $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') -FilePath "$env:SystemRoot\system32\WindowsPowerShell\v1.0\powershell.exe" -ArgumentList "-NoExit", "-Command & {Import-module -Name ADFSToolkit ; Import-ADFSTkMetadata -MaxSPAdditions $MaxSPAdditions -CacheTime -1 -ForceUpdate -ConfigFile '$ConfigFile' ;Exit}" -Wait -NoNewWindow
                         Write-ADFSTkLog "Done!"
                     }
                 }
