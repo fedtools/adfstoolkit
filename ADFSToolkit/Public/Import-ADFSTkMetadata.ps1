@@ -320,7 +320,7 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
                         $ADFSTkModuleBase= Join-Path (get-module ADFSToolkit).ModuleBase ADFSToolkit.psm1
                         Write-ADFSTkLog "Working with batch $($i)/$batches with $ADFSTkModuleBase"
                        
-                        Start-Process -WorkingDirectory $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') -FilePath "$env:SystemRoot\system32\WindowsPowerShell\v1.0\powershell.exe" -ArgumentList "-NoExit", "-Command & {Import-module -Name ADFSToolkit ; Import-ADFSTkMetadata -MaxSPAdditions $MaxSPAdditions -CacheTime -1 -ForceUpdate -ConfigFile '$ConfigFile' ;Exit}" -Wait -NoNewWindow
+                        Start-Process -WorkingDirectory $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') -FilePath "$env:SystemRoot\system32\WindowsPowerShell\v1.0\powershell.exe" -ArgumentList "-NoExit", "-Command & {Get-Module -ListAvailable ADFSToolkit |Import-Module ; Import-ADFSTkMetadata -MaxSPAdditions $MaxSPAdditions -CacheTime -1 -ForceUpdate -ConfigFile '$ConfigFile' ;Exit}" -Wait -NoNewWindow
                         Write-ADFSTkLog "Done!"
                     }
                 }
