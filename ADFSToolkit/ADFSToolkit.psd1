@@ -14,7 +14,7 @@
 RootModule = 'ADFSToolkit.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.9.1.18'
+ModuleVersion = '0.9.1.30'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
