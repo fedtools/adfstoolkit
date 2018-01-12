@@ -332,7 +332,7 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
                 }
             }
 
-            # Checking if any Swamid Relying Party Trusts show be removed
+            # Checking if any Relying Party Trusts show be removed
             
            
 
@@ -414,7 +414,7 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
             Processes-ADFSTkRelyingPartyTrust $_
         }
     }
-    elseif(! ([string]::IsNullOrEmpty($EntityBase) ) )
+    elseif(! ([string]::IsNullOrEmpty($EntityID) ) )
     {
     #Enter so that SP: N is checked against the can and ask if you want to force update. Insert the hash!
 
