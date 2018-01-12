@@ -125,9 +125,78 @@ $epa.ChildNodes | % {
 
 }
 
-$configFile = Join-Path $configPath "config.ADFSTk.xml"
+# Post processing to apply some business logic to enhance things
 
-$config.Save($configFile)
+# set workingpath for base:
+    $myWorkingPath= (Get-Module -Name ADFSToolkit).ModuleBase
+# retrieve our users MetadataPrefix to use in writing the name of the config file and other things
+    $myPrefix=  (Select-Xml -Xml $config -XPath "configuration/MetadataPrefix").Node.'#text'
+    $myCacheDir = Join-path $myWorkingPath (Select-Xml -Xml $config -XPath "configuration/CacheDir").Node.'#text'
+    $myConfigDir = Join-path $myWorkingPath (Select-Xml -Xml $config -XPath "configuration/ConfigDir").Node.'#text'
+
+# defensively coded: verify directories for cache and config exist or create if they do not
+    If(!(test-path $myCacheDir))
+{
+      New-Item -ItemType Directory -Force -Path $myCacheDir
+      Write-Host "Cache directory did not exist, creating it here: $myCacheDir"
+}else
+{
+    Write-Host "Cache directory exists at $myCacheDir"
+}
+
+    If(!(test-path $myConfigDir))
+{
+      New-Item -ItemType Directory -Force -Path $myConfigDir
+      Write-Host "Config directory did not exist, creating it here: $myConfigDir"
+}else
+{
+    Write-Host "Config directory exists at $myConfigDir"
+}
+
+
+
+# For the ADFSTk functionality, we desire to associate certain cache files to certain things and bake a certain default location
+ 
+     (Select-Xml -Xml $config -XPath "configuration/WorkingPath").Node.'#text' = $myWorkingPath
+     (Select-Xml -Xml $config -XPath "configuration/SPHashFile").Node.'#text' = "$myPrefix-SPHashfile.xml"
+     (Select-Xml -Xml $config -XPath "configuration/MetadataCacheFile").Node.'#text' = "$myPrefix-metadata.cached.xml"
+
+
+$configFile = Join-Path $configPath "config.$myPrefix.xml"
+
+
+
+if (Test-path $configFile) 
+{
+        $message  = 'Configuration Already exists.'
+        $question = 'Overwrite with this new configuration?'
+
+        $choices = New-Object Collections.ObjectModel.Collection[Management.Automation.Host.ChoiceDescription]
+        $choices.Add((New-Object Management.Automation.Host.ChoiceDescription -ArgumentList '&Yes'))
+        $choices.Add((New-Object Management.Automation.Host.ChoiceDescription -ArgumentList '&No'))
+
+        $decision = $Host.UI.PromptForChoice($message, $question, $choices, 1)
+        if ($decision -eq 0) {
+            Write-Host "Confirmed, saving new configuration to: $configFile"
+
+            $config.Save($configFile)
+
+
+        } else {
+         
+          
+            throw "User decided to not overwrite file - exiting"
+        
+        }
+
+
+}else
+{
+        Write-Host "No existing file, saving new configuration to: $configFile"
+        $config.Save($configFile)
+        }
+
+
 
 $ADFSTkRunCommand = "Import-ADFSTkMetadata -ProcessWholeMetadata -ForceUpdate -ConfigFile '$configFile'"
 
