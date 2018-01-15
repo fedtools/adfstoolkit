@@ -78,7 +78,9 @@ function Import-ADFSTkMetadata
     #region Get static values from configuration file
     $mypath= $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\')
 
-    Write-ADFSTkVerboseLog "Import-ADFSTkMetadata Script started" -EntryType Information
+    $myVersion=(get-module ADFSToolkit).version.ToString()
+
+    Write-ADFSTkVerboseLog "Import-ADFSTkMetadata $myVersion started" -EntryType Information
     Write-ADFSTkLog "Import-ADFSTkMetadata path: $mypath"
 
     #endregion
@@ -242,13 +244,18 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
 
     #Verify Metadata Signing Cert
     Write-ADFSTkVerboseLog "Verifying metadata signing cert..." -EntryType Information
+  
+    Write-ADFSTkVerboseLog "Ensuring SHA256 Signature validation is present..." -EntryType Information
+    Update-SHA256AlgXmlDSigSupport
+
+
     if (Verify-ADFSTkSigningCert $MetadataXML.EntitiesDescriptor.Signature.KeyInfo.X509Data.X509Certificate)
     {
         Write-ADFSTkVerboseLog "Successfully verified metadata signing cert!" -EntryType Information
     }
     else
     {
-        Write-ADFSTkLog "Metadata signing cert is incorrect! Please check metadata URL or signtaure fingerprint in config." -MajorFault
+        Write-ADFSTkLog "Metadata signing cert is incorrect! Please check metadata URL or signature fingerprint in config." -MajorFault
     }
 
     #Verify Metadata Signature
@@ -310,8 +317,10 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
                 {
                     for ($i = 1; $i -le $batches; $i++)
                     {
-                        Write-ADFSTkLog "Working with batch $($i)/$batches"
-                        Start-Process -WorkingDirectory $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') -FilePath "$env:SystemRoot\system32\WindowsPowerShell\v1.0\powershell.exe" -ArgumentList "-NoExit", "-Command & {Import-Module .\ADFSToolkit; Import-ADFSTkMetadata -MaxSPAdditions $MaxSPAdditions -CacheTime -1 -ForceUpdate -ConfigFile '$ConfigFile' ;Exit}" -Wait -NoNewWindow
+                        $ADFSTkModuleBase= Join-Path (get-module ADFSToolkit).ModuleBase ADFSToolkit.psm1
+                        Write-ADFSTkLog "Working with batch $($i)/$batches with $ADFSTkModuleBase"
+                       
+                        Start-Process -WorkingDirectory $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') -FilePath "$env:SystemRoot\system32\WindowsPowerShell\v1.0\powershell.exe" -ArgumentList "-NoExit", "-Command & {Get-Module -ListAvailable ADFSToolkit |Import-Module ; Import-ADFSTkMetadata -MaxSPAdditions $MaxSPAdditions -CacheTime -1 -ForceUpdate -ConfigFile '$ConfigFile' ;Exit}" -Wait -NoNewWindow
                         Write-ADFSTkLog "Done!"
                     }
                 }
@@ -323,7 +332,7 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
                 }
             }
 
-            # Checking if any Swamid Relying Party Trusts show be removed
+            # Checking if any Relying Party Trusts show be removed
             
            
 
@@ -405,7 +414,7 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
             Processes-ADFSTkRelyingPartyTrust $_
         }
     }
-    elseif(! ([string]::IsNullOrEmpty($EntityBase) ) )
+    elseif(! ([string]::IsNullOrEmpty($EntityID) ) )
     {
     #Enter so that SP: N is checked against the can and ask if you want to force update. Insert the hash!
 
