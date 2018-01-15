@@ -125,11 +125,143 @@ $epa.ChildNodes | % {
 
 }
 
-$configFile = Join-Path $configPath "config.ADFSTk.xml"
+# Post processing to apply some business logic to enhance things
 
-$config.Save($configFile)
+# set workingpath for base:
+    $myWorkingPath= (Get-Module -Name ADFSToolkit).ModuleBase
+# retrieve our users MetadataPrefix to use in writing the name of the config file and other things
+    $myPrefix=  (Select-Xml -Xml $config -XPath "configuration/MetadataPrefix").Node.'#text'
+    $myCacheDir = Join-path $myWorkingPath (Select-Xml -Xml $config -XPath "configuration/CacheDir").Node.'#text'
+    $myConfigDir = Join-path $myWorkingPath (Select-Xml -Xml $config -XPath "configuration/ConfigDir").Node.'#text'
+    $myJobDir= "c:\ADFSToolkit"
+
+# defensively coded: verify directories for cache and config exist or create if they do not
+    If(!(test-path $myCacheDir))
+{
+      New-Item -ItemType Directory -Force -Path $myCacheDir
+      Write-Host "Cache directory did not exist, creating it here: $myCacheDir"
+}else
+{
+    Write-Host "Cache directory exists at $myCacheDir"
+}
+
+    If(!(test-path $myConfigDir))
+{
+      New-Item -ItemType Directory -Force -Path $myConfigDir
+      Write-Host "Config directory did not exist, creating it here: $myConfigDir"
+}else
+{
+    Write-Host "Config directory exists at $myConfigDir"
+}
+
+# we need a job directory so that the scheduled jobs are not part of the module
+
+If(!(test-path $myJobDir))
+{
+      New-Item -ItemType Directory -Force -Path $myJobDir
+      Write-Host "ADFSToolkit directory did not exist, creating it here: $myJobDir"
+}else
+{
+    Write-Host "Cache directory exists at $myJobDir"
+}
+
+
+# For the ADFSTk functionality, we desire to associate certain cache files to certain things and bake a certain default location
+ 
+     (Select-Xml -Xml $config -XPath "configuration/WorkingPath").Node.'#text' = $myWorkingPath
+     (Select-Xml -Xml $config -XPath "configuration/SPHashFile").Node.'#text' = "$myPrefix-SPHashfile.xml"
+     (Select-Xml -Xml $config -XPath "configuration/MetadataCacheFile").Node.'#text' = "$myPrefix-metadata.cached.xml"
+
+
+$configFile = Join-Path $configPath "config.$myPrefix.xml"
+$configJobName="sync-ADFSTkAggregates.ps1"
+$configJob = Join-Path $myJobDir $configJobName
+
+
+
+
+if (Test-path $configFile) 
+{
+        $message  = 'Configuration Already exists.'
+        $question = 'Overwrite with this new configuration?'
+
+        $choices = New-Object Collections.ObjectModel.Collection[Management.Automation.Host.ChoiceDescription]
+        $choices.Add((New-Object Management.Automation.Host.ChoiceDescription -ArgumentList '&Yes'))
+        $choices.Add((New-Object Management.Automation.Host.ChoiceDescription -ArgumentList '&No'))
+
+        $decision = $Host.UI.PromptForChoice($message, $question, $choices, 1)
+        if ($decision -eq 0) {
+            Write-Host "Confirmed, saving new configuration to: $configFile"
+
+            $config.Save($configFile)
+
+
+        } else {
+         
+          
+            throw "User decided to not overwrite file - exiting"
+        
+        }
+
+
+}else
+{
+        Write-Host "No existing file, saving new configuration to: $configFile"
+        $config.Save($configFile)
+        }
+
+
 
 $ADFSTkRunCommand = "Import-ADFSTkMetadata -ProcessWholeMetadata -ForceUpdate -ConfigFile '$configFile'"
+$ADFSTkImportCommand =" `$md=get-module -ListAvailable adfstoolkit; Import-module `$md" 
+#$ADFSTkImportCommand ="Get-Module -ListAvailable ADFSToolkit |Import-Module"
+$ADFSTkModuleBase=(Get-Module -ListAvailable ADFSToolkit).ModuleBase
+
+$myDateFileUpdated= Get-Date
+
+
+if (Test-path $configJob) 
+{
+        $message  = 'Job for loading aggregate exists.'
+        $question = "Append this configuration in ADFSTk job $configJobName ? (recommended approach is yes)"
+
+        $choices = New-Object Collections.ObjectModel.Collection[Management.Automation.Host.ChoiceDescription]
+        $choices.Add((New-Object Management.Automation.Host.ChoiceDescription -ArgumentList '&Yes'))
+        $choices.Add((New-Object Management.Automation.Host.ChoiceDescription -ArgumentList '&No'))
+
+        $decision = $Host.UI.PromptForChoice($message, $question, $choices, 1)
+        if ($decision -eq 0) {
+            Write-Host "Confirmed, appending command to: $configJob"
+
+            # We want to write only the job to schedule on a newline to be run
+            # Other steps for the first time the file is written is in a nother section of the testing for existence of this file
+            Add-Content $configJob "`n$ADFSTkRunCommand"
+            Add-Content $configJob "`n#Updated as of: $myDateFileUpdated"
+
+
+        } else {
+         
+           Write-host "User selected to NOT add this configuration to $configJob"
+         
+
+        }
+
+
+}else
+{
+        Write-Host "No existing file, creating new Powershell job to schedule: $configJob"
+         # This is the first time the file is written so we need the import command and the run command
+          
+             Write-Host "$configJob does not exist, we will create it and then add your settings to it."
+        
+             Add-Content $configJob "`n$ADFSTkImportCommand"
+             Add-Content $configJob "`n$ADFSTkRunCommand"
+             $myDateFileUpdated= Get-Date
+             Add-Content $configJob "`n#Updated as of: $myDateFileUpdated"
+        
+}
+
+
 
 Write-Host "--------------------------------------------------------------------------------------------------------------" -ForegroundColor Cyan
 
@@ -162,7 +294,7 @@ elseif (([string[]]$configFoundLanguages)[$result] -eq "sv-SE")
 if (Get-ADFSTkAnswer $scheduledTaskQuestion)
 {
     $stAction = New-ScheduledTaskAction -Execute 'Powershell.exe' `
-                                      -Argument '-NoProfile -WindowStyle Hidden -command "& {$ADFSTkRunCommand}"'
+                                      -Argument "-NoProfile -WindowStyle Hidden -command '& $configJob'"
 
     $stTrigger =  New-ScheduledTaskTrigger -Daily -DaysInterval 1 -At (Get-Date)
     $stSettings = New-ScheduledTaskSettingsSet -Disable -MultipleInstances IgnoreNew -ExecutionTimeLimit ([timespan]::FromHours(12))
