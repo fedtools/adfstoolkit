@@ -28,7 +28,7 @@ param (
     else
     {
          
-        if ($currentAttribute -ne $null -and $currentAttribute.HasAttribute('useGroups') -and $currentAttribute.useGroups.ToLower() -eq 'true') 
+        if ($currentAttribute -ne $null -and $currentAttribute.HasAttribute('useGroups') -and $currentAttribute.useGroups.ToLower() -eq 'true' -and $currentAttribute.HasAttribute('claimOrigin') ) 
         {
             $useAttributeGroup = $true
         }
@@ -39,13 +39,17 @@ param (
 
         if ($useAttributeGroup)
         {
+            # Claim origin is not consistent or may want to be flexible here:
+            # "http://schemas.xmlsoap.org/claims/Group" was the old one, but we want what the config says it is.
+            $groupClaimOrigin=$currentAttribute.claimOrigin
+
             $rules = ""
             foreach ($group in $currentAttribute.group)
             {
                 $rules += @"
 
                 @RuleName = "Transform $AttributeName from group $($group.name)"
-                c:[Type == "http://schemas.xmlsoap.org/claims/Group", value == "$($group.name)"]
+                c:[Type == "$($groupClaimOrigin)", value == "$($group.name)"]
                  => issue(Type = "$Oid", 
                  Value = "$($group.value)", 
                  Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
@@ -53,7 +57,7 @@ param (
             }
             $transformRule = [PSCustomObject]@{
                 Rule=$rules
-                Attribute="http://schemas.xmlsoap.org/claims/Group"
+                Attribute="$($groupClaimOrigin)"
             }
         }
         else
