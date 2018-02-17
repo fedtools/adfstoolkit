@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <configuration>
     <ConfigVersion>0.9</ConfigVersion>
-    <WorkingPath>\\globemaster\HomeFolders\cphillips\Documents\gitcontrolled\adfstoolkit\ADFSToolkit</WorkingPath>
+    <WorkingPath>c:\Program Files\WindowsPowerShell\Modules\ADFSToolkit</WorkingPath>
     <ConfigDir>/config</ConfigDir>
     <CacheDir>/cache</CacheDir>
     <SPHashFile>SPHash.xml</SPHashFile>
@@ -44,36 +44,66 @@
                 <query>SELECT CONVERT(varchar(10), Id) FROM [LiUDB].[dbo].[EmployeeIdGen] WHERE uid = {0}</query>
             </store>
       </stores>
+      <transformRules>
+        <rule name="ADFSTkExtractSubjectUniqueId" originClaim="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn" /> 
+      </transformRules>
         <attributes>
             <attribute type="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" store="Active Directory" name="givenname" />
-            <attribute type="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname" store="Active Directory" name="surname" />
+            <attribute type="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname" store="Active Directory" name="sn" />
             <attribute type="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/displayname" store="Active Directory" name="displayname" />
             <attribute type="http://schemas.xmlsoap.org/claims/CommonName" store="Active Directory" name="cn" />
             <attribute type="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name" store="Active Directory" name="name" />
             <attribute type="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress" store="Active Directory" name="mail" />
-            <attribute type="urn:mace:dir:attribute-def:eduPersonScopedAffiliation" store="Active Directory" name="eduPersonScopedAffiliation" >
+           
+           <!-- eduPersonAffilation and eduPersonScopedAffiliation settings
+                Scenario A. Static assignement with all active users declared 'member' (default)
+                Scenario B. Dynamic assignment based on GroupSID
+                Scenario C. Attribute ssignment based on presence of eduPersonAffiliation in directory
+             
+             Note that EXAMPLE.COM is used where your domain scope is needed for easy search and replace for your domain.
+             This file is a template so commented out examples will NOT be updated
+            
+             
+             -->
+
+             <!-- Scenario A. Static assignment (default, comment out if you enable another technique -->
+             <attribute type="urn:mace:dir:attribute-def:eduPersonAffiliation" store="Static" >
+               <value>member</value>
+             </attribute>
+
+                <!-- note that in this template this field will be dynamically updated by eduPersonAfilliation above by new-ADFSTkConfiguration baking in the domain -->
+              <attribute type="urn:mace:dir:attribute-def:eduPersonScopedAffiliation" store="Static" >
+              </attribute>
+             <!-- end Scenario A. Static assignment -->
+
+
+              <!-- Scenario B. Dynamic assignment 
+     <attribute type="urn:mace:dir:attribute-def:eduPersonAffiliation" store="Active Directory" name="eduPersonAffiliation" useGroups="true" claimOrigin="http://schemas.microsoft.com/ws/2008/06/identity/claims/groupsid">
+                <group name="SID-FOR-FACULTY-GROUP" value="faculty"/>
+                <group name="SID-FOR-STAFF-GROUP" value="staff"/>
+                <group name="SID-FOR-EMPLOYEE-GROUP" value="employee"/>
+                <group name="SID-FOR-STUDENT-GROUP" value="student"/>
+                <group name="SID-FOR-ALUM-GROUP" value="alum"/>
+                <group name="SID-FOR-AFFILIATE-GROUP" value="affiliate"/>
+                <group name="SID-FOR-MEMBER-GROUP" value="member"/>
+                <group name="SID-FOR-LIBRARYWALKIN-GROUP" value="library-walk-in"/>
             </attribute>
-            <!-- <attribute type="urn:mace:dir:attribute-def:eduPersonAffiliation" store="Active Directory" name="eduPersonAffiliation" useGroups="true">
-                <group name="all-faculty" value="faculty"/>
-                <group name="all-staff" value="staff"/>
-                <group name="all-employee" value="employee"/>
-                <group name="all-student" value="student"/>
-                <group name="all-alum" value="alum"/>
-                <group name="all-affiliate" value="affiliate"/>
-                <group name="all-member" value="member"/>
-                <group name="all-library-walk-in" value="library-walk-in"/>
-            </attribute> -->
-            <!-- <attribute type="urn:mace:dir:attribute-def:eduPersonScopedAffiliation" store="Active Directory" name="eduPersonScopedAffiliation">
-              <restrictedvalue>faculty@liu.se</restrictedvalue>
-              <restrictedvalue>staff@liu.se</restrictedvalue>
-              <restrictedvalue>employee@liu.se</restrictedvalue>
-              <restrictedvalue>student@liu.se</restrictedvalue>
-              <restrictedvalue>alum@liu.se</restrictedvalue>
-              <restrictedvalue>affiliate@liu.se</restrictedvalue>
-              <restrictedvalue>member@liu.se</restrictedvalue>
-              <restrictedvalue>library-walk-in@liu.se</restrictedvalue>
-            </attribute> -->
-            <attribute type="urn:mace:dir:attribute-def:eduPersonAffiliation" store="Active Directory" name="eduPersonAffiliation">
+      <attribute type="urn:mace:dir:attribute-def:eduPersonScopedAffiliation" store="Active Directory" name="eduPersonScopedAffiliation" useGroups="true" claimOrigin="http://schemas.microsoft.com/ws/2008/06/identity/claims/groupsid" >
+                <group name="SID-FOR-FACULTY-GROUP" value="faculty@EXAMPLE.COM"/>
+                <group name="SID-FOR-STAFF-GROUP" value="staff@EXAMPLE.COM"/>
+                <group name="SID-FOR-EMPLOYEE-GROUP" value="employee@EXAMPLE.COM"/>
+                <group name="SID-FOR-STUDENT-GROUP" value="student@EXAMPLE.COM"/>
+                <group name="SID-FOR-ALUM-GROUP" value="alum@EXAMPLE.COM"/>
+                <group name="SID-FOR-AFFILIATE-GROUP" value="affiliate@EXAMPLE.COM"/>
+                <group name="SID-FOR-MEMBER-GROUP" value="member@EXAMPLE.COM"/>
+                <group name="SID-FOR-LIBRARYWALKIN-GROUP" value="library-walk-in@EXAMPLE.COM"/>
+        </attribute> 
+               end Scenario B. Dynamic assignment -->
+
+
+           <!-- Scenario C. Attribute assignment
+             
+           <attribute type="urn:mace:dir:attribute-def:eduPersonAffiliation" store="Active Directory" name="eduPersonAffiliation">
               <restrictedvalue>faculty</restrictedvalue>
               <restrictedvalue>staff</restrictedvalue>
               <restrictedvalue>employee</restrictedvalue>
@@ -83,6 +113,12 @@
               <restrictedvalue>member</restrictedvalue>
               <restrictedvalue>library-walk-in</restrictedvalue>
             </attribute>
+            
+             <attribute type="urn:mace:dir:attribute-def:eduPersonScopedAffiliation" store="Active Directory" name="eduPersonScopedAffiliation" >
+            </attribute>
+       
+            end Scenario C. Attribute assignment -->
+
             <attribute type="urn:mace:dir:attribute-def:norEduPersonNIN" store="Active Directory" name="norEduPersonNIN" />
             <attribute type="urn:mace:dir:attribute-def:norEduPersonLIN" store="Active Directory" name="norEduPersonLIN" />
             <attribute type="urn:mace:dir:attribute-def:eduPersonEntitlement" store="Active Directory" name="edupersonentitlement" useGroups="true">
@@ -92,8 +128,8 @@
                 <group name="Terena Personal Certificate Admin" value="urn:mace:terena.org:tcs:escience-admin" />
             </attribute>
             <attribute type="urn:mace:dir:attribute-def:eduPersonAssurance" store="Static">
-                <value>http://www.swamid.se/policy/assurance/al1</value>
-                <value>http://www.swamid.se/policy/assurance/al2</value>
+                <value>http://www.EXAMPLE.COM/policy/assurance/al1</value>
+                <value>http://www.EXAMPLE.COM/policy/assurance/al2</value>
             </attribute>
             <attribute type="http://schemas.xmlsoap.org/claims/samaccountname" store="Active Directory" name="samaccountname" />
             <attribute type="http://schemas.xmlsoap.org/claims/Group" store="Active Directory" name="tokenGroups" />

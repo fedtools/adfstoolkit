@@ -93,14 +93,20 @@ function Import-ADFSTkAllTransformRules
     }
 
    
+   # eduPersonPrincipalName 
+   # Calculated based off an ADFSTk configuration rule keyed to ADFSTkExtractSubjectUniqueId, default to the Claim 'upn'
+   # 
+   # Origin Claim will have only the left hand side being everything prior to the first @ sign
+   # Rest of the string will be surpressed and then it is re-assembled with our SAML2 scope.
+   #
+   
 
     $TransformRules.eduPersonPrincipalName = [PSCustomObject]@{
     Rule=@"
     @RuleName = "compose eduPersonPrincipalName"
-    c:[Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", 
-    Value !~ "^.+\\"]
+    c:[Type == "$(($Settings.configuration.storeConfig.transformRules.rule | ? name -eq "ADFSTkExtractSubjectUniqueId").originClaim )" ]
      => issue(Type = "urn:oid:1.3.6.1.4.1.5923.1.1.1.6", 
-     Value = c.Value + "@$($Settings.configuration.StaticValues.schacHomeOrganization)", 
+     Value = RegexReplace(c.Value, "@.*$", "") +"@$($Settings.configuration.StaticValues.schacHomeOrganization)", 
      Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
 "@
     Attribute="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
