@@ -30,7 +30,7 @@ function get-ADFSTkManualSPSettings
         # $TransformRules.sn = $AllTransformRules.sn
         # $TransformRules.cn = $AllTransformRules.cn
         # $TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
-        # $TransformRules.email = $AllTransformRules.email
+        # $TransformRules.mail = $AllTransformRules.mail
         # $TransformRules.eduPersonScopedAffiliation = $AllTransformRules.eduPersonScopedAffiliation
         
         # $IssuanceTransformRuleManualSP["https://shib.lynda.com/shibboleth-sp"] = $TransformRules
