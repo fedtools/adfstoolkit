@@ -34,11 +34,11 @@ function get-ADFSTkManualSPSettings
 <#
 .SYNOPSIS
 This is the file that site admins edit to locally control per Relying Party/Service provider attribute release.
-ADFSToolkit attempts to detect the presence of the Powershell function get-ADFSTkManualSPSettings to fetch site specific rules to process.
+ADFSToolkit attempts to detect the presence of variable ADFSTkSiteSPSettings and then ingest it to control specific rules.
 
-Usually dot sourced ('. get-ADFSTKManualSPSettings.ps1') in the sync-ADFSTkAggregates.ps1 file in c:\ADFSToolkit\ 
+This file, minus the digital signature, is usually used in c:\ADFSToolkit\sync-ADFSTkAggregates.ps1 
   
-ExecutionPolicy: Can execute without being signed as it is local but is up to site admin discretion to permit/allow this. 
+ExecutionPolicy: Can execute without being signed as it is locally executed. It is the site admin's discretion to permit/allow this. 
 
 
 .DESCRIPTION
@@ -73,37 +73,38 @@ a Powershell Hashtable structured such that ADFSToolkit may ingest and perform a
 
 .EXAMPLE
 ### CAF test Federation Validator service attribute release
-    
-        $TransformRules = [Ordered]@{}
-        $TransformRules.givenName = $AllTransformRules.givenName
-        $TransformRules.sn = $AllTransformRules.sn
-        $TransformRules.cn = $AllTransformRules.cn
-        $TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
-        $TransformRules.mail = $AllTransformRules.mail
-        $TransformRules.eduPersonScopedAffiliation = $AllTransformRules.eduPersonScopedAffiliation
-        
-        $IssuanceTransformRuleManualSP["https://validator.caftest.canarie.ca/shibboleth-sp"] = $TransformRules
+# $IssuanceTransformRuleManualSP = @{} uncomment when testing example. Needed only once per file to contain set of changes
+
+$TransformRules = [Ordered]@{}
+$TransformRules.givenName = $AllTransformRules.givenName
+$TransformRules.sn = $AllTransformRules.sn
+$TransformRules.cn = $AllTransformRules.cn
+$TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
+$TransformRules.mail = $AllTransformRules.mail
+$TransformRules.eduPersonScopedAffiliation = $AllTransformRules.eduPersonScopedAffiliation
+$IssuanceTransformRuleManualSP["https://validator.caftest.canarie.ca/shibboleth-sp"] = $TransformRules
 
     
 .EXAMPLE
 ### Lynda.com attribute release
+# $IssuanceTransformRuleManualSP = @{} uncomment when testing example. Needed only once per file to contain set of changes
+
     
-        $TransformRules = [Ordered]@{}
-        $TransformRules.givenName = $AllTransformRules.givenName
-        $TransformRules.sn = $AllTransformRules.sn
-        $TransformRules.cn = $AllTransformRules.cn
-        $TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
-        $TransformRules.mail = $AllTransformRules.mail
-        $TransformRules.eduPersonScopedAffiliation = $AllTransformRules.eduPersonScopedAffiliation
-        
-        $IssuanceTransformRuleManualSP["https://shib.lynda.com/shibboleth-sp"] = $TransformRules
+$TransformRules = [Ordered]@{}
+$TransformRules.givenName = $AllTransformRules.givenName
+$TransformRules.sn = $AllTransformRules.sn
+$TransformRules.cn = $AllTransformRules.cn
+$TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
+$TransformRules.mail = $AllTransformRules.mail
+$TransformRules.eduPersonScopedAffiliation = $AllTransformRules.eduPersonScopedAffiliation
+$IssuanceTransformRuleManualSP["https://shib.lynda.com/shibboleth-sp"] = $TransformRules
 
 .EXAMPLE
+### advanced ADFS Transform rule #1 'from AD'    
+# $IssuanceTransformRuleManualSP = @{} uncomment when testing example. Needed only once per file to contain set of changes
 
-    ### advanced ADFS Transform rule #1 'from AD'    
-
-         $TransformRules = [Ordered]@{}
-         $TransformRules."From AD" = @"
+$TransformRules = [Ordered]@{}
+$TransformRules."From AD" = @"
  c:[Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname", 
  Issuer == "AD AUTHORITY"]
   => issue(store = "Active Directory", 
@@ -114,42 +115,39 @@ a Powershell Hashtable structured such that ADFSToolkit may ingest and perform a
  "http://liu.se/claims/Department"), 
  query = ";userPrincipalName,displayName,mail,eduPersonScopedAffiliation,department;{0}", param = c.Value);
  "@
-        
-         $IssuanceTransformRuleManualSP."advanced.entity.id.org" = $TransformRules
+$IssuanceTransformRuleManualSP."advanced.entity.id.org" = $TransformRules
 
 .EXAMPLE
+### advanced ADFS Transform rule #2 
+# $IssuanceTransformRuleManualSP = @{} uncomment when testing example. Needed only once per file to contain set of changes
 
-    ### advanced ADFS Transform rule #2 
-
-         $TransformRules = [Ordered]@{}
-         $TransformRules.mail = [PSCustomObject]@{
-     Rule=@"
-     @RuleName = "compose mail address as name@schacHomeOrganization"
-     c:[Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", Value !~ "^.+\\"]
-  => issue(Type = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", Value = c.Value + "@$($Settings.configuration.StaticValues.schacHomeOrganization)");
- "@
-     Attribute="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+$TransformRules = [Ordered]@{}
+$TransformRules.mail = [PSCustomObject]@{
+Rule=@"
+@RuleName = "compose mail address as name@schacHomeOrganization"
+c:[Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", Value !~ "^.+\\"]
+=> issue(Type = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", Value = c.Value + "@$($Settings.configuration.StaticValues.schacHomeOrganization)");
+"@
+Attribute="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
      }
-        
-         $IssuanceTransformRuleManualSP["https://advanced.rule.two.org"] = $TransformRules
+$IssuanceTransformRuleManualSP["https://advanced.rule.two.org"] = $TransformRules
     
 .EXAMPLE
+### verify-i.myunidays.com
+# $IssuanceTransformRuleManualSP = @{} uncomment when testing example. Needed only once per file to contain set of changes
 
-    ### verify-i.myunidays.com
-
-     $TransformRules = [Ordered]@{}
-     $TransformRules["eduPersonScopedAffiliation"] = $AllTransformRules["eduPersonScopedAffiliation"]
-     $TransformRules["eduPersonTargetedID"] = $AllTransformRules["eduPersonTargetedID"]
-     $IssuanceTransformRuleManualSP["https://verify-i.myunidays.com/shibboleth"] = $TransformRules
+$TransformRules = [Ordered]@{}
+$TransformRules["eduPersonScopedAffiliation"] = $AllTransformRules["eduPersonScopedAffiliation"]
+$TransformRules["eduPersonTargetedID"] = $AllTransformRules["eduPersonTargetedID"]
+$IssuanceTransformRuleManualSP["https://verify-i.myunidays.com/shibboleth"] = $TransformRules
 
 .EXAMPLE
+### Release just transient-id
+# $IssuanceTransformRuleManualSP = @{} uncomment when testing example. Needed only once per file to contain set of changes
 
-    ### Release just transient-id
-
-     $TransformRules = [Ordered]@{}
-     $TransformRules.'transient-id' = $AllTransformRules.'transient-id'
-                
-     $IssuanceTransformRuleManualSP["https://just-transientid.org"] = $TransformRules
+$TransformRules = [Ordered]@{}
+$TransformRules.'transient-id' = $AllTransformRules.'transient-id'
+$IssuanceTransformRuleManualSP["https://just-transientid.org"] = $TransformRules
 
 .NOTES
 
