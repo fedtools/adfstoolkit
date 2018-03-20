@@ -19,7 +19,7 @@ param (
     $TransformRules = [Ordered]@{}
 
     $TransformRules.'transient-id' = $AllTransformRules.'transient-id'
-    $TransformRules.eduPersonTargetedID = $AllTransformRules.eduPersonTargetedID
+    #$TransformRules.eduPersonTargetedID = $AllTransformRules.eduPersonTargetedID
 
     $IssuanceTransformRuleCategories.Add("NoEntityCategory",$TransformRules)
     
@@ -28,7 +28,7 @@ param (
     $TransformRules = [Ordered]@{}
 
     $TransformRules.'transient-id' = $AllTransformRules.'transient-id'
-    $TransformRules.eduPersonTargetedID = $AllTransformRules.eduPersonTargetedID
+    #$TransformRules.eduPersonTargetedID = $AllTransformRules.eduPersonTargetedID
     $TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
     #eduPersonUniqueID
     $TransformRules.mail = $AllTransformRules.mail
@@ -102,7 +102,7 @@ param (
     $TransformRules = [Ordered]@{}
 
     $TransformRules.'transient-id' = $AllTransformRules.'transient-id'
-    $TransformRules.eduPersonTargetedID = $AllTransformRules.eduPersonTargetedID
+    #$TransformRules.eduPersonTargetedID = $AllTransformRules.eduPersonTargetedID
     $TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
     #eduPersonUniqueID
     $TransformRules.mail = $AllTransformRules.mail
@@ -125,7 +125,7 @@ param (
     $TransformRules = [Ordered]@{}
 
     $TransformRules.'transient-id' = $AllTransformRules.'transient-id'
-    $TransformRules.eduPersonTargetedID = $AllTransformRules.eduPersonTargetedID
+    #$TransformRules.eduPersonTargetedID = $AllTransformRules.eduPersonTargetedID
     $TransformRules.norEduPersonNIN = $AllTransformRules.norEduPersonNIN
     $TransformRules.eduPersonAssurance = $AllTransformRules.eduPersonAssurance
 
