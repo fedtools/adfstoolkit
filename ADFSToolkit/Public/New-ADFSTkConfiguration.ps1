@@ -127,57 +127,92 @@ $epa.ChildNodes | % {
 
 # Post processing to apply some business logic to enhance things
 
-# set workingpath for base:
+# Module specific info
     $myWorkingPath= (Get-Module -Name ADFSToolkit).ModuleBase
-# retrieve our users MetadataPrefix to use in writing the name of the config file and other things
-    $myPrefix=  (Select-Xml -Xml $config -XPath "configuration/MetadataPrefix").Node.'#text'
-    $myCacheDir = Join-path $myWorkingPath (Select-Xml -Xml $config -XPath "configuration/CacheDir").Node.'#text'
-    $myConfigDir = Join-path $myWorkingPath (Select-Xml -Xml $config -XPath "configuration/ConfigDir").Node.'#text'
-    $myJobDir= "c:\ADFSToolkit"
+    $myVersion= (Get-Module -Name ADFSToolkit).Version.ToString()
 
-# defensively coded: verify directories for cache and config exist or create if they do not
-    If(!(test-path $myCacheDir))
+
+# set workingpath for base:
+    $myInstallDir= "c:\ADFSToolkit"
+    $myADFSTkInstallDir= Join-path $myInstallDir $myVersion
+
+
+
+# various useful items for minting our configuration 
+ 
+
+# user entered
+    $myPrefix=     (Select-Xml -Xml $config -XPath "configuration/MetadataPrefix").Node.'#text'
+# sourced from config template
+    $myCacheDir =  (Select-Xml -Xml $config -XPath "configuration/CacheDir").Node.'#text'
+    $myConfigDir = (Select-Xml -Xml $config -XPath "configuration/ConfigDir").Node.'#text'
+    
+# derived paths 
+    $myTargetInstallCacheDir = Join-path $myADFSTkInstallDir $myCacheDir
+    $myTargetInstallConfigDir = Join-path $myADFSTkInstallDir $myConfigDir
+
+   
+
+#verify directories for cache and config exist or create if they do not
+
+# we need an install directory
+
+If(!(test-path $myADFSTkInstallDir))
 {
-      New-Item -ItemType Directory -Force -Path $myCacheDir
-      Write-Host "Cache directory did not exist, creating it here: $myCacheDir"
+      New-Item -ItemType Directory -Force -Path $myADFSTkInstallDir
+      Write-Host "ADFSToolkit directory did not exist, creating it here: $myADFSTkInstallDir"
 }else
 {
-    Write-Host "Cache directory exists at $myCacheDir"
+    Write-Host "Cache directory exists at $myADFSTkInstallDir"
 }
 
-    If(!(test-path $myConfigDir))
+    If(!(test-path $myTargetInstallCacheDir))
 {
-      New-Item -ItemType Directory -Force -Path $myConfigDir
-      Write-Host "Config directory did not exist, creating it here: $myConfigDir"
+      New-Item -ItemType Directory -Force -Path $myTargetInstallCacheDir
+      Write-Host "Cache directory did not exist, creating it here: $myTargetInstallCacheDir"
 }else
 {
-    Write-Host "Config directory exists at $myConfigDir"
+    Write-Host "Cache directory exists at $myTargetInstallCacheDir"
 }
 
-# we need a job directory so that the scheduled jobs are not part of the module
-
-If(!(test-path $myJobDir))
+    If(!(test-path $myTargetInstallConfigDir))
 {
-      New-Item -ItemType Directory -Force -Path $myJobDir
-      Write-Host "ADFSToolkit directory did not exist, creating it here: $myJobDir"
+      New-Item -ItemType Directory -Force -Path $myTargetInstallConfigDir
+      Write-Host "Config directory did not exist, creating it here: $myTargetInstallConfigDir"
 }else
 {
-    Write-Host "Cache directory exists at $myJobDir"
+    Write-Host "Config directory exists at $myTargetInstallConfigDir"
 }
+
+
 
 
 # For the ADFSTk functionality, we desire to associate certain cache files to certain things and bake a certain default location
  
-     (Select-Xml -Xml $config -XPath "configuration/WorkingPath").Node.'#text' = $myWorkingPath
+     (Select-Xml -Xml $config -XPath "configuration/WorkingPath").Node.'#text' = $myADFSTkInstallDir
      (Select-Xml -Xml $config -XPath "configuration/SPHashFile").Node.'#text' = "$myPrefix-SPHashfile.xml"
      (Select-Xml -Xml $config -XPath "configuration/MetadataCacheFile").Node.'#text' = "$myPrefix-metadata.cached.xml"
 
 
-$configFile = Join-Path $configPath "config.$myPrefix.xml"
+
+$configFile = Join-Path $myTargetInstallConfigDir "config.$myPrefix.xml"
 $configJobName="sync-ADFSTkAggregates.ps1"
-$configJob = Join-Path $myJobDir $configJobName
+$configJob = Join-Path $myADFSTkInstallDir $configJobName
 
+#
+# Prepare our template for ADFSTkManualSPSettings to be copied into place, safely of course, after directories are confirmed to be there.
 
+    $myADFSTkManualSpSettingsFileNamePrefix="get-ADFSTkManualSpSettings"
+    $myADFSTkManualSpSettingsFileNameDistroPostfix="-dist.ps1"
+    $myADFSTkManualSpSettingsFileNameInstallDistroName="$($myADFSTkManualSpSettingsFileNamePrefix)$($myADFSTkManualSpSettingsFileNameDistroPostfix)"
+    $myADFSTkManualSpSettingsFileNameInstallPostfix=".ps1"
+    $myADFSTkManualSpSettingsFileNameInstallInstallName="$($myADFSTkManualSpSettingsFileNamePrefix)$($myADFSTkManualSpSettingsFileNameInstallPostfix)"
+
+    $myADFSTkManualSpSettingsDistroTemplateFile= Join-path $myWorking (Join-Path "config" (Join-Path "default" ( Join-Path "en-US" "$($myADFSTkManualSpSettingsFileNameInstallDistroName)")))
+    
+    $myADFSTkManualSpSettingsInstallTemplateFile= Join-path $myADFSTkInstallDir (Join-Path "config"  "$($myADFSTkManualSpSettingsFileNameInstallInstallName)")
+    
+    
 
 
 if (Test-path $configFile) 
@@ -208,12 +243,46 @@ if (Test-path $configFile)
 {
         Write-Host "No existing file, saving new configuration to: $configFile"
         $config.Save($configFile)
+        
+
+
+
+
+}
+
+if (Test-path $myADFSTkManualSpSettingsInstallTemplateFile) 
+{
+        $message  = 'Local site Relying Party/Service provider Configuration Already exists at: $($myADFSTkManualSpSettingsInstallTemplateFile)'
+        $question = 'Overwrite with a blank configuration? '
+
+        $choices = New-Object Collections.ObjectModel.Collection[Management.Automation.Host.ChoiceDescription]
+        $choices.Add((New-Object Management.Automation.Host.ChoiceDescription -ArgumentList '&Yes'))
+        $choices.Add((New-Object Management.Automation.Host.ChoiceDescription -ArgumentList '&No'))
+
+        $decision = $Host.UI.PromptForChoice($message, $question, $choices, 1)
+        if ($decision -eq 0) {
+            Write-Host "Confirmed, saving new configuration to: $myADFSTkManualSpSettingsInstallTemplateFile"
+
+            Copy-item -Path $($myADFSTkManualSpSettingsDistroTemplateFile) -Destination $myADFSTkManualSpSettingsInstallTemplateFile
+
+
+        } else {
+          
+            throw "User decided to not overwrite file SP settings file - exiting"
+        
         }
 
+}else
+{
+        Write-Host "No existing file, saving new configuration to: $($myADFSTkManualSpSettingsInstallTemplateFile)"
+       Copy-item -Path $($myADFSTkManualSpSettingsDistroTemplateFile) -Destination $myADFSTkManualSpSettingsInstallTemplateFile
+
+        }
 
 
 $ADFSTkRunCommand = "Import-ADFSTkMetadata -ProcessWholeMetadata -ForceUpdate -ConfigFile '$configFile'"
 $ADFSTkImportCommand =" `$md=get-module -ListAvailable adfstoolkit; Import-module `$md" 
+$ADFSTKManualSPCommand ="`$ADFSTkSiteSPSettings=$($myADFSTkManualSpSettingsInstallTemplateFile)"
 #$ADFSTkImportCommand ="Get-Module -ListAvailable ADFSToolkit |Import-Module"
 $ADFSTkModuleBase=(Get-Module -ListAvailable ADFSToolkit).ModuleBase
 
@@ -250,12 +319,19 @@ if (Test-path $configJob)
 }else
 {
         Write-Host "No existing file, creating new Powershell job to schedule: $configJob"
-         # This is the first time the file is written so we need the import command and the run command
+         # This is the first time the file is written so we need:
+         # the import command
+         # the run command
+         # the Manual SP Settings Command
+
           
              Write-Host "$configJob does not exist, we will create it and then add your settings to it."
         
              Add-Content $configJob "`n$ADFSTkImportCommand"
              Add-Content $configJob "`n$ADFSTkRunCommand"
+
+             Add-Content $configJob "`n$ADFSTKManualSPCommand"
+             
              $myDateFileUpdated= Get-Date
              Add-Content $configJob "`n#Updated as of: $myDateFileUpdated"
         
