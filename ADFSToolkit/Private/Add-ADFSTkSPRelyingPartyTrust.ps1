@@ -15,9 +15,6 @@ function Add-ADFSTkSPRelyingPartyTrust {
     ### Name, DisplayName
     $Name = (Split-Path $sp.entityID -NoQualifier).TrimStart('/') -split '/' | select -First 1
 
-    ### SwamID 2.0
-    #$Swamid2 = ($sp.base | Split-Path -Parent) -eq "swamid-2.0"
-
     ### Token Encryption Certificate 
     Write-ADFSTkVerboseLog "Getting Token Encryption Certificate..."
     $EncryptionCertificate = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
@@ -30,7 +27,9 @@ function Add-ADFSTkSPRelyingPartyTrust {
     
     try
     {
-        #May be more certificates! Be sure to check it out and drive foreach. Select the valid certificate with the highest validity period
+        #May be more certificates! Be sure to check it out and drive foreach. 
+        # 1. If any cert is invalid, choose the valid one
+        # 2. If more than one is valid, select certificate with the lowest validity period
         Write-ADFSTkVerboseLog "Converting Token Encryption Certificate string to Certificate..."
         $CertificateBytes  = [system.Text.Encoding]::UTF8.GetBytes($CertificateString)
         $EncryptionCertificate.Import($CertificateBytes)
@@ -43,7 +42,12 @@ function Add-ADFSTkSPRelyingPartyTrust {
     }
 
     ### Token Signing Certificate 
+
+    #Add all signing certificates if there are more than one
     Write-ADFSTkVerboseLog "Getting Token Signing Certificate..."
+    
+    $SignatureAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256" 
+    
     $SigningCertificate = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
     $CertificateString = ($sp.SPSSODescriptor.KeyDescriptor | ? use -eq "signing"  | select -ExpandProperty KeyInfo).X509Data.X509Certificate
     if ($CertificateString -eq $null)
@@ -58,6 +62,11 @@ function Add-ADFSTkSPRelyingPartyTrust {
             Write-ADFSTkVerboseLog "Converting Token Signing Certificate string to Certificate..."
             $CertificateBytes  = [system.Text.Encoding]::UTF8.GetBytes($CertificateString)
             $SigningCertificate.Import($CertificateBytes)
+
+            if ($SigningCertificate.SignatureAlgorithm.Value -eq '1.2.840.113549.1.1.5') #Check if Signature Algorithm is SHA1
+            {
+                $SignatureAlgorithm = "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+            }
             Write-ADFSTkVerboseLog "Convertion of Token Signing Certificate string to Certificate done!"
         }
         catch
@@ -150,6 +159,7 @@ function Add-ADFSTkSPRelyingPartyTrust {
                 Write-ADFSTkVerboseLog "Adding ADFSRelyingPartyTrust `'$entityID`'..."
                 
                 Add-ADFSRelyingPartyTrust -Identifier $entityID `
+                                    -SignatureAlgorithm $SignatureAlgorithm `
                                     -RequestSigningCertificate $SigningCertificate `
                                     -Name $NameWithPrefix `
                                     -EncryptionCertificate $EncryptionCertificate  `
