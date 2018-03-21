@@ -120,7 +120,9 @@ function Add-ADFSTkSPRelyingPartyTrust {
         Write-ADFSTkVerboseLog "Added Forced Entity Categories: $($ForcedEntityCategories -join ',')"
     }
 
-    $IssuanceTransformRules = Get-ADFSTkIssuanceTransformRules $EntityCategories -EntityId $entityID -RequestedAttribute $sp.SPSSODescriptor.AttributeConsumingService.RequestedAttribute
+    $IssuanceTransformRules = Get-ADFSTkIssuanceTransformRules $EntityCategories -EntityId $entityID `
+                                                                                 -RequestedAttribute $sp.SPSSODescriptor.AttributeConsumingService.RequestedAttribute `
+                                                                                 -RegistrationAuthority $sp.extensions.RegistrationInfo.registrationAuthority
 
     $IssuanceAuthorityRule =
 @"
@@ -160,6 +162,8 @@ function Add-ADFSTkSPRelyingPartyTrust {
                 
                 Add-ADFSRelyingPartyTrust -Identifier $entityID `
                                     -SignatureAlgorithm $SignatureAlgorithm `
+                                    -EncryptionCertificateRevocationCheck None `
+                                    -SigningCertificateRevocationCheck None `
                                     -RequestSigningCertificate $SigningCertificate `
                                     -Name $NameWithPrefix `
                                     -EncryptionCertificate $EncryptionCertificate  `
