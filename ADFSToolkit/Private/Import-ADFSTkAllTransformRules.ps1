@@ -127,7 +127,7 @@ function Import-ADFSTkAllTransformRules
     $TransformRules.eduPersonUniqueID = [PSCustomObject]@{
     Rule=@"
     @RuleName = "compose eduPersonUniqueID"
-    c:[Type == "urn:mace:dir:attribute-def:norEduPersonLIN" 
+    c:[Type == "urn:mace:dir:attribute-def:norEduPersonLIN"] 
      => issue(Type = "urn:oid:1.3.6.1.4.1.5923.1.1.1.13", 
      Value = RegExReplace(c.Value, "-", "") + "@$($Settings.configuration.StaticValues.schacHomeOrganization)",
      Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
