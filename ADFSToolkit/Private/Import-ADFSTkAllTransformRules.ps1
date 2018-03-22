@@ -12,6 +12,7 @@ function Import-ADFSTkAllTransformRules
     Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
 "@
     Attribute=""
+    AttributeGroup="Static attributes"
     }
 
     $TransformRules.norEduOrgAcronym = [PSCustomObject]@{
@@ -22,6 +23,7 @@ function Import-ADFSTkAllTransformRules
     Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
 "@
     Attribute=""
+    AttributeGroup="Static attributes"
     }
 
     $TransformRules.c = [PSCustomObject]@{
@@ -32,6 +34,7 @@ function Import-ADFSTkAllTransformRules
     Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
 "@
     Attribute=""
+    AttributeGroup="Static attributes"
     }
 
     $TransformRules.co = [PSCustomObject]@{
@@ -42,6 +45,7 @@ function Import-ADFSTkAllTransformRules
     Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
 "@
     Attribute=""
+    AttributeGroup="Static attributes"
     }
 
     $TransformRules.schacHomeOrganization = [PSCustomObject]@{
@@ -52,6 +56,7 @@ function Import-ADFSTkAllTransformRules
     Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
 "@
     Attribute=""
+    AttributeGroup="Static attributes"
     }
 
     $TransformRules.schacHomeOrganizationType = [PSCustomObject]@{
@@ -62,6 +67,7 @@ function Import-ADFSTkAllTransformRules
     Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
 "@
     Attribute=""
+    AttributeGroup="Static attributes"
     }
     #endregion
 
@@ -90,6 +96,7 @@ function Import-ADFSTkAllTransformRules
      Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/namequalifier"] = "http://$($Settings.configuration.StaticValues.ADFSExternalDNS)/adfs/services/trust");
 "@
     Attribute=""
+    AttributeGroup="ID's"
     }
 
    
@@ -110,6 +117,7 @@ function Import-ADFSTkAllTransformRules
      Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
 "@
     Attribute="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+    AttributeGroup="ID's"
     }
 
     $TransformRules.eduPersonTargetedID = [PSCustomObject]@{
@@ -122,6 +130,7 @@ function Import-ADFSTkAllTransformRules
      Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
 "@
     Attribute="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+    AttributeGroup="ID's"
     }
 
     $TransformRules.eduPersonUniqueID = [PSCustomObject]@{
@@ -133,6 +142,7 @@ function Import-ADFSTkAllTransformRules
      Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
 "@
     Attribute="urn:mace:dir:attribute-def:norEduPersonLIN"
+    AttributeGroup="ID's"
     }
 
  $TransformRules["LoginName"] = [PSCustomObject]@{
@@ -146,56 +156,58 @@ function Import-ADFSTkAllTransformRules
 "@
 
     Attribute="http://schemas.xmlsoap.org/claims/samaccountname"
+    AttributeGroup="ID's"
     }
 
     #endregion
     #region Personal attributes
     $TransformRules.givenName = Get-ADFSTkTransformRule -Type "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" `
                                                   -Oid "urn:oid:2.5.4.42" `
-                                                  -AttributeName givenName
+                                                  -AttributeName givenName `                                                  -AttributeGroup "Personal attributes"
 
     $TransformRules.sn = Get-ADFSTkTransformRule -Type "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname" `
                                            -Oid "urn:oid:2.5.4.4" `
-                                           -AttributeName sn
+                                           -AttributeName sn `                                           -AttributeGroup "Personal attributes"
 
     $TransformRules.displayName = Get-ADFSTkTransformRule -Type "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/displayname" `
                                            -Oid "urn:oid:2.16.840.1.113730.3.1.241" `
-                                           -AttributeName displayName
-
+                                           -AttributeName displayName `                                           -AttributeGroup "Personal attributes"
+                                           
     $TransformRules.cn = Get-ADFSTkTransformRule -Type "http://schemas.xmlsoap.org/claims/CommonName" `
                                            -Oid "urn:oid:2.5.4.3" `
-                                           -AttributeName cn
+                                           -AttributeName cn `                                           -AttributeGroup "Personal attributes"
 
     $TransformRules.mail = Get-ADFSTkTransformRule -Type "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress" `
                                              -Oid "urn:oid:0.9.2342.19200300.100.1.3" `
-                                             -AttributeName mail
+                                             -AttributeName mail `                                             -AttributeGroup "Personal attributes"
+
     #endregion
 
  #region eduPerson Attributes
 
     $TransformRules.eduPersonScopedAffiliation = Get-ADFSTkTransformRule -Type "urn:mace:dir:attribute-def:eduPersonScopedAffiliation" `
                                                         -Oid "urn:oid:1.3.6.1.4.1.5923.1.1.1.9" `
-                                                        -AttributeName eduPersonScopedAffiliation
+                                                        -AttributeName eduPersonScopedAffiliation `                                                        -AttributeGroup "eduPerson attributes"
 
     $TransformRules.eduPersonAffiliation = Get-ADFSTkTransformRule -Type "urn:mace:dir:attribute-def:eduPersonAffiliation" `
                                                         -Oid "urn:oid:1.3.6.1.4.1.5923.1.1.1.1" `
-                                                        -AttributeName eduPersonAffiliation
+                                                        -AttributeName eduPersonAffiliation `                                                        -AttributeGroup "eduPerson attributes"
 
     $TransformRules.norEduPersonNIN = Get-ADFSTkTransformRule -Type "urn:mace:dir:attribute-def:norEduPersonNIN" `
                                                         -Oid "urn:oid:1.3.6.1.4.1.2428.90.1.5" `
-                                                        -AttributeName norEduPersonNIN
+                                                        -AttributeName norEduPersonNIN `                                                        -AttributeGroup "eduPerson attributes"
 
     $TransformRules.eduPersonEntitlement = Get-ADFSTkTransformRule -Type "urn:mace:dir:attribute-def:eduPersonEntitlement" `
                                                              -Oid "urn:oid:1.3.6.1.4.1.5923.1.1.1.7" `
-                                                             -AttributeName eduPersonEntitlement
+                                                             -AttributeName eduPersonEntitlement `                                                             -AttributeGroup "eduPerson attributes"
 
     $TransformRules.eduPersonAssurance = Get-ADFSTkTransformRule -Type "urn:mace:dir:attribute-def:eduPersonAssurance" `
                                                            -Oid "urn:oid:1.3.6.1.4.1.5923.1.1.1.11" `
-                                                           -AttributeName eduPersonAssurance
+                                                           -AttributeName eduPersonAssurance `                                                           -AttributeGroup "eduPerson attributes"
 
     $TransformRules.norEduPersonLIN = Get-ADFSTkTransformRule -Type "urn:mace:dir:attribute-def:norEduPersonLIN" `
                                                         -Oid "urn:oid:1.3.6.1.4.1.2428.90.1.4" `
-                                                        -AttributeName norEduPersonLIN
+                                                        -AttributeName norEduPersonLIN `                                                        -AttributeGroup "norEduPerson attributes"
 
     #endregion
 
