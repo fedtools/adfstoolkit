@@ -12,32 +12,41 @@ $IssuanceTransformRuleManualSP = @{}
 # Please see the help section.
 #
 
-# We attempt to detect the variable $ADFSTkSiteSPSettings which should contain the collection
+# We attempt to detect existance of the functionwhich should contain the collection
 # of service provider
 #
 #      
 
-process {
+
     
     try {
 
         
+         #Attempt to Get local override
+            if ([string]::IsNullOrEmpty($Settings.configuration.LocalRelyingPartyFile))
+            {
+             Write-ADFSTkLog -message "No local configuration directive detected. No attribute overrides will be processed. Update configuration file to add LocalRelyingPartyFile element"
+              }
+            else
+            {
+               # build the file path, source the file, invoke the function/method that the file is named
+               $localRelyingPartyFileFullPath=Join-Path $Settings.configuration.WorkingPath -ChildPath $Settings.configuration.ConfigDir |Join-Path -ChildPath $Settings.configuration.LocalRelyingPartyFile
+              
+                $myRelyingPartyMethodToInvoke=[IO.Path]::GetFileNameWithoutExtension($localRelyingPartyFileFullPath)
 
-if ([string]::IsNullOrEmpty($ADFSTkSiteSPSettings))
-    {
-         Write-ADFSTkLog -message "ADFSTkSPSettings:EMPTY. No Site specific overrides detected in ADFSTkSiteSPSettings env variable, proceeding." 
-    }
-    else
-    {
-        $contents= $ADFSTkSiteSPSettings|ft -Property name,value -AutoSize |out-string -Width 4096
+              if (Test-Path -Path $localRelyingPartyFileFullPath )
+              {
+                   . $localRelyingPartyFileFullPath
+                   $IssuanceTransformRuleManualSP = & $myRelyingPartyMethodToInvoke
 
-          Write-ADFSTkLog -message "ADFSTkSPSettings: PRESENT. Ingesting settings" 
-          Write-ADFSTkLog -message "ADFSTkSPSettings: Values being ingested: $contents" 
-   
-   $IssuanceTransformRuleManualSP = $ADFSTkSiteSPSettings
+              }else
+              {
+                Write-ADFSTkLog -message "LocalRelyingPartyFile setting detected, file does not exist! No attribute overrides will be processed."
 
-    }
+              }
 
+
+            }
 
 
     # ADFSToolkit ships with empty RP/SP settings now
@@ -49,13 +58,13 @@ if ([string]::IsNullOrEmpty($ADFSTkSiteSPSettings))
     
     $IssuanceTransformRuleManualSP
 
-
+}
     Catch
         {
             Throw $_
         }
 
-}
+
 
 <#
 .SYNOPSIS
@@ -111,7 +120,7 @@ $TransformRules.cn = $AllTransformRules.cn
 $TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
 $TransformRules.mail = $AllTransformRules.mail
 $TransformRules.eduPersonScopedAffiliation = $AllTransformRules.eduPersonScopedAffiliation
-$IssuanceTransformRuleManualSP["https://validator.caftest.canarie.ca/shibboleth-sp"] = $TransformRules
+$IssuanceTransformRuleManualSP["https://validator.caftest.canarie.ca/shibboleth"] = $TransformRules
 
     
 .EXAMPLE

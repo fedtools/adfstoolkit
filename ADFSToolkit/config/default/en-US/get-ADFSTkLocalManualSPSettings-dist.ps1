@@ -1,6 +1,6 @@
 
 
-function get-ADFSTkManualSPSettings
+function get-ADFSTkLocalManualSPSettings
 {
 
 # HOW TO USE THIS FILE
