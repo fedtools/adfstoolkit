@@ -30,7 +30,7 @@ param (
         $signCertificateHashCompare = $Settings.configuration.signCertFingerprint -replace ":"
     }
     
-    Write-ADFSTkLog "Comparing aggregate certificate hash of: $signCertificateHash.Hash to $signCertificateHashCompare" -EntryType Information
+    Write-ADFSTkLog "Comparing aggregate certificate hash of: $($signCertificateHash.Hash) to $signCertificateHashCompare" -EntryType Information
 
     return ($signCertificateHash.Hash -eq $signCertificateHashCompare)
     
