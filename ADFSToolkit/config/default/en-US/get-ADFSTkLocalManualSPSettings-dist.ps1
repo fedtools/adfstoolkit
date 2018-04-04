@@ -82,7 +82,7 @@ $TransformRules.cn = $AllTransformRules.cn
 $TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
 $TransformRules.mail = $AllTransformRules.mail
 $TransformRules.eduPersonScopedAffiliation = $AllTransformRules.eduPersonScopedAffiliation
-$IssuanceTransformRuleManualSP["https://validator.caftest.canarie.ca/shibboleth-sp"] = $TransformRules
+$IssuanceTransformRuleManualSP["https://validator.caftest.canarie.ca/shibboleth"] = $TransformRules
 
     
 .EXAMPLE
