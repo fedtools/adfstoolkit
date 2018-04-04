@@ -2,7 +2,8 @@ function Get-ADFSTkTransformRule {
 param (
     $Type,
     $Oid,
-    $AttributeName
+    $AttributeName,
+    $AttributeGroup
     
 )
     $currentAttribute = $Settings.configuration.storeConfig.attributes.attribute | ? type -eq $Type
@@ -23,6 +24,7 @@ param (
         $transformRule = [PSCustomObject]@{
             Rule=$rule
             Attribute=""
+            AttributeGroup=$AttributeGroup
         }
     }
     else
@@ -58,6 +60,7 @@ param (
             $transformRule = [PSCustomObject]@{
                 Rule=$rules
                 Attribute="$($groupClaimOrigin)"
+                AttributeGroup=$AttributeGroup
             }
         }
         else
@@ -78,6 +81,7 @@ param (
                 $transformRule = [PSCustomObject]@{
                     Rule=$rules
                     Attribute="$Type"
+                    AttributeGroup=$AttributeGroup
                 }
             }
             else
@@ -92,6 +96,7 @@ param (
                  Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
 "@
                 Attribute="$Type"
+                AttributeGroup=$AttributeGroup
             }
             }
         }

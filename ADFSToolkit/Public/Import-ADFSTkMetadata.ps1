@@ -197,10 +197,14 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
             {
                
 
+
             Write-ADFSTkVerboseLog "Downloading From: $metadataURL to file $CachedMetadataFile" -EntryType Information
                
                 #$Metadata = Invoke-WebRequest $metadataURL -OutFile $CachedMetadataFile -PassThru
+                $myUserAgent = "ADFSToolkit/"+(get-module ADFSToolkit).Version.toString()
+ 
                 $webClient = New-Object System.Net.WebClient 
+                $webClient.Headers.Add("user-agent", "$myUserAgent")
                 $webClient.DownloadFile($metadataURL, $CachedMetadataFile) 
                 
                 Write-ADFSTkVerboseLog "Successfully downloaded Metadata from $metadataURL" -EntryType Information

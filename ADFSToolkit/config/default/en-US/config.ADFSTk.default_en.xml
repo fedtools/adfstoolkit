@@ -6,6 +6,7 @@
     <CacheDir>/cache</CacheDir>
     <SPHashFile>SPHash.xml</SPHashFile>
     <MetadataCacheFile>metadata.cached.xml</MetadataCacheFile>
+    <LocalRelyingPartyFile>get-ADFSTkLocalManualSPSettings.ps1</LocalRelyingPartyFile>
 
     <MetadataPrefix>A prefix that are added to the Service Provider´s name in AD FS Console</MetadataPrefix>
     <MetadataPrefixSeparator>:</MetadataPrefixSeparator>
