@@ -333,7 +333,7 @@ $ADFSTkSyncJobFingerPrint  = "#ADFSToolkit:$myADSTkCurrentVersion : $myDateFileU
 $ADFSTkImportCommand       ="`$md=get-module -ListAvailable adfstoolkit; Import-module `$md" 
 
 $ADFSTkRunCommand          = "Import-ADFSTkMetadata -ProcessWholeMetadata -ForceUpdate -ConfigFile '$configFile'"
-$ADFSTKManualSPCommand     =". $($myADFSTkManualSpSettingsInstallTemplateFile)`r`n`$ADFSTkSiteSPSettings=$myADFSTkManualSpSettingsFileNamePrefix"
+#$ADFSTKManualSPCommand     =". $($myADFSTkManualSpSettingsInstallTemplateFile)`r`n`$ADFSTkSiteSPSettings=$myADFSTkManualSpSettingsFileNamePrefix"
 
 $ADFSTkModuleBase=(Get-Module -ListAvailable ADFSToolkit).ModuleBase
 
@@ -371,7 +371,7 @@ if (Test-path $configJob)
              Add-Content $configJob "`n$ADFSTkSyncJobFingerPrint"
              Add-Content $configJob "`n$ADFSTkSyncJobSetVersionCommand"
              Add-Content $configJob "`n$ADFSTkImportCommand"
-             Add-Content $configJob "`n$ADFSTKManualSPCommand"
+            # Add-Content $configJob "`n$ADFSTKManualSPCommand"
              Add-Content $configJob "`n$ADFSTkRunCommand"        
              Add-Content $configJob "`n#Updated by: $ADFSTkSyncJobFingerPrint"        
 }
