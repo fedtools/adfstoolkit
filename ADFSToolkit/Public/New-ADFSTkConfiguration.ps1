@@ -1,16 +1,8 @@
 ﻿#Requires -Version 5.1
 
-
-#New-ADFSTkConfiguration -WhatIf
-#Set-ADFSTkConfiguration -Identity -Aggregate -fingerPrint -MetadataPrefix -ADFSExternalDNS -o -c -co
-#Get-ADFSTkConfiguration 
-
-
-#Do you have a current config file?
-
-
-
 function New-ADFSTkConfiguration {
+
+
 
 $myModule = Get-Module ADFSToolkit
 $configPath = Join-Path $myModule.ModuleBase "config"
