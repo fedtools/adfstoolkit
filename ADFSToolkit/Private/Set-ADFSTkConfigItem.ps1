@@ -5,8 +5,11 @@ param (
     $DefaultValue
 )
 
+
+
     $ConfigPath = Select-Xml -Xml $config -XPath $XPath
 
+    
     Write-Host -ForegroundColor Yellow "$($ConfigPath.Node.Name)`: " -NoNewline
     Write-Host -ForegroundColor Gray $ConfigPath.Node.'#text' -NoNewline
 
@@ -21,9 +24,26 @@ param (
     
     $text = "Please provide a value for $($ConfigPath.Node.Name)"
     
+
+    # passed in Default value takes precedence even over migration settings
+
+
     if (![string]::IsNullOrEmpty($DefaultValue))
     {
         $text += " ($DefaultValue)" 
+    }
+    else
+    {
+        $myExtractedValue=(Select-Xml -Xml $PreviousConfig -XPath "$XPath").Node.'#text'
+
+            if ([string]::IsNullOrEmpty($myExtractedValue))
+            {
+                # skip if it wasn't there
+            }else
+            { 
+                $DefaultValue="$myExtractedValue"
+                $text+= " ($DefaultValue)"
+            }
     }
 
     do 
@@ -43,6 +63,9 @@ param (
         }
     }
     until (![string]::IsNullOrEmpty($inputValue))
+
+    # strip carriage returns, tabs, newlines from XML variables
+     $inputValue=$inputValue -replace "`t|`n|`r",""
 
     $ConfigPath.Node.'#text' = [string]$inputValue
 }
