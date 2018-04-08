@@ -4,53 +4,66 @@ function New-ADFSTkConfiguration {
 
 
 
-$myModule = Get-Module ADFSToolkit
-$configPath = Join-Path $myModule.ModuleBase "config"
-if (Test-Path $configPath)
-{
-    $configDefaultPath = Join-Path $configPath "default"
-    if (Test-Path $configDefaultPath)
-    {
-        $dirs = Get-ChildItem -Path $configDefaultPath -Directory
-        $configFoundLanguages = (Compare-ADFSTkObject -FirstSet $dirs.Name -SecondSet ([System.Globalization.CultureInfo]::GetCultures("SpecificCultures").Name) -CompareType Intersection).CompareSet
-    
-        $configFoundLanguages | % {
-            $choices = @()
-            $caption = "Select language"
-            $message = "Please select which language you want help text in."
-            $defaultChoice = 0
-            $i = 0
-        }{
-            $choices += New-Object System.Management.Automation.Host.ChoiceDescription "&$([System.Globalization.CultureInfo]::GetCultureInfo($_).DisplayName)","" #if we want more than one language with the same starting letter we need to redo this (number the languages)
-            if ($_ -eq "en-US") {
-                $defaultChoice = $i
-            }
-            $i++
-        }{
-            
-            $result = $Host.UI.PromptForChoice($caption,$message,[System.Management.Automation.Host.ChoiceDescription[]]$choices,$defaultChoice) 
-        }
-        
-        $configChosenLanguagePath = Join-Path $configDefaultPath ([string[]]$configFoundLanguages)[$result]
 
-        if (Test-Path $configChosenLanguagePath)
+[cmdletbinding()]
+    Param (
+        [parameter(ValueFromPipeline=$True)]
+        [string[]]$MigrationConfig
+    )
+
+    Begin {
+
+        $myModule = Get-Module ADFSToolkit
+        $configPath = Join-Path $myModule.ModuleBase "config"
+        if (Test-Path $configPath)
         {
-            $defaultConfigFile = Get-ChildItem -Path $configChosenLanguagePath -File -Filter "config.ADFSTk.default*.xml" | Select -First 1 #Just to be sure
+            $configDefaultPath = Join-Path $configPath "default"
+            if (Test-Path $configDefaultPath)
+            {
+                $dirs = Get-ChildItem -Path $configDefaultPath -Directory
+                $configFoundLanguages = (Compare-ADFSTkObject -FirstSet $dirs.Name -SecondSet ([System.Globalization.CultureInfo]::GetCultures("SpecificCultures").Name) -CompareType Intersection).CompareSet
+    
+                $configFoundLanguages | % {
+                    $choices = @()
+                    $caption = "Select language"
+                    $message = "Please select which language you want help text in."
+                    $defaultChoice = 0
+                    $i = 0
+                }{
+                    $choices += New-Object System.Management.Automation.Host.ChoiceDescription "&$([System.Globalization.CultureInfo]::GetCultureInfo($_).DisplayName)","" #if we want more than one language with the same starting letter we need to redo this (number the languages)
+                    if ($_ -eq "en-US") {
+                        $defaultChoice = $i
+                    }
+                    $i++
+                }{
+            
+                    $result = $Host.UI.PromptForChoice($caption,$message,[System.Management.Automation.Host.ChoiceDescription[]]$choices,$defaultChoice) 
+                }
+        
+                $configChosenLanguagePath = Join-Path $configDefaultPath ([string[]]$configFoundLanguages)[$result]
+
+                if (Test-Path $configChosenLanguagePath)
+                {
+                    $defaultConfigFile = Get-ChildItem -Path $configChosenLanguagePath -File -Filter "config.ADFSTk.default*.xml" | Select -First 1 #Just to be sure
+                }
+                else
+                {
+                    #This should'nt happen
+                }
+            }
+            else
+            {
+                #no default configs :(
+            }
         }
         else
         {
-            #This should'nt happen
+            #Yeh what to do?
         }
-    }
-    else
-    {
-        #no default configs :(
-    }
+
 }
-else
-{
-    #Yeh what to do?
-}
+
+
 
     Write-Host "--------------------------------------------------------------------------------------------------------------" -ForegroundColor Cyan
 if (([string[]]$configFoundLanguages)[$result] -eq "en-US")
@@ -421,5 +434,43 @@ elseif (([string[]]$configFoundLanguages)[$result] -eq "sv-SE")
     Write-Host "This is actually in Swedish! ;)" -ForegroundColor Cyan
     Write-Host "All done!" -ForegroundColor Green
 }
+
+
+<#
+.SYNOPSIS
+Create or migrats an ADFSToolkit configuration file per aggregate.
+
+.DESCRIPTION
+
+This command creates a new or migrates an older configuration to a newer one when invoked.
+
+How this Powershell Cmdlet works:
+ 
+When loaded we:
+   -  seek out a template configuration in $Module-home/config/default/en/config.ADFSTk.default*.xml 
+   -- where * is the language designation, usually 'en'
+   -  if invoked with -MigrateConfig, the configuration attempts to detect the previous answers as defaults to the new ones where possible
+
+   
+.INPUTS
+
+zero or more inputs of an array of string to command
+
+.OUTPUTS
+
+configuration file(s) for use with current ADFSToolkit that this command is associated with
+
+.EXAMPLE
+new-ADFSTkConfiguration
+
+.EXAMPLE
+
+"C:\ADFSToolkit\0.0.0.0\config\config.file.xml" | new-ADFSTkConfiguration
+
+.EXAMPLE
+
+"C:\ADFSToolkit\0.0.0.0\config\config.file.xml","C:\ADFSToolkit\0.0.0.0\config\config.file2.xml" | new-ADFSTkConfiguration
+
+#>
 
 }
