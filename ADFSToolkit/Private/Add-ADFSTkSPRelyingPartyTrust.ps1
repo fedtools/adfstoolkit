@@ -122,8 +122,7 @@ function Add-ADFSTkSPRelyingPartyTrust {
 
     $IssuanceTransformRules = Get-ADFSTkIssuanceTransformRules $EntityCategories -EntityId $entityID `
                                                                                  -RequestedAttribute $sp.SPSSODescriptor.AttributeConsumingService.RequestedAttribute `
-                                                                                 -RegistrationAuthority $sp.extensions.RegistrationInfo.registrationAuthority
-
+                                                                                
     $IssuanceAuthorityRule =
 @"
     @RuleTemplate = "AllowAllAuthzRule"

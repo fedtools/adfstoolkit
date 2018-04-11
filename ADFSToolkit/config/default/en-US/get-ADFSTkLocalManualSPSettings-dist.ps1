@@ -1,98 +1,60 @@
 
 
-function get-ADFSTkManualSPSettings
+function get-ADFSTkLocalManualSPSettings
 {
-
-
-$IssuanceTransformRuleManualSP = @{}
 
 # HOW TO USE THIS FILE
 #
-# As of 0.9.45, this file purposely abstracts out overrides to user managed PowerShell.
-# Please see the help section.
+# To see examples invoke Powershell get-help <command>: 
+#   get-help get-ADFSTkManualSPSettings -Detail
+# (you may need to dot source the file)
 #
+# This file exists as a template in the Module with a runtime instance in: 
+#     C:\ADFSToolkit\get-ADFSTkManualSPSettings.ps1         
 
-# We attempt to detect existance of the functionwhich should contain the collection
-# of service provider
-#
-#      
 
+
+    # Hashtable that we will return at the end of the function (ok to be empty, but MUST exist)
+
+    $IssuanceTransformRuleManualSP = @{}
+
+    # see below documentation for example Powershell code blocks to copy and paste here
+  
+    ######BEGIN Specific SP Attribute Release Settings
+    
+    # If this is empty, there are no overrides for an SP. See examples 
+    
+    ######END Specific SP Attribute Release Settings
 
     
-    try {
-
-        
-         #Attempt to Get local override
-            if ([string]::IsNullOrEmpty($Settings.configuration.LocalRelyingPartyFile))
-            {
-             Write-ADFSTkLog -message "No local configuration directive detected. No attribute overrides will be processed. Update configuration file to add LocalRelyingPartyFile element"
-              }
-            else
-            {
-               # build the file path, source the file, invoke the function/method that the file is named
-               $localRelyingPartyFileFullPath=Join-Path $Settings.configuration.WorkingPath -ChildPath $Settings.configuration.ConfigDir |Join-Path -ChildPath $Settings.configuration.LocalRelyingPartyFile
-              
-                $myRelyingPartyMethodToInvoke=[IO.Path]::GetFileNameWithoutExtension($localRelyingPartyFileFullPath)
-
-              if (Test-Path -Path $localRelyingPartyFileFullPath )
-              {
-                   . $localRelyingPartyFileFullPath
-                   $IssuanceTransformRuleManualSP = & $myRelyingPartyMethodToInvoke
-
-              }else
-              {
-                Write-ADFSTkLog -message "LocalRelyingPartyFile setting detected, file does not exist! No attribute overrides will be processed."
-
-              }
-
-
-            }
-
-
-    # ADFSToolkit ships with empty RP/SP settings now
-    # 
-    # Sites can pass in their settings by $ADFSTkSiteSPSettings 
-    # Examples are below.
-    
-    # This returns the hashtable of hashtables to whomever invoked this function
+    # Manditory: this returns the hashtable of hashtables to whomever invoked this function
     
     $IssuanceTransformRuleManualSP
 
-}
-    Catch
-        {
-            Throw $_
-        }
-
-
-
 <#
 .SYNOPSIS
-As of 0.9.45 and later, this file detects the existance of a site's  Relying Party/Service provider attribute release definitions.
-If the variable: ADFSTkSiteSPSettings exists, we will import these site specific settings.
+This is the file that site admins edit to locally control per Relying Party/Service provider attribute release.
+ADFSToolkit attempts to detect the presence of variable ADFSTkSiteSPSettings and then ingest it to control specific rules.
+
+This file, minus the digital signature, is usually used in c:\ADFSToolkit\sync-ADFSTkAggregates.ps1 
+  
+ExecutionPolicy: Can execute without being signed as it is locally executed. It is the site admin's discretion to permit/allow this. 
 
 
 .DESCRIPTION
 
-This file is a harness to allow a site admin to configure per RP/SP attribute release policies for ADFSToolkit.
+This file allows a site admin to configure per RP/SP attribute release policies for ADFSToolkit.
 ADFSToolkit's default behaviour for Entity Categories such as Research and Scholarship are handled elsewhere in the ADFSToolkit Module.
 
 
 How this Powershell Cmdlet works:
 
-This file is delivered code complete, but returns an empty result.
-
 Creation of this file: 
+Usually created from invocation of get-ADFSTkConfiguration or created by hand and placed in c:\ADFSToolkit\ to be dot sourced.
 
-Usually created when get-ADFSTkConfiguration is invoked which uses this file as a template (minus signature):
-
- (Get-Module -Name ADFSToolkit).ModuleBase\config\default\en-US\get-ADFSTkManualSPSettings-dist.ps1
-
-Alternatively, it can be created by hand and placed in c:\ADFSToolkit\<version>\config and sourced by command:
-
-c:\ADFSToolkit\sync-ADFSTkAggregates.ps1
-
-In the site specific file, for each entity we want to change the attribute handling policy of ADFS, we:
+In the file:
+ 
+For each entity we want to change the attribute handling policy of ADFS, we:
    -  create an empty TransformRules Hashtable
    -  assign 1 or more specific transform rules that have a corelating TransformRules Object
    -  When all transform rules are described, the set of transforms is inserted into the Hashtable we return

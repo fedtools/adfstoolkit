@@ -1,6 +1,11 @@
 function Import-ADFSTkIssuanceTransformRuleCategories {
 param (
+    
+[Parameter(Mandatory=$false,
+                   ValueFromPipelineByPropertyName=$true,
+                   Position=0)]
     $RequestedAttribute
+
 )
     ### Create AttributeStore variables
     $IssuanceTransformRuleCategories = @{}
@@ -12,6 +17,10 @@ param (
         $RequestedAttribute | % {
             $RequestedAttributes.($_.Name) = $_.friendlyName
         }
+    }else
+    {
+    Write-ADFSTkLog "No Requested attributes detected"
+
     }
 
     ### Released to SP:s without Entity Category
