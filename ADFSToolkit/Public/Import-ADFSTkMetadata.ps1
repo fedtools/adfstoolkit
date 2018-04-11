@@ -431,7 +431,22 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
         }
 
         if ($sp.count -gt 1) {
-            $sp = $sp[0] #Why, but necessary!?!
+            $tmpSP = $null
+            $sp | % {
+                if (![string]::IsNullOrEmpty($_.Extensions.RegistrationInfo))
+                {
+                    $tmpSP = $_
+                }
+            }
+
+            if ($tmpSP -ne $null)
+            {
+                $sp = $tmpSP
+            }
+            else
+            {
+                $sp = $sp[0]
+            }
         }
 
         if ([string]::IsNullOrEmpty($sp)){
