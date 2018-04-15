@@ -123,8 +123,8 @@
 
             <!-- Attribute filter pivoting on allowedRegistrationAuthorities - useful for GDPR purposes 
 
-             Absence of allowedRegsitrationAuthorities -- no action taken
-             Presence of allowedRegistrationAuthorities -- attribute filters to be present in only said RA (one or more)
+             Absence of allowedRegsitrationAuthorities - no action taken
+             Presence of allowedRegistrationAuthorities - attribute filters to be present in only said RA (one or more)
             --> 
             <attribute type="urn:mace:dir:attribute-def:norEduPersonNIN" store="Active Directory" name="norEduPersonNIN">
                 <allowedRegistrationAuthorities>

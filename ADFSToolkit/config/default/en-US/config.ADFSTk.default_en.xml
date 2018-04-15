@@ -43,7 +43,8 @@
             <!--<store name="Custom Store"     issuer="AD AUTHORITY" type="http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname" order="2" />-->
            <!-- <store name="SQL" issuer="SQL" type="http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname" order="3">
                 <query>SELECT CONVERT(varchar(10), Id) FROM [LiUDB].[dbo].[EmployeeIdGen] WHERE uid = {0}</query>
-            </store> -->
+            </store> 
+            -->
 
       </stores>
       <transformRules>
@@ -123,14 +124,15 @@
 
             <!-- Attribute filter pivoting on allowedRegistrationAuthorities - useful for GDPR purposes 
 
-             Absence of allowedRegsitrationAuthorities -- no action taken
-             Presence of allowedRegistrationAuthorities -- attribute filters to be present in only said RA (one or more)
+             Absence of allowedRegsitrationAuthorities - no action taken
+             Presence of allowedRegistrationAuthorities - attribute filters to be present in only said RA (one or more)
             --> 
-            <attribute type="urn:mace:dir:attribute-def:norEduPersonNIN" store="Active Directory" name="norEduPersonNIN">
+          <!--  <attribute type="urn:mace:dir:attribute-def:norEduPersonNIN" store="Active Directory" name="norEduPersonNIN">
                 <allowedRegistrationAuthorities>
                     <registrationAuthority>http://www.swamid.se/</registrationAuthority>
                 </allowedRegistrationAuthorities>
             </attribute>
+            -->
 
             <attribute type="urn:mace:dir:attribute-def:norEduPersonLIN" store="Active Directory" name="norEduPersonLIN" />
             <attribute type="urn:mace:dir:attribute-def:eduPersonEntitlement" store="Active Directory" name="edupersonentitlement" useGroups="true">
