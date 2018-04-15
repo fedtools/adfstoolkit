@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <configuration>
-    <ConfigVersion>0.9</ConfigVersion>
+    <ConfigVersion>1.0</ConfigVersion>
     <WorkingPath>c:\Program Files\WindowsPowerShell\Modules\ADFSToolkit</WorkingPath>
     <ConfigDir>/config</ConfigDir>
     <CacheDir>/cache</CacheDir>
@@ -41,9 +41,10 @@
         <stores>
             <store name="Active Directory" issuer="AD AUTHORITY" type="http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname" order="1" />
             <!--<store name="Custom Store"     issuer="AD AUTHORITY" type="http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname" order="2" />-->
-            <store name="SQL" issuer="SQL" type="http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname" order="3">
+           <!-- <store name="SQL" issuer="SQL" type="http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname" order="3">
                 <query>SELECT CONVERT(varchar(10), Id) FROM [LiUDB].[dbo].[EmployeeIdGen] WHERE uid = {0}</query>
-            </store>
+            </store> -->
+
       </stores>
       <transformRules>
         <rule name="ADFSTkExtractSubjectUniqueId" originClaim="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn" /> 
@@ -120,11 +121,21 @@
        
             end Scenario C. Attribute assignment -->
 
-            <attribute type="urn:mace:dir:attribute-def:norEduPersonNIN" store="Active Directory" name="norEduPersonNIN" />
+            <!-- Attribute filter pivoting on allowedRegistrationAuthorities - useful for GDPR purposes 
+
+             Absence of allowedRegsitrationAuthorities -- no action taken
+             Presence of allowedRegistrationAuthorities -- attribute filters to be present in only said RA (one or more)
+            --> 
+            <attribute type="urn:mace:dir:attribute-def:norEduPersonNIN" store="Active Directory" name="norEduPersonNIN">
+                <allowedRegistrationAuthorities>
+                    <registrationAuthority>http://www.swamid.se/</registrationAuthority>
+                </allowedRegistrationAuthorities>
+            </attribute>
+
             <attribute type="urn:mace:dir:attribute-def:norEduPersonLIN" store="Active Directory" name="norEduPersonLIN" />
             <attribute type="urn:mace:dir:attribute-def:eduPersonEntitlement" store="Active Directory" name="edupersonentitlement" useGroups="true">
-                <group name="employee-liu.se" value="urn:mace:terena.org:tcs:personal-user" />
-                <group name="employee-liu.se" value="urn:mace:terena.org:tcs:escience-user" />
+                <group name="employee" value="urn:mace:terena.org:tcs:personal-user" />
+                <group name="employee" value="urn:mace:terena.org:tcs:escience-user" />
                 <group name="Terena Personal Certificate Admin" value="urn:mace:terena.org:tcs:personal-admin" />
                 <group name="Terena Personal Certificate Admin" value="urn:mace:terena.org:tcs:escience-admin" />
             </attribute>
