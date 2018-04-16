@@ -22,7 +22,11 @@ function get-ADFSTkLocalManualSPSettings
   
     ######BEGIN Specific SP Attribute Release Settings
     
-    # If this is empty, there are no overrides for an SP. See examples 
+    # If this is empty, there are no overrides for an SP. 
+    
+    # To See examples to add to this file type: get-help get-ADFSTkSITEManualSPSettings -examples
+
+
     
     ######END Specific SP Attribute Release Settings
 
@@ -81,6 +85,7 @@ $TransformRules.sn = $AllTransformRules.sn
 $TransformRules.cn = $AllTransformRules.cn
 $TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
 $TransformRules.mail = $AllTransformRules.mail
+$TransformRules.eduPersonAffiliation = $AllTransformRules.eduPersonAffiliation
 $TransformRules.eduPersonScopedAffiliation = $AllTransformRules.eduPersonScopedAffiliation
 $IssuanceTransformRuleManualSP["https://validator.caftest.canarie.ca/shibboleth"] = $TransformRules
 
