@@ -32,12 +32,14 @@ function Compare-ADFSTkObject {
 param (        
     [Parameter(Mandatory=$true,
                 Position=0)]
+                [AllowEmptyCollection()]
     #The first set to compare
-    $FirstSet,
+    $FirstSet =@(),
     [Parameter(Mandatory=$true,
                 Position=1)]
+                [AllowEmptyCollection()]
     #The second set to compare
-    $SecondSet,
+    $SecondSet =@(),
     [Parameter(Mandatory=$true,
                 Position=2)]
     [ValidateSet("InFirstSetOnly","InSecondSetOnly","Union","Intersection","AddRemove")]

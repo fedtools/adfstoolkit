@@ -5,12 +5,15 @@ function get-ADFSTkLocalManualSPSettings
 
 # HOW TO USE THIS FILE
 #
-# To see examples invoke Powershell get-help <command>: 
-#   get-help get-ADFSTkManualSPSettings -Detail
-# (you may need to dot source the file)
+# To see examples:
+# dot source this file from the location:
+#  . c:\ADFSToolkit\<version>\config\get-ADFSTkLocalManualSPSettings.ps1
 #
+# To see examples invoke Powershell get-help: 
+#   get-help get-ADFSTkLocalManualSPSettings -Examples
+
 # This file exists as a template in the Module with a runtime instance in: 
-#     C:\ADFSToolkit\get-ADFSTkManualSPSettings.ps1         
+#     c:\ADFSToolkit\<version>\config\get-ADFSTkLocalManualSPSettings.ps1         
 
 
 
@@ -22,7 +25,10 @@ function get-ADFSTkLocalManualSPSettings
   
     ######BEGIN Specific SP Attribute Release Settings
     
-    # If this is empty, there are no overrides for an SP. See examples 
+    # If this section is empty, there are no overrides for SPs yet -- see help above for examples
+    
+
+
     
     ######END Specific SP Attribute Release Settings
 
@@ -81,6 +87,7 @@ $TransformRules.sn = $AllTransformRules.sn
 $TransformRules.cn = $AllTransformRules.cn
 $TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
 $TransformRules.mail = $AllTransformRules.mail
+$TransformRules.eduPersonAffiliation = $AllTransformRules.eduPersonAffiliation
 $TransformRules.eduPersonScopedAffiliation = $AllTransformRules.eduPersonScopedAffiliation
 $IssuanceTransformRuleManualSP["https://validator.caftest.canarie.ca/shibboleth"] = $TransformRules
 
