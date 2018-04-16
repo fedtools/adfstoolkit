@@ -347,6 +347,10 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
             Write-ADFSTkLog "Checking for Relying Parties removed from Metadata using Filter:$FilterString* ..." 
 
             $CurrentSwamidSPs = Get-ADFSRelyingPartyTrust | ? {$_.Name -like "$FilterString*"} | select -ExpandProperty Identifier
+            if ($CurrentSwamidSPs -eq $null)
+            {
+                $CurrentSwamidSPs = @()
+            }
 
             #$RemoveSPs = Compare-ADFSTkObject $CurrentSwamidSPs $SwamidSPs | ? SideIndicator -eq "<=" | select -ExpandProperty InputObject
             $CompareSets = Compare-ADFSTkObject -FirstSet $CurrentSwamidSPs -SecondSet $SwamidSPs -CompareType InFirstSetOnly
