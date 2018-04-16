@@ -6,6 +6,9 @@ function Add-ADFSTkSPRelyingPartyTrust {
     )
     
     $Continue = $true
+     ### EntityId
+    $entityID = $sp.entityID
+
     $rpParams = @{
         Identifier = $entityID
         EncryptionCertificateRevocationCheck = 'None'
@@ -20,8 +23,7 @@ function Add-ADFSTkSPRelyingPartyTrust {
         ErrorAction = 'Stop'
     }
 
-    ### EntityId
-    $entityID = $sp.entityID
+   
 
     Write-ADFSTkLog "Adding $entityId as SP..." -EntryType Information
 
@@ -202,6 +204,10 @@ function Add-ADFSTkSPRelyingPartyTrust {
             {
                 Write-ADFSTkVerboseLog "Adding ADFSRelyingPartyTrust `'$entityID`'..."
                 
+                # Invoking the following command leverages 'splatting' for passing the switches for commands
+                # for details, see: https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_splatting?view=powershell-6
+                # (that's what it's @rpParams and not $rpParams)
+
                 Add-ADFSRelyingPartyTrust @rpParams
 
                 Write-ADFSTkLog "Successfully added `'$entityId`'!" -EntryType Information
