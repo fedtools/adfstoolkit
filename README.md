@@ -55,25 +55,25 @@ The process to handle an update of ADFSToolkit is to:
 - Create a system snapshot/recovery point to return to
 - Disable/suspend the ADFSToolkit scheduled job
 - Issue ‘Update-Module ADFSToolkit’
--- When Update-Module is run, it will attempt to detect if there is a newer version available from PowerShellGallery.com and download it. 
--- Note that each module is downloaded into it’s own directory containing the version number of the script.  ADFSToolkit will not run properly with more than one version available so once the new version is confirmed on disk and available, we recommend moving the older version out of the PowerShell path so that only the latest version is available. 
+ - When Update-Module is run, it will attempt to detect if there is a newer version available from PowerShellGallery.com and download it. 
+ - Note that each module is downloaded into it’s own directory containing the version number of the script.  ADFSToolkit will not run properly with more than one version available so once the new version is confirmed on disk and available, we recommend moving the older version out of the PowerShell path so that only the latest version is available. 
 - Migrate existing configuration file and related cache files
--- Is possible but if you hand edited the settings before, you need to re-apply the changes after migrating the configuration to the new format. There are two ways to do this
---- Create the configuration as if they are new hand entering old answers
---- Taking advantage of the pipelining features of New-ADFSTkConfiguration which can ingest your existing configuration and fetch many of the existing settings and bring them into the new format.  You still need to inspect for any hand edits to be applied however.
+ - Is possible but if you hand edited the settings before, you need to re-apply the changes after migrating the configuration to the new format. There are two ways to do this
+  - Create the configuration as if they are new hand entering old answers
+  - Taking advantage of the pipelining features of New-ADFSTkConfiguration which can ingest your existing configuration and fetch many of the existing settings and bring them into the new format.  You still need to inspect for any hand edits to be applied however.
 
 
 Example of pipelining your old configuration into the new is below:
 ```
 "C:\ADFSToolkit\0.9.1.55\config\config.CAF.xml" |New-ADFSTkConfiguration
 ```
---- Once you have completed the review of the  settings in configurations from the old configuration to the new configuration,ADFSToolkit
--- Determining migrating caches from old to new is required.
---- A sub-directory called ‘\cache’ in the live ADFSToolkit home is used to track changes in metadata and save time re-calculating entity records in ADFS. 
---- It is possible to copy the cache from the old version to the new one to preserve current processing status and usually is possible.
---- If there are major changes in how ADFSToolkit processes records it may be worthwhile to permit ADFSToolkit to recalculate everything again. This is done by NOT moving the old cache files over but the consequence is that all records will be refreshed and overwritten using the new logic.  This may be desireable depending on the changes available in the new version.
+  - Once you have completed the review of the  settings in configurations from the old configuration to the new configuration,ADFSToolkit
+ - Determining migrating caches from old to new is required.
+  - A sub-directory called ‘\cache’ in the live ADFSToolkit home is used to track changes in metadata and save time re-calculating entity records in ADFS. 
+  - It is possible to copy the cache from the old version to the new one to preserve current processing status and usually is possible.
+ - If there are major changes in how ADFSToolkit processes records it may be worthwhile to permit ADFSToolkit to recalculate everything again. This is done by NOT moving the old cache files over but the consequence is that all records will be refreshed and overwritten using the new logic.  This may be desireable depending on the changes available in the new version.
 - Migrate Site specific overrides
--- The file c:\ADFSToolkit\#.#.#.#\get-ADFSTkLocalManualSpSettings.ps1 contains all your local settings. Review the release notes and if no instructions are offered, simply copying the file from the old version to the new one is sufficient.
---- If you do not copy this file into the newly created folder with the latest verion of ADFSToolkit job, all your settings for existing entities will be removed.
+ - The file c:\ADFSToolkit\#.#.#.#\get-ADFSTkLocalManualSpSettings.ps1 contains all your local settings. Review the release notes and if no instructions are offered, simply copying the file from the old version to the new one is sufficient.
+  - If you do not copy this file into the newly created folder with the latest verion of ADFSToolkit job, all your settings for existing entities will be removed.
 - Resuming synchronization of Metadata
--- Once manual operation has been validated, the ADFSToolkit job can be resumed in the Microsoft Job Scheduler and your migration considered complete.
+ - Once manual operation has been validated, the ADFSToolkit job can be resumed in the Microsoft Job Scheduler and your migration considered complete.
