@@ -13,7 +13,7 @@ techniques to manage trust in a scalable fashion stepping up AD FS's trust model
 
 # Installation Procedure
 
-:exclamation: :exclamation: Installing from this GIT repository is not recommended - please use PowerShellGallery.com :exclamation: :exclamation:
+:exclamation: Installing from this GIT repository is not recommended - please use PowerShellGallery.com :exclamation:
 
 https://www.powershellgallery.com/packages/ADFSToolkit/ 
 
@@ -49,7 +49,7 @@ ADFSToolkit is a component built for and by the research and educational communi
 
 This is the default behaviour of ADFSToolkit and by using this tool, you are enabling this model of attribute release by default.  You are  encouraged to contact CANARIE and register your organizations as supporting Research and Scholarship entity category for more benefits. See this link for more detail: https://www.canarie.ca/identity/fim/research-and-scholarship-entity-category/
 
-# ADFSToolkit’s Lifecycle Management / Suggested Update Procedure 
+# ADFSToolkit’s Lifecycle Management / Update Practice 
 ADFSToolkit’s Module uses the PowerShell Gallery tool command ‘Update-Module’ to manage delivery of updates.  Sites using ADFSToolkit are strongly encouraged to have a test system to review changes between versions.  In cases where there is no test system, a snapshot/backup of their environment is strongly recommended. 
 Note that some updates may require removing the cache files and run again completely to apply new features.  Updates that require this will be flagged as such in the release notes. It is up to the site operator to determine when to do this and to allow for sufficient time to recalculate the new improved settings. ADFSToolkit is designed to be idempotent in it’s operation – no matter how many times it is run, the resulting set will be the same which. 
 The process to handle an update of ADFSToolkit is to:
