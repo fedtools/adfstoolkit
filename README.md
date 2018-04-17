@@ -3,8 +3,8 @@
 A PowerShell Module used to handle SAML2 multi-lateral federation aggregates
 
 The ADFSToolkit was designed to rapidly configure your Active Directory Federation Services (AD FS v3 or higher) 
-to connect to Research and Education (R&E) Federated Identity Management services. 
-The ADFSToolkit reduces the installation and configuration time for CAF services to a matter of minutes and offers 
+to connect to Research and Education (R&E) Federated Identity Management service federations. 
+The ADFSToolkit reduces the installation and configuration time to a matter of minutes and offers 
 techniques to manage trust in a scalable fashion stepping up AD FS's trust model to be sufficient to be an IdP in a SAML2 R&E federation.
 
 # Sites using ADFSToolkit
