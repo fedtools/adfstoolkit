@@ -69,13 +69,13 @@ Example of pipelining your old configuration into the new is below:
 ```
 "C:\ADFSToolkit\0.9.1.55\config\config.CAF.xml" |New-ADFSTkConfiguration
 ```
-  - Once you have completed the review of the  settings in configurations from the old configuration to the new configuration,ADFSToolkit
+Once you have completed the review of the  settings in configurations from the old configuration to the new configuration,ADFSToolkit
  - Determining migrating caches from old to new is required.
-  - A sub-directory called ‘\cache’ in the live ADFSToolkit home is used to track changes in metadata and save time re-calculating entity records in ADFS. 
-  - It is possible to copy the cache from the old version to the new one to preserve current processing status and usually is possible.
+   - A sub-directory called ‘\cache’ in the live ADFSToolkit home is used to track changes in metadata and save time re-calculating entity records in ADFS. 
+   - It is possible to copy the cache from the old version to the new one to preserve current processing status and usually is possible.
  - If there are major changes in how ADFSToolkit processes records it may be worthwhile to permit ADFSToolkit to recalculate everything again. This is done by NOT moving the old cache files over but the consequence is that all records will be refreshed and overwritten using the new logic.  This may be desireable depending on the changes available in the new version.
 - Migrate Site specific overrides
- - The file c:\ADFSToolkit\#.#.#.#\get-ADFSTkLocalManualSpSettings.ps1 contains all your local settings. Review the release notes and if no instructions are offered, simply copying the file from the old version to the new one is sufficient.
-  - If you do not copy this file into the newly created folder with the latest verion of ADFSToolkit job, all your settings for existing entities will be removed.
+  - The file c:\ADFSToolkit\#.#.#.#\get-ADFSTkLocalManualSpSettings.ps1 contains all your local settings. Review the release notes and if no instructions are offered, simply copying the file from the old version to the new one is sufficient.
+    - If you do not copy this file into the newly created folder with the latest verion of ADFSToolkit job, all your settings for existing entities will be removed.
 - Resuming synchronization of Metadata
- - Once manual operation has been validated, the ADFSToolkit job can be resumed in the Microsoft Job Scheduler and your migration considered complete.
+  - Once manual operation has been validated, the ADFSToolkit job can be resumed in the Microsoft Job Scheduler and your migration considered complete.
