@@ -13,7 +13,9 @@ techniques to manage trust in a scalable fashion stepping up AD FS's trust model
 
 # Installation Procedure
 
-:exclamation: :exclamation: Installing from this GIT repository is not recommended - please use PowerShellGallery.com: https://www.powershellgallery.com/packages/ADFSToolkit/ :exclamation: :exclamation:
+:exclamation: :exclamation: Installing from this GIT repository is not recommended - please use PowerShellGallery.com :exclamation: :exclamation:
+
+https://www.powershellgallery.com/packages/ADFSToolkit/ 
 
 ADFSToolkit uses Microsoft’s PowerShellGallery.com service as the official primary distribution channel of ADFSToolkit as a PowerShell Module.  This allows us to rely on Microsoft’s approach to managing distribution and updated PowerShell Modules for the lifecycle of ADFSToolkit.
 To install ADFSToolkit you will need to:
@@ -55,12 +57,12 @@ The process to handle an update of ADFSToolkit is to:
 - Create a system snapshot/recovery point to return to
 - Disable/suspend the ADFSToolkit scheduled job
 - Issue ‘Update-Module ADFSToolkit’
- - When Update-Module is run, it will attempt to detect if there is a newer version available from PowerShellGallery.com and download it. 
- - Note that each module is downloaded into it’s own directory containing the version number of the script.  ADFSToolkit will not run properly with more than one version available so once the new version is confirmed on disk and available, we recommend moving the older version out of the PowerShell path so that only the latest version is available. 
+  - When Update-Module is run, it will attempt to detect if there is a newer version available from PowerShellGallery.com and download it. 
+  - Note that each module is downloaded into it’s own directory containing the version number of the script.  ADFSToolkit will not run properly with more than one version available so once the new version is confirmed on disk and available, we recommend moving the older version out of the PowerShell path so that only the latest version is available. 
 - Migrate existing configuration file and related cache files
- - Is possible but if you hand edited the settings before, you need to re-apply the changes after migrating the configuration to the new format. There are two ways to do this
-  - Create the configuration as if they are new hand entering old answers
-  - Taking advantage of the pipelining features of New-ADFSTkConfiguration which can ingest your existing configuration and fetch many of the existing settings and bring them into the new format.  You still need to inspect for any hand edits to be applied however.
+  - Is possible but if you hand edited the settings before, you need to re-apply the changes after migrating the configuration to the new format. There are two ways to do this
+    - Create the configuration as if they are new hand entering old answers
+    - Taking advantage of the pipelining features of New-ADFSTkConfiguration which can ingest your existing configuration and fetch many of the existing settings and bring them into the new format.  You still need to inspect for any hand edits to be applied however.
 
 
 Example of pipelining your old configuration into the new is below:
