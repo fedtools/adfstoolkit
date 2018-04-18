@@ -4,12 +4,7 @@
 
    $UserManaged = @( Get-ChildItem -Path $PSScriptRoot\config\*.ps1 )
 
-# $Public  = @( Get-ChildItem -Path $PSScriptRoot\Public\*.ps1 -ErrorAction SilentlyContinue )
- #   $Private = @( Get-ChildItem -Path $PSScriptRoot\Private\*.ps1 -ErrorAction SilentlyContinue )
-
-
 #Dot source the files
-
 Write-Verbose -Message "ADFSToolkit Public: $Public"
 Write-Verbose -Message "ADFSToolkit Private: $Private"
 
@@ -27,5 +22,5 @@ Write-Verbose -Message "ADFSToolkit Private: $Private"
     }
 
 
-Export-ModuleMember -Function  Import-ADFSTkMetadata,New-ADFSTkConfiguration,Unpublish-ADFSTkAggregate
+Export-ModuleMember -Function  Import-ADFSTkMetadata,New-ADFSTkConfiguration,Unpublish-ADFSTkAggregate,Get-ADFSTkTransformRuleObjects
 

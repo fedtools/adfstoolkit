@@ -6,58 +6,116 @@ function Add-ADFSTkSPRelyingPartyTrust {
     )
     
     $Continue = $true
-
-    ### EntityId
+     ### EntityId
     $entityID = $sp.entityID
+
+    $rpParams = @{
+        Identifier = $entityID
+        EncryptionCertificateRevocationCheck = 'None'
+        SigningCertificateRevocationCheck = 'None'
+        ClaimsProviderName = @("Active Directory")
+        IssuanceAuthorizationRules =
+@"
+    @RuleTemplate = "AllowAllAuthzRule"
+     => issue(Type = "http://schemas.microsoft.com/authorization/claims/permit", 
+     Value = "true");
+"@
+        ErrorAction = 'Stop'
+    }
+
+   
 
     Write-ADFSTkLog "Adding $entityId as SP..." -EntryType Information
 
     ### Name, DisplayName
     $Name = (Split-Path $sp.entityID -NoQualifier).TrimStart('/') -split '/' | select -First 1
 
-    ### SwamID 2.0
-    #$Swamid2 = ($sp.base | Split-Path -Parent) -eq "swamid-2.0"
 
-    ### Token Encryption Certificate 
+#region Token Encryption Certificate 
     Write-ADFSTkVerboseLog "Getting Token Encryption Certificate..."
-    $EncryptionCertificate = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
+    
     $CertificateString = ($sp.SPSSODescriptor.KeyDescriptor | ? use -eq "encryption"  | select -ExpandProperty KeyInfo).X509Data.X509Certificate
+    
     if ($CertificateString -eq $null)
     {
+        #Check if any certificates without 'use'. Should we use this?
         Write-ADFSTkVerboseLog "Certificate with description `'encryption`' not found. Using default certificate..."
-        $CertificateString = ($sp.SPSSODescriptor.KeyDescriptor | select -ExpandProperty KeyInfo -First 1).X509Data.X509Certificate
+        #$CertificateString = ($sp.SPSSODescriptor.KeyDescriptor | select -ExpandProperty KeyInfo -First 1).X509Data.X509Certificate 
+        $CertificateString = ($sp.SPSSODescriptor.KeyDescriptor | ? use -ne "signing"  | select -ExpandProperty KeyInfo).X509Data.X509Certificate #or shoud 'use' not be present?
     }
     
-    try
+    if ($CertificateString -ne $null)
     {
-        #May be more certificates! Be sure to check it out and drive foreach. Select the valid certificate with the highest validity period
-        Write-ADFSTkVerboseLog "Converting Token Encryption Certificate string to Certificate..."
-        $CertificateBytes  = [system.Text.Encoding]::UTF8.GetBytes($CertificateString)
-        $EncryptionCertificate.Import($CertificateBytes)
-        Write-ADFSTkVerboseLog "Convertion of Token Encryption Certificate string to Certificate done!"
+        $rpParams.EncryptionCertificate = $null
+        try
+        {
+            #May be more certificates! Be sure to check it out and drive foreach. 
+            #If more than one, choose the one with furthest end date.
+            $CertificateString | % {
+                Write-ADFSTkVerboseLog "Converting Token Encryption Certificate string to Certificate..."
+                $EncryptionCertificate = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
+    
+                $CertificateBytes  = [system.Text.Encoding]::UTF8.GetBytes($_)
+                $EncryptionCertificate.Import($CertificateBytes)
+                
+                if ($rpParams.EncryptionCertificate -eq $null) 
+                {
+                    $rpParams.EncryptionCertificate = $EncryptionCertificate
+                }
+                elseif($rpParams.EncryptionCertificate.NotAfter -lt $EncryptionCertificate.NotAfter)
+                {
+                    $rpParams.EncryptionCertificate = $EncryptionCertificate
+                }
+                Write-ADFSTkVerboseLog "Convertion of Token Encryption Certificate string to Certificate done!"
+            }
+        }
+        catch
+        {
+            Write-ADFSTkLog "Could not import Token Encryption Certificate!" -EntryType Error
+            $Continue = $false
+        }
     }
-    catch
-    {
-        Write-ADFSTkLog "Could not import Token Encryption Certificate!" -EntryType Error
-        $Continue = $false
-    }
+#endregion
 
-    ### Token Signing Certificate 
+#region Token Signing Certificate 
+
+    #Add all signing certificates if there are more than one
     Write-ADFSTkVerboseLog "Getting Token Signing Certificate..."
-    $SigningCertificate = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
+    
+    $rpParams.SignatureAlgorithm = "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+    
     $CertificateString = ($sp.SPSSODescriptor.KeyDescriptor | ? use -eq "signing"  | select -ExpandProperty KeyInfo).X509Data.X509Certificate
     if ($CertificateString -eq $null)
     {
         Write-ADFSTkVerboseLog "Certificate with description `'signing`' not found. Using Token Decryption certificate..."
-        $SigningCertificate = $EncryptionCertificate
+        $CertificateString = ($sp.SPSSODescriptor.KeyDescriptor | ? use -ne "encryption"  | select -ExpandProperty KeyInfo).X509Data.X509Certificate #or shoud 'use' not be present?
     }
-    else
+    
+    
+    if ($CertificateString -ne $null) #foreach insted create $SigningCertificates array
     {
         try
         {
-            Write-ADFSTkVerboseLog "Converting Token Signing Certificate string to Certificate..."
-            $CertificateBytes  = [system.Text.Encoding]::UTF8.GetBytes($CertificateString)
-            $SigningCertificate.Import($CertificateBytes)
+            $rpParams.RequestSigningCertificate = @()
+
+            $CertificateString | % {
+
+                Write-ADFSTkVerboseLog "Converting Token Signing Certificate string to Certificate..."
+
+                $CertificateBytes  = [system.Text.Encoding]::UTF8.GetBytes($_)
+                
+                $SigningCertificate = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2                
+                $SigningCertificate.Import($CertificateBytes)
+
+                $rpParams.RequestSigningCertificate += $SigningCertificate
+
+                if ($SigningCertificate.SignatureAlgorithm.Value -eq '1.2.840.113549.1.1.11') #Check if Signature Algorithm is SHA256
+                {
+                    $rpParams.SignatureAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"
+                }
+            }
+            
+            
             Write-ADFSTkVerboseLog "Convertion of Token Signing Certificate string to Certificate done!"
         }
         catch
@@ -66,10 +124,11 @@ function Add-ADFSTkSPRelyingPartyTrust {
             $Continue = $false
         }
     }
+#endregion
 
-    ### Bindings
+#region Get SamlEndpoints
     Write-ADFSTkVerboseLog "Getting SamlEndpoints..."
-    $SamlEndpoints = $sp.SPSSODescriptor.AssertionConsumerService |  % {
+    $rpParams.SamlEndpoint = $sp.SPSSODescriptor.AssertionConsumerService |  % {
         if ($_.Binding -eq "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST")
         {  
             Write-ADFSTkVerboseLog "HTTP-POST SamlEndpoint found!"
@@ -82,14 +141,14 @@ function Add-ADFSTkSPRelyingPartyTrust {
         }
     } 
 
-    if ($SamlEndpoints -eq $null) 
+    if ($rpParams.SamlEndpoint -eq $null) 
     {
         Write-ADFSTkLog "No SamlEndpoints found!" -EntryType Error
         $Continue = $false
     }
-    
+#endregion
 
-    ### Get Category
+#region Get Issuance Transform Rules from Entity Categories
     Write-ADFSTkVerboseLog "Getting Entity Categories..."
     $EntityCategories = @()
     $EntityCategories += $sp.Extensions.EntityAttributes.Attribute | ? Name -eq "http://macedir.org/entity-category" | select -ExpandProperty AttributeValue | % {
@@ -111,19 +170,13 @@ function Add-ADFSTkSPRelyingPartyTrust {
         Write-ADFSTkVerboseLog "Added Forced Entity Categories: $($ForcedEntityCategories -join ',')"
     }
 
-    $IssuanceTransformRules = Get-ADFSTkIssuanceTransformRules $EntityCategories -EntityId $entityID -RequestedAttribute $sp.SPSSODescriptor.AttributeConsumingService.RequestedAttribute
-
-    $IssuanceAuthorityRule =
-@"
-    @RuleTemplate = "AllowAllAuthzRule"
-     => issue(Type = "http://schemas.microsoft.com/authorization/claims/permit", 
-     Value = "true");
-"@
+    $rpParams.IssuanceTransformRules = Get-ADFSTkIssuanceTransformRules $EntityCategories -EntityId $entityID `
+                                                                                 -RequestedAttribute $sp.SPSSODescriptor.AttributeConsumingService.RequestedAttribute `
+                                                                                 -RegistrationAuthority $sp.Extensions.RegistrationInfo.registrationAuthority
+#endregion
 
     if ((Get-ADFSRelyingPartyTrust -Identifier $entityID) -eq $null)
     {
-        
-
         $NamePrefix = $Settings.configuration.MetadataPrefix 
         $Sep= $Settings.configuration.MetadataPrefixSeparator      
         $NameWithPrefix = "$NamePrefix$Sep$Name"
@@ -142,6 +195,8 @@ function Add-ADFSTkSPRelyingPartyTrust {
             $NameWithPrefix = "$NamePrefix $Name"
             Write-ADFSTkVerboseLog "A RelyingPartyTrust already exist with the same name. Changing name to `'$NameWithPrefix`'..."
         }
+
+        $rpParams.Name = $NameWithPrefix
         
         if ($Continue)
         {
@@ -149,15 +204,11 @@ function Add-ADFSTkSPRelyingPartyTrust {
             {
                 Write-ADFSTkVerboseLog "Adding ADFSRelyingPartyTrust `'$entityID`'..."
                 
-                Add-ADFSRelyingPartyTrust -Identifier $entityID `
-                                    -RequestSigningCertificate $SigningCertificate `
-                                    -Name $NameWithPrefix `
-                                    -EncryptionCertificate $EncryptionCertificate  `
-                                    -IssuanceTransformRules $IssuanceTransformRules `
-                                    -IssuanceAuthorizationRules $IssuanceAuthorityRule `
-                                    -SamlEndpoint $SamlEndpoints `
-                                    -ClaimsProviderName @("Active Directory") `
-                                    -ErrorAction Stop
+                # Invoking the following command leverages 'splatting' for passing the switches for commands
+                # for details, see: https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_splatting?view=powershell-6
+                # (that's what it's @rpParams and not $rpParams)
+
+                Add-ADFSRelyingPartyTrust @rpParams
 
                 Write-ADFSTkLog "Successfully added `'$entityId`'!" -EntryType Information
                 Add-ADFSTkEntityHash -EntityID $entityId

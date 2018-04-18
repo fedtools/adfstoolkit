@@ -1,6 +1,11 @@
 function Import-ADFSTkIssuanceTransformRuleCategories {
 param (
+    
+[Parameter(Mandatory=$false,
+                   ValueFromPipelineByPropertyName=$true,
+                   Position=0)]
     $RequestedAttribute
+
 )
     ### Create AttributeStore variables
     $IssuanceTransformRuleCategories = @{}
@@ -12,6 +17,10 @@ param (
         $RequestedAttribute | % {
             $RequestedAttributes.($_.Name) = $_.friendlyName
         }
+    }else
+    {
+    Write-ADFSTkLog "No Requested attributes detected"
+
     }
 
     ### Released to SP:s without Entity Category
@@ -19,7 +28,6 @@ param (
     $TransformRules = [Ordered]@{}
 
     $TransformRules.'transient-id' = $AllTransformRules.'transient-id'
-    $TransformRules.eduPersonTargetedID = $AllTransformRules.eduPersonTargetedID
 
     $IssuanceTransformRuleCategories.Add("NoEntityCategory",$TransformRules)
     
@@ -28,9 +36,7 @@ param (
     $TransformRules = [Ordered]@{}
 
     $TransformRules.'transient-id' = $AllTransformRules.'transient-id'
-    $TransformRules.eduPersonTargetedID = $AllTransformRules.eduPersonTargetedID
     $TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
-    #eduPersonUniqueID
     $TransformRules.mail = $AllTransformRules.mail
     $TransformRules.displayName = $AllTransformRules.displayName
     $TransformRules.givenName = $AllTransformRules.givenName
@@ -53,6 +59,9 @@ param (
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.6")) { 
             $TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
+        }
+        if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.13")) { 
+            $TransformRules.eduPersonUniqueID = $AllTransformRules.eduPersonUniqueID
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:0.9.2342.19200300.100.1.3")) { 
             $TransformRules.mail = $AllTransformRules.mail
@@ -102,9 +111,8 @@ param (
     $TransformRules = [Ordered]@{}
 
     $TransformRules.'transient-id' = $AllTransformRules.'transient-id'
-    $TransformRules.eduPersonTargetedID = $AllTransformRules.eduPersonTargetedID
     $TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
-    #eduPersonUniqueID
+    $TransformRules.eduPersonUniqueID = $AllTransformRules.eduPersonUniqueID
     $TransformRules.mail = $AllTransformRules.mail
     $TransformRules.displayName = $AllTransformRules.displayName
     $TransformRules.cn = $AllTransformRules.cn
@@ -125,7 +133,6 @@ param (
     $TransformRules = [Ordered]@{}
 
     $TransformRules.'transient-id' = $AllTransformRules.'transient-id'
-    $TransformRules.eduPersonTargetedID = $AllTransformRules.eduPersonTargetedID
     $TransformRules.norEduPersonNIN = $AllTransformRules.norEduPersonNIN
     $TransformRules.eduPersonAssurance = $AllTransformRules.eduPersonAssurance
 

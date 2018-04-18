@@ -197,10 +197,14 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
             {
                
 
+
             Write-ADFSTkVerboseLog "Downloading From: $metadataURL to file $CachedMetadataFile" -EntryType Information
                
                 #$Metadata = Invoke-WebRequest $metadataURL -OutFile $CachedMetadataFile -PassThru
+                $myUserAgent = "ADFSToolkit/"+(get-module ADFSToolkit).Version.toString()
+ 
                 $webClient = New-Object System.Net.WebClient 
+                $webClient.Headers.Add("user-agent", "$myUserAgent")
                 $webClient.DownloadFile($metadataURL, $CachedMetadataFile) 
                 
                 Write-ADFSTkVerboseLog "Successfully downloaded Metadata from $metadataURL" -EntryType Information
@@ -343,6 +347,10 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
             Write-ADFSTkLog "Checking for Relying Parties removed from Metadata using Filter:$FilterString* ..." 
 
             $CurrentSwamidSPs = Get-ADFSRelyingPartyTrust | ? {$_.Name -like "$FilterString*"} | select -ExpandProperty Identifier
+            if ($CurrentSwamidSPs -eq $null)
+            {
+                $CurrentSwamidSPs = @()
+            }
 
             #$RemoveSPs = Compare-ADFSTkObject $CurrentSwamidSPs $SwamidSPs | ? SideIndicator -eq "<=" | select -ExpandProperty InputObject
             $CompareSets = Compare-ADFSTkObject -FirstSet $CurrentSwamidSPs -SecondSet $SwamidSPs -CompareType InFirstSetOnly
@@ -427,7 +435,22 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
         }
 
         if ($sp.count -gt 1) {
-            $sp = $sp[0] #Why, but necessary!?!
+            $tmpSP = $null
+            $sp | % {
+                if (![string]::IsNullOrEmpty($_.Extensions.RegistrationInfo))
+                {
+                    $tmpSP = $_
+                }
+            }
+
+            if ($tmpSP -ne $null)
+            {
+                $sp = $tmpSP
+            }
+            else
+            {
+                $sp = $sp[0]
+            }
         }
 
         if ([string]::IsNullOrEmpty($sp)){

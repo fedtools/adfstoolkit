@@ -13,7 +13,11 @@ param (
     [Parameter(Mandatory=$false,
                    ValueFromPipelineByPropertyName=$true,
                    Position=2)]
-    $RequestedAttribute
+    $RequestedAttribute,
+    [Parameter(Mandatory=$false,
+                   ValueFromPipelineByPropertyName=$true,
+                   Position=3)]
+    $RegistrationAuthority
 )
 
 
@@ -116,6 +120,26 @@ if ($EntityId -ne $null -and $IssuanceTransformRulesManualSP.ContainsKey($Entity
         }
     }
 }
+
+### This is a good place to remove attributes that shouldn't be sent outside a RegistrationAuthority
+$removeRules = @()
+foreach ($rule in $IssuanceTransformRules.Keys)
+{
+    $attribute = $Settings.configuration.storeConfig.attributes.attribute | ? name -eq $rule
+    if ($attribute -ne $null -and $attribute.allowedRegistrationAuthorities -ne $null)
+    {
+        $allowedRegistrationAuthorities = @()
+        $allowedRegistrationAuthorities += $attribute.allowedRegistrationAuthorities.registrationAuthority
+        if ($allowedRegistrationAuthorities.count -gt 0 -and !$allowedRegistrationAuthorities.contains($RegistrationAuthority))
+        {
+            $removeRules += $rule
+        }
+    }
+}
+
+$removeRules | % {$IssuanceTransformRules.Remove($_)}
+
+###
 
 #region Create Stores
 if ($AttributesFromStore.Count)
