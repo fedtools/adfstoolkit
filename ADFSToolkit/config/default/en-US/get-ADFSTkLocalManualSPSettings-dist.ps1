@@ -13,13 +13,57 @@ function get-ADFSTkLocalManualSPSettings
 #   get-help get-ADFSTkLocalManualSPSettings -Examples
 
 # This file exists as a template in the Module with a runtime instance in: 
-#     c:\ADFSToolkit\<version>\config\get-ADFSTkLocalManualSPSettings.ps1         
+#     c:\ADFSToolkit\<version>\config\get-ADFSTkLocalManualSPSettings.ps1  
 
+#To get help with wich attributes that are available, run the following commands:
+#(you can select the lines between <# and #> and press F8 to run them
+<#
+    $md = Get-Module -Name ADFSToolkit
+    . (join-path $md.ModuleBase "Private\Get-ADFSTkTransformRule.ps1")
+    . (join-path $md.ModuleBase "Private\Import-ADFSTkAllTransformRules.ps1")
+    $AllTransformRules = Import-ADFSTkAllTransformRules
+#>       
 
+#region Helper Objects
+
+    #Helper objects, do not remove!
+    $SecureHashAlgorithm = @{
+            SHA1 = 'http://www.w3.org/2000/09/xmldsig#rsa-sha1'
+            SHA256 = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'
+        }
 
     # Hashtable that we will return at the end of the function (ok to be empty, but MUST exist)
 
     $IssuanceTransformRuleManualSP = @{}
+
+    # Hashtable containing all settings to set or override on a SP
+    # Copy this to all SP's you want to configure
+
+    #$ManualSPSettings = @{
+    #    TransformRules = [Ordered]@{}
+    #    AuthorizationRules = @{}
+    #    HashAlgorithm = $SecureHashAlgorithm.SHA1
+    #    EntityCategories = @("http://www.geant.net/uri/dataprotection-code-of-conduct/v1")
+    #}
+
+#endregion
+
+    <#
+    ### Attribute release for ALL SP:s
+    
+    $ManualSPSettings.TransformRules = [Ordered]@{}
+    $ManualSPSettings.TransformRules.norEduPersonNIN = $AllTransformRules.norEduPersonNIN
+    
+    $IssuanceTransformRuleManualSP["urn:adfstk:allsps"] = $ManualSPSettings
+
+    ### Attribute release for all SP:s for one institution
+    
+    $ManualSPSettings.TransformRules = [Ordered]@{}
+    $ManualSPSettings.TransformRules.norEduPersonLIN = $AllTransformRules.norEduPersonLIN
+    
+    $IssuanceTransformRuleManualSP["urn:adfstk:entityiddnsendswith:swamid.se"] = $ManualSPSettings
+    
+    #>
 
     # see below documentation for example Powershell code blocks to copy and paste here
   
@@ -33,7 +77,7 @@ function get-ADFSTkLocalManualSPSettings
     ######END Specific SP Attribute Release Settings
 
     
-    # Manditory: this returns the hashtable of hashtables to whomever invoked this function
+    # Manditory: this returns the settings to whomever invoked this function
     
     $IssuanceTransformRuleManualSP
 
