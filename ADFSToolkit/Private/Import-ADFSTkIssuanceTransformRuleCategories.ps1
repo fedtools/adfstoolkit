@@ -36,12 +36,22 @@ param (
     $TransformRules = [Ordered]@{}
 
     $TransformRules.'transient-id' = $AllTransformRules.'transient-id'
-    $TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
-    $TransformRules.mail = $AllTransformRules.mail
+    
     $TransformRules.displayName = $AllTransformRules.displayName
-    $TransformRules.givenName = $AllTransformRules.givenName
-    $TransformRules.sn = $AllTransformRules.sn
+    $TransformRules.eduPersonAssurance = $AllTransformRules.eduPersonAssurance
+    $TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
     $TransformRules.eduPersonScopedAffiliation = $AllTransformRules.eduPersonScopedAffiliation
+    
+    #eduPersonTargetedID should only be released if eduPersonPrincipalName i ressignable
+    if (![string]::IsNullOrEmpty($Settings.configuration.eduPersonPrincipalNameRessignable) -and $Settings.configuration.eduPersonPrincipalNameRessignable.ToLower() -eq "true")
+    {
+        $TransformRules.eduPersonTargetedID = $AllTransformRules.eduPersonTargetedID
+    }
+
+    $TransformRules.eduPersonUniqueID = $AllTransformRules.eduPersonUniqueID
+    $TransformRules.givenName = $AllTransformRules.givenName
+    $TransformRules.mail = $AllTransformRules.mail
+    $TransformRules.sn = $AllTransformRules.sn
 
     $IssuanceTransformRuleCategories.Add("research-and-scholarship",$TransformRules)
 
@@ -51,56 +61,77 @@ param (
 
     if ($RequestedAttributes.Count -gt 0)
     {
-        if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.10")) { 
-            $TransformRules.eduPersonTargetedID = $AllTransformRules.'transient-id'
+        if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.6")) {
+            $TransformRules.c = $AllTransformRules.c
         }
-        if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.10")) { 
-            $TransformRules.eduPersonTargetedID = $AllTransformRules.eduPersonTargetedID
+        if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.3")) {
+            $TransformRules.cn = $AllTransformRules.cn
         }
-        if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.6")) { 
-            $TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
-        }
-        if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.13")) { 
-            $TransformRules.eduPersonUniqueID = $AllTransformRules.eduPersonUniqueID
-        }
-        if ($RequestedAttributes.ContainsKey("urn:oid:0.9.2342.19200300.100.1.3")) { 
-            $TransformRules.mail = $AllTransformRules.mail
+        if ($RequestedAttributes.ContainsKey("urn:oid:0.9.2342.19200300.100.1.43")) {
+            $TransformRules.co = $AllTransformRules.co
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:2.16.840.1.113730.3.1.241")) { 
             $TransformRules.displayName = $AllTransformRules.displayName 
         }
-        if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.3")) { 
-            $TransformRules.cn = $AllTransformRules.cn
+        if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.6")) { 
+            $TransformRules.countryName = $AllTransformRules.countryName 
         }
-        if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.42")) { 
-            $TransformRules.displayName = $AllTransformRules.givenName 
+        if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.1")) {
+            $TransformRules.eduPersonAffiliation = $AllTransformRules.eduPersonAffiliation
         }
-        if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.4")) { 
-            $TransformRules.cn = $AllTransformRules.sn
+        if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.11")) {
+            $TransformRules.eduPersonAssurance = $AllTransformRules.eduPersonAssurance
+        }
+        if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.16")) {
+            $TransformRules.eduPersonOrcid = $AllTransformRules.eduPersonOrcid
+        }
+        if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.6")) { 
+            $TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.9")) {
             $TransformRules.eduPersonScopedAffiliation = $AllTransformRules.eduPersonScopedAffiliation
         }
-        if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.1")) {
-            $TransformRules.eduPersonScopedAffiliation = $AllTransformRules.eduPersonAffiliation
+        if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.10")) { 
+            $TransformRules.eduPersonTargetedID = $AllTransformRules.eduPersonTargetedID
         }
-        if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.10")) { 
-            $TransformRules.displayName = $AllTransformRules.organizationName 
-        }
-        if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.2428.90.1.6")) { 
-            $TransformRules.displayName = $AllTransformRules.norEduOrgAcronym 
-        }
-        if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.6")) { 
-            $TransformRules.displayName = $AllTransformRules.countryName 
+        if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.13")) { 
+            $TransformRules.eduPersonUniqueID = $AllTransformRules.eduPersonUniqueID
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:0.9.2342.19200300.100.1.43")) { 
-            $TransformRules.displayName = $AllTransformRules.friendlyCountryName 
+            $TransformRules.friendlyCountryName = $AllTransformRules.friendlyCountryName 
+        }
+        if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.42")) { 
+            $TransformRules.givenName = $AllTransformRules.givenName 
+        }
+        if ($RequestedAttributes.ContainsKey("urn:oid:0.9.2342.19200300.100.1.3")) { 
+            $TransformRules.mail = $AllTransformRules.mail
+        }
+        if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.2428.90.1.6")) { 
+            $TransformRules.norEduOrgAcronym = $AllTransformRules.norEduOrgAcronym 
+        }
+        if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.2428.90.1.5")) {
+            $TransformRules.norEduPersonNIN = $AllTransformRules.norEduPersonNIN
+        }
+        if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.10")) {
+            $TransformRules.o = $AllTransformRules.o
+        }
+        if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.10")) { 
+            $TransformRules.organizationName = $AllTransformRules.organizationName 
+        }
+        if ($RequestedAttributes.ContainsKey("urn:oid:1.2.752.29.4.13")) {
+            $TransformRules.personalIdentityNumber = $AllTransformRules.personalIdentityNumber
+        }
+        if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.25178.1.2.3")) {
+            $TransformRules.schacDateOfBirth = $AllTransformRules.schacDateOfBirth
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.25178.1.2.9")) { 
             $TransformRules.schacHomeOrganization = $AllTransformRules.schacHomeOrganization
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.25178.1.2.10")) {
             $TransformRules.schacHomeOrganizationType = $AllTransformRules.schacHomeOrganizationType
+        }
+        if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.4")) { 
+            $TransformRules.sn = $AllTransformRules.sn
         }
     }
 
