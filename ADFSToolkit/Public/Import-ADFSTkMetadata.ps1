@@ -29,10 +29,11 @@ function Import-ADFSTkMetadata
         $AddRemoveOnly,
         #The time in minutes the chached metadatafile live
         [int]
-        $CacheTime = 60,
+        $CacheTime = 15,
         #The maximum SPs to add in one run (to prevent throttling). Is used when the script recusrive calls itself
         [int]
-        $MaxSPAdditions = 80
+        $MaxSPAdditions = 80,
+        [switch]$Silent
     )
 
 
@@ -65,7 +66,7 @@ function Import-ADFSTkMetadata
         if (Verify-ADFSTkEventLogUsage)
         {
             #If we evaluated as true, the eventlog is now set up and we link the WriteADFSTklog to it
-            Write-ADFSTkLog   -SetEventLogName $Settings.configuration.logging.LogName -SetEventLogSource $Settings.configuration.logging.Source
+            Write-ADFSTkLog -SetEventLogName $Settings.configuration.logging.LogName -SetEventLogSource $Settings.configuration.logging.Source
 
         }
         else {
@@ -81,7 +82,7 @@ function Import-ADFSTkMetadata
     $myVersion=(get-module ADFSToolkit).version.ToString()
 
     Write-ADFSTkVerboseLog "Import-ADFSTkMetadata $myVersion started" -EntryType Information
-    Write-ADFSTkLog "Import-ADFSTkMetadata path: $mypath"
+    Write-ADFSTkLog "Import-ADFSTkMetadata path: $mypath" -EventID 1
 
     #endregion
 
@@ -95,7 +96,7 @@ function Import-ADFSTkMetadata
     else
     {
         $SPHashFile = Join-Path $Settings.configuration.WorkingPath -ChildPath $Settings.configuration.CacheDir | Join-Path -ChildPath $Settings.configuration.SPHashFile
-            Write-ADFSTkLog "Setting SPHashFile to: $SPHashFile"
+            Write-ADFSTkLog "Setting SPHashFile to: $SPHashFile" -EventID 2
     }
 
     if (Test-Path $SPHashFile)
@@ -126,7 +127,7 @@ function Import-ADFSTkMetadata
     #Cached Metadata file
     $CachedMetadataFile = Join-Path $Settings.configuration.WorkingPath -ChildPath $Settings.configuration.CacheDir | Join-Path -ChildPath $Settings.configuration.MetadataCacheFile
     #Join-Path $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\cache\') SwamidMetadata.cache.xml
-Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
+    Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile" -EventID 3
 
 
     if ($LocalMetadataFile)
@@ -140,7 +141,7 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
         }
         catch
         {
-            Write-ADFSTkLog "Could not load LocalMetadataFile!" -MajorFault
+            Write-ADFSTkLog "Could not load LocalMetadataFile!" -MajorFault -EventID 4
         }
     }
 
@@ -161,13 +162,13 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
                     
                     if ([string]::IsNullOrEmpty($MetadataXML))
                     {
-                        Write-ADFSTkLog "Cached Metadata file was empty. Downloading instead!" -EntryType Error
+                        Write-ADFSTkLog "Cached Metadata file was empty. Downloading instead!" -EntryType Error -EventID 5
                         $UseCachedMetadata =  $false
                     }
                 }
                 catch
                 {
-                    Write-ADFSTkLog "Could not parse cached Metadata file. Downloading instead!" -EntryType Error
+                    Write-ADFSTkLog "Could not parse cached Metadata file. Downloading instead!" -EntryType Error -EventID 6
                     $UseCachedMetadata =  $false
                 }
             }
@@ -211,7 +212,7 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
             }
             catch
             {
-                Write-ADFSTkLog "Could not download Metadata from $metadataURL" -MajorFault
+                Write-ADFSTkLog "Could not download Metadata from $metadataURL" -MajorFault -EventID 7
             }
         
             try
@@ -225,7 +226,7 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
             }
             catch
             {
-                Write-ADFSTkLog "Could not parse downloaded Metadata from $metadataURL" -MajorFault
+                Write-ADFSTkLog "Could not parse downloaded Metadata from $metadataURL" -MajorFault -EventID 8
             }
         }
     }
@@ -237,10 +238,10 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
 
             $MyFileSize=(Get-Item $CachedMetadataFile).length 
             if ((Get-Item $CachedMetadataFile).length -gt 0kb) {
-            Write-ADFSTkLog "Metadata file size is $MyFileSize"
+            Write-ADFSTkLog "Metadata file size is $MyFileSize" -EventID 9
             } else {
     
-            Write-ADFSTkLog "Note: $CachedMetadataFile  is 0 bytes" 
+            Write-ADFSTkLog "Note: $CachedMetadataFile  is 0 bytes" -EventID 10
         
          }
     }
@@ -259,7 +260,7 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
     }
     else
     {
-        Write-ADFSTkLog "Metadata signing cert is incorrect! Please check metadata URL or signature fingerprint in config." -MajorFault
+        Write-ADFSTkLog "Metadata signing cert is incorrect! Please check metadata URL or signature fingerprint in config." -MajorFault -EventID 11
     }
 
     #Verify Metadata Signature
@@ -270,7 +271,7 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
     }
     else
     {
-        Write-ADFSTkLog "Metadata signature test did not pass. Aborting!" -MajorFault
+        Write-ADFSTkLog "Metadata signature test did not pass. Aborting!" -MajorFault -EventID 12
     }
 
     #region Read/Create file with 
@@ -283,7 +284,7 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
 
     if ($ProcessWholeMetadata)
     {
-        Write-ADFSTkLog "Processing whole Metadata file..." -EntryType Information
+        Write-ADFSTkLog "Processing whole Metadata file..." -EntryType Information -EventID 13
    
         $AllSPs = $MetadataXML.EntitiesDescriptor.EntityDescriptor | ? {$_.SPSSODescriptor -ne $null}
 #        $AllSPs = $MetadataXML.EntitiesDescriptor.EntityDescriptor | ? {$_.SPSSODescriptor -ne $null -and $_.Extensions -ne $null}
@@ -322,10 +323,10 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
                     for ($i = 1; $i -le $batches; $i++)
                     {
                         $ADFSTkModuleBase= Join-Path (get-module ADFSToolkit).ModuleBase ADFSToolkit.psm1
-                        Write-ADFSTkLog "Working with batch $($i)/$batches with $ADFSTkModuleBase"
+                        Write-ADFSTkLog "Working with batch $($i)/$batches with $ADFSTkModuleBase" -EventID 14
                        
                         Start-Process -WorkingDirectory $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') -FilePath "$env:SystemRoot\system32\WindowsPowerShell\v1.0\powershell.exe" -ArgumentList "-NoExit", "-Command & {Get-Module -ListAvailable ADFSToolkit |Import-Module ; Import-ADFSTkMetadata -MaxSPAdditions $MaxSPAdditions -CacheTime -1 -ForceUpdate -ConfigFile '$ConfigFile' ;Exit}" -Wait -NoNewWindow
-                        Write-ADFSTkLog "Done!"
+                        Write-ADFSTkLog "Done!" -EventID 15
                     }
                 }
                 else
@@ -344,7 +345,7 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
         $Sep= $Settings.configuration.MetadataPrefixSeparator      
         $FilterString="$NamePrefix$Sep"
 
-            Write-ADFSTkLog "Checking for Relying Parties removed from Metadata using Filter:$FilterString* ..." 
+            Write-ADFSTkLog "Checking for Relying Parties removed from Metadata using Filter:$FilterString* ..." -EventID 16
 
             $CurrentSwamidSPs = Get-ADFSRelyingPartyTrust | ? {$_.Name -like "$FilterString*"} | select -ExpandProperty Identifier
             if ($CurrentSwamidSPs -eq $null)
@@ -369,7 +370,7 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
                     }
                     catch
                     {
-                        Write-ADFSTkLog "Could not remove `'$($rp)`'! Error: $_" -EntryType Error
+                        Write-ADFSTkLog "Could not remove `'$($rp)`'! Error: $_" -EntryType Error -EventID 17
                     }
                 }
             }
@@ -386,7 +387,7 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
                     }
                     catch
                     {
-                        Write-ADFSTkLog "Could not remove `'$($rp)`'! Error: $_" -EntryType Error
+                        Write-ADFSTkLog "Could not remove `'$($rp)`'! Error: $_" -EntryType Error -EventID 18
                     }
                 }
             }
@@ -394,7 +395,7 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
     }
     elseif($PSBoundParameters.ContainsKey('MaxSPAdditions') -and $MaxSPAdditions -gt 0)
     {
-        Write-ADFSTkLog "Processing $MaxSPAdditions SPs..." -EntryType Information
+        Write-ADFSTkLog "Processing $MaxSPAdditions SPs..." -EntryType Information -EventID 19
        
         $AllSPsInMetadata = $MetadataXML.EntitiesDescriptor.EntityDescriptor | ? {$_.SPSSODescriptor -ne $null }
 #        $AllSPsInMetadata = $MetadataXML.EntitiesDescriptor.EntityDescriptor | ? {$_.SPSSODescriptor -ne $null -and $_.Extensions -ne $null}
@@ -434,27 +435,13 @@ Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile"
             $sp = $MetadataXML.EntitiesDescriptor.EntityDescriptor | ? {$_.entityId -eq $EntityId -and $_.base -eq $EntityBase}
         }
 
-        if ($sp.count -gt 1) {
-            $tmpSP = $null
-            $sp | % {
-                if (![string]::IsNullOrEmpty($_.Extensions.RegistrationInfo))
-                {
-                    $tmpSP = $_
-                }
-            }
-
-            if ($tmpSP -ne $null)
-            {
-                $sp = $tmpSP
-            }
-            else
-            {
-                $sp = $sp[0]
-            }
+        if ($sp.count -gt 1) { 
+            $sp = $sp[0]
+            Write-ADFSTkLog "More than one entry with entityID = '$EntityId' found in aggregate!" -EntryType Warning -EventID 29
         }
 
         if ([string]::IsNullOrEmpty($sp)){
-            Write-ADFSTkLog "No SP found!" -MajorFault
+            Write-ADFSTkLog "No SP found!" -MajorFault -EventID 20
         }
         else {
             Processes-ADFSTkRelyingPartyTrust $sp

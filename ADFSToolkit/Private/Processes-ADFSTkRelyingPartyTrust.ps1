@@ -16,7 +16,7 @@ param (
         {
             if ((Get-ADFSRelyingPartyTrust -Name $Name) -ne $null)
             {
-                Write-ADFSTkLog "'$($sp.EntityID)' added manual in ADFS database, aborting force update!" -EntryType Warning
+                Write-ADFSTkLog "'$($sp.EntityID)' added manual in ADFS database, aborting force update!" -EntryType Warning -EventID 26
                 Add-ADFSTkEntityHash -EntityID $sp.EntityID
             }
             else
@@ -32,7 +32,7 @@ param (
                 }
                 catch
                 {
-                    Write-ADFSTkLog "Could not delete '$($sp.EntityID)'... Error: $_" -EntryType Error
+                    Write-ADFSTkLog "Could not delete '$($sp.EntityID)'... Error: $_" -EntryType Error -EventID 27
                 }
             }
         }
@@ -68,7 +68,7 @@ param (
                     }
                     catch
                     {
-                        Write-ADFSTkLog "Could not delete '$($sp.EntityID)'... Error: $_" -EntryType Error
+                        Write-ADFSTkLog "Could not delete '$($sp.EntityID)'... Error: $_" -EntryType Error -EventID 28
                     }
                 }
             }

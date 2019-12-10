@@ -6,7 +6,8 @@ function Add-ADFSTkSPRelyingPartyTrust {
     )
     
     $Continue = $true
-     ### EntityId
+    
+    ### EntityId
     $entityID = $sp.entityID
 
     $rpParams = @{
@@ -23,10 +24,8 @@ function Add-ADFSTkSPRelyingPartyTrust {
         ErrorAction = 'Stop'
     }
 
-   
-
-    Write-ADFSTkLog "Adding $entityId as SP..." -EntryType Information
-
+    Write-ADFSTkLog "Adding $entityId as SP..." -EntryType Information -EventID 41
+     
     ### Name, DisplayName
     $Name = (Split-Path $sp.entityID -NoQualifier).TrimStart('/') -split '/' | select -First 1
 
@@ -40,7 +39,6 @@ function Add-ADFSTkSPRelyingPartyTrust {
     {
         #Check if any certificates without 'use'. Should we use this?
         Write-ADFSTkVerboseLog "Certificate with description `'encryption`' not found. Using default certificate..."
-        #$CertificateString = ($sp.SPSSODescriptor.KeyDescriptor | select -ExpandProperty KeyInfo -First 1).X509Data.X509Certificate 
         $CertificateString = ($sp.SPSSODescriptor.KeyDescriptor | ? use -ne "signing"  | select -ExpandProperty KeyInfo).X509Data.X509Certificate #or shoud 'use' not be present?
     }
     
@@ -49,14 +47,16 @@ function Add-ADFSTkSPRelyingPartyTrust {
         $rpParams.EncryptionCertificate = $null
         try
         {
-            #May be more certificates! Be sure to check it out and drive foreach. 
+            #May be more certificates! 
             #If more than one, choose the one with furthest end date.
+
             $CertificateString | % {
                 Write-ADFSTkVerboseLog "Converting Token Encryption Certificate string to Certificate..."
                 $EncryptionCertificate = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
     
                 $CertificateBytes  = [system.Text.Encoding]::UTF8.GetBytes($_)
                 $EncryptionCertificate.Import($CertificateBytes)
+                
                 
                 if ($rpParams.EncryptionCertificate -eq $null) 
                 {
@@ -68,10 +68,15 @@ function Add-ADFSTkSPRelyingPartyTrust {
                 }
                 Write-ADFSTkVerboseLog "Convertion of Token Encryption Certificate string to Certificate done!"
             }
+
+            if ($CertificateString -is [Object[]]) #Just for logging!
+            {
+                Write-ADFSTkLog "Multiple encryption certificates found! Chose certificate with thumbprint '$($EncryptionCertificate.Thumbprint)' as encryption certificate." -EntryType Warning -EventID 30
+            }
         }
         catch
         {
-            Write-ADFSTkLog "Could not import Token Encryption Certificate!" -EntryType Error
+            Write-ADFSTkLog "Could not import Token Encryption Certificate!" -EntryType Error -EventID 21
             $Continue = $false
         }
     }
@@ -90,7 +95,6 @@ function Add-ADFSTkSPRelyingPartyTrust {
         Write-ADFSTkVerboseLog "Certificate with description `'signing`' not found. Using Token Decryption certificate..."
         $CertificateString = ($sp.SPSSODescriptor.KeyDescriptor | ? use -ne "encryption"  | select -ExpandProperty KeyInfo).X509Data.X509Certificate #or shoud 'use' not be present?
     }
-    
     
     if ($CertificateString -ne $null) #foreach insted create $SigningCertificates array
     {
@@ -115,12 +119,11 @@ function Add-ADFSTkSPRelyingPartyTrust {
                 }
             }
             
-            
             Write-ADFSTkVerboseLog "Convertion of Token Signing Certificate string to Certificate done!"
         }
         catch
         {
-            Write-ADFSTkLog "Could not import Token Signing Certificate!" -EntryType Error
+            Write-ADFSTkLog "Could not import Token Signing Certificate!" -EntryType Error -EventID 22
             $Continue = $false
         }
     }
@@ -143,7 +146,7 @@ function Add-ADFSTkSPRelyingPartyTrust {
 
     if ($rpParams.SamlEndpoint -eq $null) 
     {
-        Write-ADFSTkLog "No SamlEndpoints found!" -EntryType Error
+        Write-ADFSTkLog "No SamlEndpoints found!" -EntryType Error -EventID 23
         $Continue = $false
     }
 #endregion
@@ -172,7 +175,8 @@ function Add-ADFSTkSPRelyingPartyTrust {
 
     $rpParams.IssuanceTransformRules = Get-ADFSTkIssuanceTransformRules $EntityCategories -EntityId $entityID `
                                                                                  -RequestedAttribute $sp.SPSSODescriptor.AttributeConsumingService.RequestedAttribute `
-                                                                                 -RegistrationAuthority $sp.Extensions.RegistrationInfo.registrationAuthority
+                                                                                 -RegistrationAuthority $sp.Extensions.RegistrationInfo.registrationAuthority `
+                                                                                 -NameIdFormat $sp.SPSSODescriptor.NameIDFormat
 #endregion
 
     if ((Get-ADFSRelyingPartyTrust -Identifier $entityID) -eq $null)
@@ -210,12 +214,12 @@ function Add-ADFSTkSPRelyingPartyTrust {
 
                 Add-ADFSRelyingPartyTrust @rpParams
 
-                Write-ADFSTkLog "Successfully added `'$entityId`'!" -EntryType Information
+                Write-ADFSTkLog "Successfully added `'$entityId`'!" -EntryType Information -EventID 42
                 Add-ADFSTkEntityHash -EntityID $entityId
             }
             catch
             {
-                Write-ADFSTkLog "Could not add $entityId as SP! Error: $_" -EntryType Error
+                Write-ADFSTkLog "Could not add $entityId as SP! Error: $_" -EntryType Error -EventID 24
                 Add-ADFSTkEntityHash -EntityID $entityId
             }
         }
@@ -227,6 +231,6 @@ function Add-ADFSTkSPRelyingPartyTrust {
     }
     else
     {
-        Write-ADFSTkLog "$entityId already exists as SP!" -EntryType Warning
+        Write-ADFSTkLog "$entityId already exists as SP!" -EntryType Warning -EventID 25
     }                
 }
