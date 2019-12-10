@@ -4,7 +4,11 @@ param (
 [Parameter(Mandatory=$false,
                    ValueFromPipelineByPropertyName=$true,
                    Position=0)]
-    $RequestedAttribute
+    $RequestedAttribute,
+    [Parameter(Mandatory=$false,
+                   ValueFromPipelineByPropertyName=$true,
+                   Position=1)]
+    $NameIDFormat
 
 )
     ### Create AttributeStore variables
@@ -15,7 +19,7 @@ param (
     if (![string]::IsNullOrEmpty($RequestedAttribute))
     {
         $RequestedAttribute | % {
-            $RequestedAttributes.($_.Name) = $_.friendlyName
+            $RequestedAttributes.($_.Name.trimEnd()) = $_.friendlyName
         }
     }else
     {
@@ -27,7 +31,22 @@ param (
 
     $TransformRules = [Ordered]@{}
 
-    $TransformRules.'transient-id' = $AllTransformRules.'transient-id'
+    if ([string]::IsNullOrEmpty($NameIDFormat))
+    {
+        $TransformRules.'transient-id' = $AllTransformRules.'transient-id'
+    }
+    elseif ($NameIDFormat.Contains('urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'))
+    {
+        $TransformRules.'persistent-id' = $AllTransformRules.'persistent-id'
+    }
+    elseif ($NameIDFormat.Contains('urn:oasis:names:tc:SAML:2.0:nameid-format:transient'))
+    {
+        $TransformRules.'transient-id' = $AllTransformRules.'transient-id'
+    }
+    else
+    {
+        $TransformRules.'transient-id' = $AllTransformRules.'transient-id'
+    }
 
     $IssuanceTransformRuleCategories.Add("NoEntityCategory",$TransformRules)
     
@@ -35,7 +54,7 @@ param (
 
     $TransformRules = [Ordered]@{}
 
-    $TransformRules.'transient-id' = $AllTransformRules.'transient-id'
+    #$TransformRules.'transient-id' = $AllTransformRules.'transient-id'
     
     $TransformRules.displayName = $AllTransformRules.displayName
     $TransformRules.eduPersonAssurance = $AllTransformRules.eduPersonAssurance
@@ -54,6 +73,9 @@ param (
     $TransformRules.sn = $AllTransformRules.sn
 
     $IssuanceTransformRuleCategories.Add("research-and-scholarship",$TransformRules)
+
+    #...
+    #$IssuanceTransformRuleCategories.Add("research-and-scholarship-SWAMID",$TransformRules)
 
     ### GEANT Dataprotection Code of Conduct
     
@@ -141,7 +163,7 @@ param (
 
     $TransformRules = [Ordered]@{}
 
-    $TransformRules.'transient-id' = $AllTransformRules.'transient-id'
+    #$TransformRules.'transient-id' = $AllTransformRules.'transient-id'
     $TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
     $TransformRules.eduPersonUniqueID = $AllTransformRules.eduPersonUniqueID
     $TransformRules.mail = $AllTransformRules.mail
@@ -163,7 +185,7 @@ param (
 
     $TransformRules = [Ordered]@{}
 
-    $TransformRules.'transient-id' = $AllTransformRules.'transient-id'
+    #$TransformRules.'transient-id' = $AllTransformRules.'transient-id'
     $TransformRules.norEduPersonNIN = $AllTransformRules.norEduPersonNIN
     $TransformRules.eduPersonAssurance = $AllTransformRules.eduPersonAssurance
 

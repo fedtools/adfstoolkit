@@ -2,8 +2,6 @@ function Import-ADFSTkAllAttributes
 {
     #All attributes
     $Attributes = @{}
-    
-     $Attributes = @{}
 
     foreach ($store in $Settings.configuration.storeConfig.stores.store)
     {
