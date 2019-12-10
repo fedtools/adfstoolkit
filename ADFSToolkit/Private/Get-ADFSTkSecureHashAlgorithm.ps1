@@ -1,0 +1,75 @@
+﻿function Get-ADFSTkSecureHashAlgorithm
+{
+param (
+
+    [Parameter(Mandatory=$false,
+                   ValueFromPipelineByPropertyName=$true,
+                   Position=0)]
+    [string]$EntityId,
+    $CertificateSignatureAlgorithm
+)
+
+
+$ManualSPSettings = get-ADFSTkManualSPSettings
+
+#Default hash algorithm if nothing overrides it
+$SignatureAlgorithm = "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+
+#Check if signing cerificate Signature Algorithm is SHA256
+if ($SignatureAlgorithm -eq '1.2.840.113549.1.1.11') 
+{
+    $SignatureAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"
+}
+
+#AllSPs
+if ($ManualSPSettings.ContainsKey('urn:adfstk:allsps') -and `
+    $ManualSPSettings.'urn:adfstk:allsps' -is [System.Collections.Hashtable] -and `
+    $ManualSPSettings.'urn:adfstk:allsps'.ContainsKey('HashAlgorithm'))
+{
+    $SignatureAlgorithm = $ManualSPSettings.'urn:adfstk:allsps'.HashAlgorithm
+}
+
+#AllEduSPs
+
+if ($EntityId -ne $null)
+{
+    
+    #First remove http:// or https://
+    $entityDNS = $EntityId.ToLower().Replace('http://','').Replace('https://','')
+
+    #Second get rid of all ending sub paths
+    $entityDNS = $entityDNS -split '/' | select -First 1
+
+    #Last fetch the last two words and join them with a .
+    #$entityDNS = ($entityDNS -split '\.' | select -Last 2) -join '.'
+
+    $settingsDNS = $null
+
+    foreach($setting in $ManualSPSettings.Keys)
+    {
+        if ($setting.StartsWith('urn:adfstk:entityiddnsendswith:'))
+        {
+            $settingsDNS = $setting -split ':' | select -Last 1
+        }
+    }
+
+    if ($entityDNS.EndsWith($settingsDNS) -and `
+        $ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS" -is [System.Collections.Hashtable] -and `
+        $ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS".ContainsKey('HashAlgorithm'))
+{
+    $SignatureAlgorithm = $ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS".HashAlgorithm
+}
+
+#Manual SP
+if ($EntityId -ne $null -and `
+    $ManualSPSettings.ContainsKey($EntityId) -and `
+    $ManualSPSettings.$EntityId -is [System.Collections.Hashtable] -and `
+    $ManualSPSettings.$EntityId.ContainsKey('HashAlgorithm'))
+    {
+        $SignatureAlgorithm = $ManualSPSettings.$EntityId.HashAlgorithm
+    }
+}
+
+$SignatureAlgorithm
+
+}

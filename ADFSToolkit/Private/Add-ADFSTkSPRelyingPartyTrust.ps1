@@ -11,16 +11,11 @@ function Add-ADFSTkSPRelyingPartyTrust {
     $entityID = $sp.entityID
 
     $rpParams = @{
-        Identifier = $entityID
+        Identifier = $sp.entityID
         EncryptionCertificateRevocationCheck = 'None'
         SigningCertificateRevocationCheck = 'None'
         ClaimsProviderName = @("Active Directory")
-        IssuanceAuthorizationRules =
-@"
-    @RuleTemplate = "AllowAllAuthzRule"
-     => issue(Type = "http://schemas.microsoft.com/authorization/claims/permit", 
-     Value = "true");
-"@
+        IssuanceAuthorizationRules = Get-ADFSTkIssuanceAuthorizationRules -EntityId $entityID
         ErrorAction = 'Stop'
     }
 
@@ -87,7 +82,7 @@ function Add-ADFSTkSPRelyingPartyTrust {
     #Add all signing certificates if there are more than one
     Write-ADFSTkVerboseLog "Getting Token Signing Certificate..."
     
-    $rpParams.SignatureAlgorithm = "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+    #$rpParams.SignatureAlgorithm = "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
     
     $CertificateString = ($sp.SPSSODescriptor.KeyDescriptor | ? use -eq "signing"  | select -ExpandProperty KeyInfo).X509Data.X509Certificate
     if ($CertificateString -eq $null)
@@ -113,10 +108,10 @@ function Add-ADFSTkSPRelyingPartyTrust {
 
                 $rpParams.RequestSigningCertificate += $SigningCertificate
 
-                if ($SigningCertificate.SignatureAlgorithm.Value -eq '1.2.840.113549.1.1.11') #Check if Signature Algorithm is SHA256
-                {
-                    $rpParams.SignatureAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"
-                }
+                #if ($SigningCertificate.SignatureAlgorithm.Value -eq '1.2.840.113549.1.1.11') #Check if Signature Algorithm is SHA256
+                #{
+                #    $rpParams.SignatureAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"
+                #}
             }
             
             Write-ADFSTkVerboseLog "Convertion of Token Signing Certificate string to Certificate done!"
@@ -178,6 +173,9 @@ function Add-ADFSTkSPRelyingPartyTrust {
                                                                                  -RegistrationAuthority $sp.Extensions.RegistrationInfo.registrationAuthority `
                                                                                  -NameIdFormat $sp.SPSSODescriptor.NameIDFormat
 #endregion
+
+    $rpParams.SignatureAlgorithm = Get-ADFSTkSecureHashAlgorithm -EntityId $entityID -CertificateSignatureAlgorithm $SigningCertificate.SignatureAlgorithm.Value
+
 
     if ((Get-ADFSRelyingPartyTrust -Identifier $entityID) -eq $null)
     {

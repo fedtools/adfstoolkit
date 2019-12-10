@@ -30,14 +30,54 @@ $AllTransformRules = Import-ADFSTkAllTransformRules
 
 #Add posibility to have manual transform rules
 
+#$ManualTransformRules = Import-ADFSTkAllManualTransformRules
+#foreach ($key in $ManualTransformRules.Keys)
+#{
+#    $AllTransformRules.$key = $ManualTransformRules.$key    
+#}
 
 $IssuanceTransformRuleCategories = Import-ADFSTkIssuanceTransformRuleCategories -RequestedAttribute $RequestedAttribute -NameIDFormat $NameIDFormat
+
+$ManualSPSettings = get-ADFSTkManualSPSettings
+
+
 ### Transform Entity Categories
 
 $TransformedEntityCategories = @()
 
 $AttributesFromStore = @{}
 $IssuanceTransformRules = [Ordered]@{}
+
+$ManualSPTransformRules = $null
+
+#Check version of get-ADFSTkLocalManualSpSettings and retrieve the transform rules
+if ($EntityId -ne $null -and $ManualSPSettings.ContainsKey($EntityId))
+{
+    if ($ManualSPSettings.$EntityId -is [System.Collections.Hashtable] -and `
+        $ManualSPSettings.$EntityId.ContainsKey('TransformRules'))
+    {
+        $ManualSPTransformRules = $ManualSPSettings.$EntityId.TransformRules
+    }
+    elseif ($IssuanceTransformRuleManualSP.$EntityId -is [System.Collections.Specialized.OrderedDictionary])
+    {
+        $ManualSPTransformRules = $IssuanceTransformRuleManualSP.$EntityId
+    }
+    else
+    {
+        #Shouldn't be here
+    }
+}
+
+#Add manually added entity categories if any
+
+if ($EntityId -ne $null -and `
+    $ManualSPSettings.ContainsKey($EntityId) -and `
+    $ManualSPSettings.$EntityId -is [System.Collections.Hashtable] -and `
+    $ManualSPSettings.$EntityId.ContainsKey('EntityCategories'))
+{
+    $EntityCategories += $ManualSPSettings.$EntityId.EntityCategories
+}
+
 
 if ($EntityCategories -eq $null)
 {

@@ -3,9 +3,6 @@
 function get-ADFSTkManualSPSettings
 {
 
-
-$IssuanceTransformRuleManualSP = @{}
-
 # HOW TO USE THIS FILE
 #
 # As of 0.9.45, this file purposely abstracts out overrides to user managed PowerShell.
@@ -37,7 +34,7 @@ $IssuanceTransformRuleManualSP = @{}
               if (Test-Path -Path $localRelyingPartyFileFullPath )
               {
                    . $localRelyingPartyFileFullPath
-                   $IssuanceTransformRuleManualSP = & $myRelyingPartyMethodToInvoke
+                   $ManualSPSettings = & $myRelyingPartyMethodToInvoke
 
               }else
               {
@@ -56,7 +53,7 @@ $IssuanceTransformRuleManualSP = @{}
     
     # This returns the hashtable of hashtables to whomever invoked this function
     
-    $IssuanceTransformRuleManualSP
+    $ManualSPSettings
 
 }
     Catch
