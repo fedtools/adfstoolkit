@@ -2,14 +2,16 @@
 <configuration>
     <ConfigVersion>1.0</ConfigVersion>
     <WorkingPath>c:\Program Files\WindowsPowerShell\Modules\ADFSToolkit</WorkingPath>
-    <ConfigDir>/config</ConfigDir>
-    <CacheDir>/cache</CacheDir>
+    <ConfigDir>config</ConfigDir>
+    <CacheDir>cache</CacheDir>
     <SPHashFile>SPHash.xml</SPHashFile>
     <MetadataCacheFile>metadata.cached.xml</MetadataCacheFile>
     <LocalRelyingPartyFile>get-ADFSTkLocalManualSPSettings.ps1</LocalRelyingPartyFile>
 
     <MetadataPrefix>A prefix that are added to the Service Provider´s name in AD FS Console</MetadataPrefix>
     <MetadataPrefixSeparator>:</MetadataPrefixSeparator>
+
+    <eduPersonPrincipalNameRessignable>Does your institution reassign eduPersonPrincipalName to new accounts?</eduPersonPrincipalNameRessignable>
 
     <Logging useEventLog="true">
       <LogName>ADFSToolkit</LogName>
@@ -39,12 +41,11 @@
 	</staticValues>
     <storeConfig>
         <stores>
-            <store name="Active Directory" issuer="AD AUTHORITY" type="http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname" order="1" />
-            <!--<store name="Custom Store"     issuer="AD AUTHORITY" type="http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname" order="2" />-->
-           <!-- <store name="SQL" issuer="SQL" type="http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname" order="3">
-                <query>SELECT CONVERT(varchar(10), Id) FROM [LiUDB].[dbo].[EmployeeIdGen] WHERE uid = {0}</query>
+            <store name="Active Directory" storetype="Active Directory" issuer="AD AUTHORITY" type="http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname" order="1" />
+            <!--<store name="Custom Store" storetype="Custom Store" issuer="AD AUTHORITY" type="http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname" order="2" />-->
+           <!-- <store name="SQL" storetype="SQL" issuer="AD AUTHORITY" type="http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname" order="3">
+                <query>SELECT CONVERT(varchar(10), Id) FROM [LiUDB].[dbo].[EmployeeIdGen] WHERE uid = REPLACE({0}, 'TEST\', '')</query>
             </store> -->
-
       </stores>
       <transformRules>
         <rule name="ADFSTkExtractSubjectUniqueId" originClaim="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn" /> 
@@ -132,7 +133,21 @@
                 </allowedRegistrationAuthorities>
             </attribute>
 
+            <attribute type="urn:mace:dir:attribute-def:personalIdentityNumber" store="Active Directory" name="norEduPersonNIN">
+                <allowedRegistrationAuthorities>
+                    <registrationAuthority>http://www.swamid.se/</registrationAuthority>
+                </allowedRegistrationAuthorities>
+            </attribute>
+
+            <attribute type="urn:mace:dir:attribute-def:schacDateOfBirth" store="Active Directory" name="norEduPersonNIN">
+                <allowedRegistrationAuthorities>
+                    <registrationAuthority>http://www.swamid.se/</registrationAuthority>
+                </allowedRegistrationAuthorities>
+            </attribute>
+
             <attribute type="urn:mace:dir:attribute-def:norEduPersonLIN" store="Active Directory" name="norEduPersonLIN" />
+            <attribute type="urn:mace:dir:attribute-def:eduPersonUniqueID" store="Active Directory" name="norEduPersonLIN" />
+
             <attribute type="urn:mace:dir:attribute-def:eduPersonEntitlement" store="Active Directory" name="edupersonentitlement" useGroups="true">
                 <group name="employee" value="urn:mace:terena.org:tcs:personal-user" />
                 <group name="employee" value="urn:mace:terena.org:tcs:escience-user" />

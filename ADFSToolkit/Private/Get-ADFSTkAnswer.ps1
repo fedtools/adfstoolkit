@@ -89,7 +89,7 @@ PROCESS
         $caption = $Caption
         $message = $Message
         #$result = $Host.UI.PromptForChoice($caption,$message,$choices,$DefaultAnswer) 
-        $result = $Host.UI.PromptForChoice($caption,$message,[System.Management.Automation.Host.ChoiceDescription[]]($choices),0)
+        $result = $Host.UI.PromptForChoice($caption,$message,[System.Management.Automation.Host.ChoiceDescription[]]($choices),$DefaultAnswer)
 
         switch ($result)
         {
