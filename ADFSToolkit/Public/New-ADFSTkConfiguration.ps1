@@ -9,79 +9,79 @@ function New-ADFSTkConfiguration {
 
     Begin {
         #$ADFSTkModule = Get-Module ADFSToolkit
-        $ADFSTkModule = Get-Module -ListAvailable ADFSToolkit | Sort-Object Version -Descending | Select -First 1
+
+        #Get All paths
+        $ADFSTKPaths = Get-ADFSTKPaths
+
+        #$ADFSTkModule = Get-Module -ListAvailable ADFSToolkit | Sort-Object Version -Descending | Select -First 1
         
         if (!(Test-Path "Function:\Write-ADFSTkLog"))
         {
-            . (Join-Path $ADFSTkModule.ModuleBase 'Private\Write-ADFSTkLog.ps1')
+            . (Join-Path $ADFSTKPaths.modulePath 'Private\Write-ADFSTkLog.ps1')
         }
 
         if (!(Test-Path "Function:\Get-ADFSTkAnswer"))
         {
-            . (Join-Path $ADFSTkModule.ModuleBase 'Private\Get-ADFSTkAnswer.ps1')
+            . (Join-Path $ADFSTKPaths.modulePath 'Private\Get-ADFSTkAnswer.ps1')
         }
 
         if (!(Test-Path "Function:\Compare-ADFSTkObject"))
         {
-            . (Join-Path $ADFSTkModule.ModuleBase 'Private\Compare-ADFSTkObject.ps1')
+            . (Join-Path $ADFSTKPaths.modulePath 'Private\Compare-ADFSTkObject.ps1')
         }
         
-        #ADFSTk-TestAndCreateDir
+        #Create main dirs
+        ADFSTk-TestAndCreateDir -Path $ADFSTKPaths.mainDir         -PathName "ADFSTk install directory"
+        ADFSTk-TestAndCreateDir -Path $ADFSTKPaths.moduleConfigDir -PathName "ADFSTk install directory"
+        ADFSTk-TestAndCreateDir -Path $ADFSTKPaths.mainConfigDir   -PathName "Main configuration"
+        ADFSTk-TestAndCreateDir -Path $ADFSTKPaths.cacheDir        -PathName "Cache directory"
+        ADFSTk-TestAndCreateDir -Path $ADFSTKPaths.institutionDir  -PathName "Institution config directory"
+
         #
         #Set-ADFSTkConfigItem
 
         $AllFederations = @()
                 
-        $configPath = Join-Path $ADFSTkModule.ModuleBase "config"
-
-        if (Test-Path $configPath)
+        #All this should change when fixing proper language handling
+        if (Test-Path $ADFSTKPaths.moduleConfigDefaultDir)
         {
-            $configDefaultPath = Join-Path $configPath "default"
-            if (Test-Path $configDefaultPath)
-            {
-                $dirs = Get-ChildItem -Path $configDefaultPath -Directory
-                $configFoundLanguages = (Compare-ADFSTkObject -FirstSet $dirs.Name `
-                                                              -SecondSet ([System.Globalization.CultureInfo]::GetCultures("SpecificCultures").Name) `
-                                                              -CompareType Intersection).CompareSet
+            $dirs = Get-ChildItem -Path $ADFSTKPaths.moduleConfigDefaultDir -Directory
+            $configFoundLanguages = (Compare-ADFSTkObject -FirstSet $dirs.Name `
+                                                            -SecondSet ([System.Globalization.CultureInfo]::GetCultures("SpecificCultures").Name) `
+                                                            -CompareType Intersection).CompareSet
     
-                $configFoundLanguages | % {
-                    $choices = @()
-                    $caption = "Select language"
-                    $message = "Please select which language you want help text in."
-                    $defaultChoice = 0
-                    $i = 0
-                }{
-                    $choices += New-Object System.Management.Automation.Host.ChoiceDescription "&$([System.Globalization.CultureInfo]::GetCultureInfo($_).DisplayName)","" #if we want more than one language with the same starting letter we need to redo this (number the languages)
-                    if ($_ -eq "en-US") {
-                        $defaultChoice = $i
-                    }
-                    $i++
-                }{
+            $configFoundLanguages | % {
+                $choices = @()
+                $caption = "Select language"
+                $message = "Please select which language you want help text in."
+                $defaultChoice = 0
+                $i = 0
+            }{
+                $choices += New-Object System.Management.Automation.Host.ChoiceDescription "&$([System.Globalization.CultureInfo]::GetCultureInfo($_).DisplayName)","" #if we want more than one language with the same starting letter we need to redo this (number the languages)
+                if ($_ -eq "en-US") {
+                    $defaultChoice = $i
+                }
+                $i++
+            }{
             
-                    $result = $Host.UI.PromptForChoice($caption,$message,[System.Management.Automation.Host.ChoiceDescription[]]$choices,$defaultChoice) 
-                }
+                $result = $Host.UI.PromptForChoice($caption,$message,[System.Management.Automation.Host.ChoiceDescription[]]$choices,$defaultChoice) 
+            }
         
-                $configChosenLanguagePath = Join-Path $configDefaultPath ([string[]]$configFoundLanguages)[$result]
+            $configChosenLanguagePath = Join-Path $ADFSTKPaths.moduleConfigDefaultDir ([string[]]$configFoundLanguages)[$result]
 
-                if (Test-Path $configChosenLanguagePath)
-                {
-                    $defaultConfigFile = Get-ChildItem -Path $configChosenLanguagePath -File -Filter "config.ADFSTk.default*.xml" | Select -First 1 #Just to be sure
-                }
-                else
-                {
-                    #This should'nt happen
-                }
+            if (Test-Path $configChosenLanguagePath)
+            {
+                $defaultConfigFile = Get-ChildItem -Path $configChosenLanguagePath -File -Filter "config.ADFSTk.default*.xml" | Select -First 1 #Just to be sure
             }
             else
             {
-                #no default configs :(
+                #This should'nt happen
             }
         }
         else
         {
-            #Yeh what to do?
+            #no default configs :(
         }
-
 }
 
 # for each configuration we want to handle, we do these steps
@@ -164,34 +164,54 @@ process
     Write-ADFSTkHost "--------------------------------------------------------------------------------------------------------------" -ForegroundColor Cyan
        
     Set-ADFSTkConfigItem -XPath "configuration/metadataURL" `
-                         -ExampleValue 'https://metadata.federationOperator.org/path/to/metadata.xml'
+                         -ExampleValue 'https://metadata.federationOperator.org/path/to/metadata.xml' `
+                         -Config $config `
+                         -DefaultConfig $previousConfig
                        
     Set-ADFSTkConfigItem -XPath "configuration/signCertFingerprint" `
-                         -ExampleValue '0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF'
+                         -ExampleValue '0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF' `
+                         -Config $config `
+                         -DefaultConfig $previousConfig
 
     Set-ADFSTkConfigItem -XPath "configuration/MetadataPrefix" `
                          -ExampleValue 'ADFSTk/SWAMID/CANARIE/INCOMMON' `
+                         -Config $config `
+                         -DefaultConfig $previousConfig
                   
     Set-ADFSTkConfigItem -XPath "configuration/staticValues/o" `
-                         -ExampleValue 'ABC University'
+                         -ExampleValue 'ABC University' `
+                         -Config $config `
+                         -DefaultConfig $previousConfig
 
     Set-ADFSTkConfigItem -XPath "configuration/staticValues/co" `
-                         -ExampleValue 'Canada, Sweden'
+                         -ExampleValue 'Canada, Sweden' `
+                         -Config $config `
+                         -DefaultConfig $previousConfig
 
     Set-ADFSTkConfigItem -XPath "configuration/staticValues/c" `
-                         -ExampleValue 'CA, SE'
+                         -ExampleValue 'CA, SE' `
+                         -Config $config `
+                         -DefaultConfig $previousConfig
 
     Set-ADFSTkConfigItem -XPath "configuration/staticValues/schacHomeOrganization" `
-                         -ExampleValue 'institution.edu'
+                         -ExampleValue 'institution.edu' `
+                         -Config $config `
+                         -DefaultConfig $previousConfig
 
     Set-ADFSTkConfigItem -XPath "configuration/staticValues/norEduOrgAcronym" `
-                         -ExampleValue 'CA'
+                         -ExampleValue 'CA' `
+                         -Config $config `
+                         -DefaultConfig $previousConfig
 
     Set-ADFSTkConfigItem -XPath "configuration/staticValues/ADFSExternalDNS" `
-                         -ExampleValue 'adfs.institution.edu'
+                         -ExampleValue 'adfs.institution.edu' `
+                         -Config $config `
+                         -DefaultConfig $previousConfig
 
     Set-ADFSTkConfigItem -XPath "configuration/eduPersonPrincipalNameRessignable" `
-                         -ExampleValue 'false'
+                         -ExampleValue 'false' `
+                         -Config $config `
+                         -DefaultConfig $previousConfig
 
     $epsa = $config.configuration.storeConfig.attributes.attribute | ? type -eq "urn:mace:dir:attribute-def:eduPersonScopedAffiliation"
     $epa = $config.configuration.storeConfig.attributes.attribute | ? type -eq "urn:mace:dir:attribute-def:eduPersonAffiliation" 
@@ -207,51 +227,36 @@ process
 
     # Module specific info
     #$myWorkingPath = (Get-Module -Name ADFSToolkit).ModuleBase
-    $myWorkingPath = $ADFSTkModule.ModuleBase
+    #$myWorkingPath = $ADFSTKPaths.modulePath
     #$myVersion = (Get-Module -Name ADFSToolkit).Version.ToString()
-    $myVersion = "{0}.{1}" -f $ADFSTkModule.Version.Major.ToString(),$ADFSTkModule.Version.Minor.ToString()
+    #$myVersion = "{0}.{1}" -f $ADFSTkModule.Version.Major.ToString(),$ADFSTkModule.Version.Minor.ToString()
 
     # set workingpath for base:
-    $myInstallDir = "c:\ADFSToolkit"
-    $myMainConfigDir = Join-Path $myInstallDir 'config'
-
-    $myADFSTkInstallDir = Join-path $myInstallDir $myVersion
+    #$myInstallDir = "c:\ADFSToolkit"
+    #$myMainConfigDir = Join-Path $myInstallDir 'config'
+    #$myADFSTkInstallDir = Join-path $myInstallDir 'institution'
+    #$myCacheDir =  Join-path $myInstallDir 'cache'
+    #$myInstitutionConfigDir = Join-path $myInstallDir 'institution'
+    
 
     # various useful items for minting our configuration 
 
     # user entered
     $myPrefix = (Select-Xml -Xml $config -XPath "configuration/MetadataPrefix").Node.'#text'
 
-    # sourced from config template
-    $myCacheDir =  (Select-Xml -Xml $config -XPath "configuration/CacheDir").Node.'#text'
-    $myConfigDir = (Select-Xml -Xml $config -XPath "configuration/ConfigDir").Node.'#text'
-    
-    # derived paths 
-    $myTargetInstallCacheDir = Join-path $myADFSTkInstallDir $myCacheDir
-    $myTargetInstallConfigDir = Join-path $myADFSTkInstallDir $myConfigDir
-
-    #verify directories for cache and config exist or create if they do not
-
-    # we need an install directory
-
-    ADFSTk-TestAndCreateDir -Path $myADFSTkInstallDir       -PathName "ADFSTk install directory"
-    ADFSTk-TestAndCreateDir -Path $myMainConfigDir          -PathName "Main configuration"
-    ADFSTk-TestAndCreateDir -Path $myTargetInstallCacheDir  -PathName "Cache directory"
-    ADFSTk-TestAndCreateDir -Path $myTargetInstallConfigDir -PathName "Config directory"
-    
     # For the ADFSTk functionality, we desire to associate certain cache files to certain things and bake a certain default location
  
-    (Select-Xml -Xml $config -XPath "configuration/WorkingPath").Node.'#text' = "$myADFSTkInstallDir" #Do we really need this?
+    #(Select-Xml -Xml $config -XPath "configuration/WorkingPath").Node.'#text' = "$myADFSTkInstallDir" #Do we really need this?
     (Select-Xml -Xml $config -XPath "configuration/SPHashFile").Node.'#text' = "$myPrefix-SPHashfile.xml"
     (Select-Xml -Xml $config -XPath "configuration/MetadataCacheFile").Node.'#text' = "$myPrefix-metadata.cached.xml"
 
-    $configFile = Join-Path $myTargetInstallConfigDir "config.$myPrefix.xml"
+    $configFile = Join-Path $ADFSTKPaths.institutionDir "config.$myPrefix.xml"
 
     #
     # Prepare our template for ADFSTkManualSPSettings to be copied into place, safely of course, after directories are confirmed to be there.
 
-    $myADFSTkManualSpSettingsDistroTemplateFile =  Join-Path $myWorkingPath            -ChildPath "config\default\en-US\get-ADFSTkLocalManualSpSettings-dist.ps1"
-    $myADFSTkManualSpSettingsInstallTemplateFile = Join-Path $myTargetInstallConfigDir -ChildPath "get-ADFSTkLocalManualSpSettings.ps1"
+    $myADFSTkManualSpSettingsDistroTemplateFile =  Join-Path $ADFSTKPaths.modulePath     -ChildPath "config\default\en-US\get-ADFSTkLocalManualSpSettings-dist.ps1"
+    $myADFSTkManualSpSettingsInstallTemplateFile = Join-Path $ADFSTKPaths.institutionDir -ChildPath "get-ADFSTkLocalManualSpSettings.ps1"
 
     # create a new file using timestamp removing illegal file characters 
     $myConfigFileBkpExt = (get-date -Format o).Replace(':','.')
@@ -322,7 +327,7 @@ process
     }
     else
     {
-        Write-ADFSTkHost "No existing file, saving new configuration to: $($myADFSTkManualSpSettingsInstallTemplateFile)"
+        Write-ADFSTkHost "No existing file, saving new configuration to: $myADFSTkManualSpSettingsInstallTemplateFile"
         Copy-item -Path $myADFSTkManualSpSettingsDistroTemplateFile -Destination $myADFSTkManualSpSettingsInstallTemplateFile
     }
 

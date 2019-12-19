@@ -1,13 +1,13 @@
 ﻿function Set-ADFSTkConfigItem {
 param (
+    $Config,
+    $DefaultConfig,
     $XPath,
     $ExampleValue,
     $DefaultValue
 )
 
-
-
-    $ConfigPath = Select-Xml -Xml $config -XPath $XPath
+    $ConfigPath = Select-Xml -Xml $Config -XPath $XPath
 
     
     Write-Host -ForegroundColor Yellow "$($ConfigPath.Node.Name)`: " -NoNewline
@@ -34,12 +34,13 @@ param (
     }
     else
     {
-        $myExtractedValue=(Select-Xml -Xml $PreviousConfig -XPath "$XPath").Node.'#text'
+        $myExtractedValue=(Select-Xml -Xml $DefaultConfig -XPath "$XPath").Node.'#text'
 
             if ([string]::IsNullOrEmpty($myExtractedValue))
             {
                 # skip if it wasn't there
-            }else
+            }
+            else
             { 
                 $DefaultValue="$myExtractedValue"
                 $text+= " ($DefaultValue)"

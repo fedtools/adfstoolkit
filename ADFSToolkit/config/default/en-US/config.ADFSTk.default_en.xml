@@ -1,14 +1,13 @@
 <?xml version="1.0"?>
 <configuration>
-    <ConfigVersion>1.0</ConfigVersion>
-    <WorkingPath>c:\Program Files\WindowsPowerShell\Modules\ADFSToolkit</WorkingPath>
-    <ConfigDir>config</ConfigDir>
-    <CacheDir>cache</CacheDir>
+    <ConfigVersion>1.2</ConfigVersion>
+    <Federation>The name of your federation</Federation>
+    
     <SPHashFile>SPHash.xml</SPHashFile>
     <MetadataCacheFile>metadata.cached.xml</MetadataCacheFile>
     <LocalRelyingPartyFile>get-ADFSTkLocalManualSPSettings.ps1</LocalRelyingPartyFile>
 
-    <MetadataPrefix>A prefix that are added to the Service Provider´s name in AD FS Console</MetadataPrefix>
+    <MetadataPrefix>A prefix that are added to the Service Providerï¿½s name in AD FS Console</MetadataPrefix>
     <MetadataPrefixSeparator>:</MetadataPrefixSeparator>
 
     <eduPersonPrincipalNameRessignable>Does your institution reassign eduPersonPrincipalName to new accounts?</eduPersonPrincipalNameRessignable>
