@@ -1,0 +1,315 @@
+<?xml version="1.0"?>
+<Federations>
+  <Federation>
+    <Name>AAF (Australia)</Name>
+    <Id>AAF</Id>
+  </Federation>
+  <Federation>
+    <Name>AAI@EduHr (Croatia)</Name>
+    <Id>AAI-EDUHR</Id>
+  </Federation>
+  <Federation>
+    <Name>AAIEduMk (North Macedonia)</Name>
+    <Id>AAIEDUMK</Id>
+  </Federation>
+  <Federation>
+    <Name>ACOnet Identity Federation (Austria)</Name>
+    <Id>ACONET</Id>
+  </Federation>
+  <Federation>
+    <Name>AFIRE (Armenia)</Name>
+    <Id>AFIRE</Id>
+  </Federation>
+  <Federation>
+    <Name>ARNaai (Algeria)</Name>
+    <Id>ARNAAI</Id>
+  </Federation>
+  <Federation>
+    <Name>ArnesAAI Slovenska izobraževalno raziskovalna federacija (Slovenia)</Name>
+    <Id>ARNESAAI</Id>
+  </Federation>
+  <Federation>
+    <Name>Belnet Federation (Belgium)</Name>
+    <Id>BELNET</Id>
+  </Federation>
+  <Federation>
+    <Name>Canadian Access Federation (Canada)</Name>
+    <Id>CAF</Id>
+  </Federation>
+  <Federation>
+    <Name>CAFe (Brazil)</Name>
+    <Id>CAFE</Id>
+  </Federation>
+  <Federation>
+    <Name>CAFMoz (Mozambique)</Name>
+    <Id>CAFMOZ</Id>
+  </Federation>
+  <Federation>
+    <Name>CARSI (China)</Name>
+    <Id>CARSI</Id>
+  </Federation>
+  <Federation>
+    <Name>COFRe (Chile)</Name>
+    <Id>COFRE</Id>
+  </Federation>
+  <Federation>
+    <Name>COLFIRE (Colombia)</Name>
+    <Id>COLFIRE</Id>
+  </Federation>
+  <Federation>
+    <Name>CyNet Identity Federation (Cyprus)</Name>
+    <Id>CYNET-IF</Id>
+  </Federation>
+  <Federation>
+    <Name>DFN-AAI (Germany)</Name>
+    <Id>DFN-AAI</Id>
+  </Federation>
+  <Federation>
+    <Name>Edugate (Ireland)</Name>
+    <Id>EDUGATE</Id>
+  </Federation>
+  <Federation>
+    <Name>eduID.cz (Czech Republic)</Name>
+    <Id>EDUID-CZ</Id>
+  </Federation>
+  <Federation>
+    <Name>eduId.hu (Hungary)</Name>
+    <Id>EDUID-HU</Id>
+  </Federation>
+  <Federation>
+    <Name>eduID Luxembourg (Luxembourg)</Name>
+    <Id>EDUID-LU</Id>
+  </Federation>
+  <Federation>
+    <Name>eduIDM.ma (Morocco, Western Sahara)</Name>
+    <Id>EDUIDM-MA</Id>
+  </Federation>
+  <Federation>
+    <Name>FEBAS (Belarus)</Name>
+    <Id>FEBAS</Id>
+  </Federation>
+  <Federation>
+    <Name>фEDUrus (Russia)</Name>
+    <Id>FEDRUS</Id>
+  </Federation>
+  <Federation>
+    <Name>FEIDE (Norway)</Name>
+    <Id>FEIDE</Id>
+  </Federation>
+  <Federation>
+    <Name>Fédération Éducation-Recherche (France)</Name>
+    <Id>FER</Id>
+  </Federation>
+  <Federation>
+    <Name>FIDERN (Zambia)</Name>
+    <Id>FIDERN</Id>
+  </Federation>
+  <Federation>
+    <Name>GakuNin (Japan)</Name>
+    <Id>GAKUNIN</Id>
+  </Federation>
+  <Federation>
+    <Name>Grena Identity Federation (Georgia)</Name>
+    <Id>GIF</Id>
+  </Federation>
+  <Federation>
+    <Name>GRNET (Greece)</Name>
+    <Id>GRNET</Id>
+  </Federation>
+  <Federation>
+    <Name>HAKA (Finland)</Name>
+    <Id>HAKA</Id>
+  </Federation>
+  <Federation>
+    <Name>HKAF (Hong Kong)</Name>
+    <Id>HKAF</Id>
+  </Federation>
+  <Federation>
+    <Name>IDEM (Italy)</Name>
+    <Id>IDEM</Id>
+  </Federation>
+  <Federation>
+    <Name>InCommon (United States)</Name>
+    <Id>INCOMMON</Id>
+  </Federation>
+  <Federation>
+    <Name>INFED (India)</Name>
+    <Id>INFED</Id>
+  </Federation>
+  <Federation>
+    <Name>IRFED (Iran)</Name>
+    <Id>IRFED</Id>
+  </Federation>
+  <Federation>
+    <Name>IUCC Identity Federation (Israel)</Name>
+    <Id>IUCCIF</Id>
+  </Federation>
+  <Federation>
+    <Name>KAFE (Korea)</Name>
+    <Id>KAFE</Id>
+  </Federation>
+  <Federation>
+    <Name>KRENA Identity Federation (Kyrgyzstan)</Name>
+    <Id>KRENA</Id>
+  </Federation>
+  <Federation>
+    <Name>LAIFE (Latvia)</Name>
+    <Id>LAIFE</Id>
+  </Federation>
+  <Federation>
+    <Name>LEAF (Moldova)</Name>
+    <Id>LEAF</Id>
+  </Federation>
+  <Federation>
+    <Name>LITNET FEDI (Lithuania)</Name>
+    <Id>LITNET-FEDI</Id>
+  </Federation>
+  <Federation>
+    <Name>LIAF (Sri Lanka)</Name>
+    <Id>LK-LIAF</Id>
+  </Federation>
+  <Federation>
+    <Name>MATE (Argentina)</Name>
+    <Id>MATE</Id>
+  </Federation>
+  <Federation>
+    <Name>MINGA (Ecuador)</Name>
+    <Id>MINGA</Id>
+  </Federation>
+  <Federation>
+    <Name>Oman KID (Oman)</Name>
+    <Id>OMAN-KID</Id>
+  </Federation>
+  <Federation>
+    <Name>OMREN (Oman)</Name>
+    <Id>OMREN</Id>
+  </Federation>
+  <Federation>
+    <Name>PEANO (Ukraine)</Name>
+    <Id>PEANO</Id>
+  </Federation>
+  <Federation>
+    <Name>PIONIER.Id (Poland)</Name>
+    <Id>PIONIER-ID</Id>
+  </Federation>
+  <Federation>
+    <Name>PKIFED (Pakistan)</Name>
+    <Id>PKIFED</Id>
+  </Federation>
+  <Federation>
+    <Name>RASH (Albania)</Name>
+    <Id>RASH</Id>
+  </Federation>
+  <Federation>
+    <Name>RCTSaai (Portugal)</Name>
+    <Id>RCTSAAI</Id>
+  </Federation>
+  <Federation>
+    <Name>RiċerkaNET Identity Federation (Malta)</Name>
+    <Id>RICERKA-NET</Id>
+  </Federation>
+  <Federation>
+    <Name>RIF (Uganda)</Name>
+    <Id>RIF</Id>
+  </Federation>
+  <Federation>
+    <Name>RoEduNetID (Romania)</Name>
+    <Id>ROEDUNETID</Id>
+  </Federation>
+  <Federation>
+    <Name>RUNNET AAI (Russia)</Name>
+    <Id>RUNNET-AAI</Id>
+  </Federation>
+  <Federation>
+    <Name>Maeen Identity Federation (Saudi Arabia)</Name>
+    <Id>SA-MIF</Id>
+  </Federation>
+  <Federation>
+    <Name>SAFIRE (South Africa)</Name>
+    <Id>SAFIRE</Id>
+  </Federation>
+  <Federation>
+    <Name>Singapore Access Federation - SGAF (Singapore)</Name>
+    <Id>SGAF</Id>
+  </Federation>
+  <Federation>
+    <Name>SIFULAN Malaysian Access Federation (Malaysia)</Name>
+    <Id>SIFULAN</Id>
+  </Federation>
+  <Federation>
+    <Name>SIR (Spain)</Name>
+    <Id>SIR</Id>
+  </Federation>
+  <Federation>
+    <Name>SURFconext (Netherlands)</Name>
+    <Id>SURFCONEXT</Id>
+  </Federation>
+  <Federation>
+    <Name>SWAMID (Sweden)</Name>
+    <Id>SWAMID</Id>
+  </Federation>
+  <Federation>
+    <Name>SWITCHaai (Switzerland)</Name>
+    <Id>SWITCHAAI</Id>
+  </Federation>
+  <Federation>
+    <Name>TAAT (Estonia)</Name>
+    <Id>TAAT</Id>
+  </Federation>
+  <Federation>
+    <Name>Tuakiri New Zealand Access Federation (New Zealand)</Name>
+    <Id>TUAKIRI</Id>
+  </Federation>
+  <Federation>
+    <Name>UK federation (United Kingdom)</Name>
+    <Id>UK-FEDERATION</Id>
+  </Federation>
+  <Federation>
+    <Name>WAYF (Denmark, Iceland)</Name>
+    <Id>WAYF</Id>
+  </Federation>
+  <Federation>
+    <Name>YETKİM (Turkey)</Name>
+    <Id>YETKIM</Id>
+  </Federation>
+  <Federation>
+    <Name>BIF (Bulgaria)</Name>
+    <Id>BIF</Id>
+  </Federation>
+  <Federation>
+    <Name>Grid Identity Pool</Name>
+    <Id>GIP</Id>
+  </Federation>
+  <Federation>
+    <Name>CSTCloudFederation (China)</Name>
+    <Id>CST-CF</Id>
+  </Federation>
+  <Federation>
+    <Name>eduID (Montenegro)</Name>
+    <Id>EDUID-ME</Id>
+  </Federation>
+  <Federation>
+    <Name>FENIX (Mexico)</Name>
+    <Id>FENIX</Id>
+  </Federation>
+  <Federation>
+    <Name>iAMRES (Serbia)</Name>
+    <Id>IAMRES</Id>
+  </Federation>
+  <Federation>
+    <Name>LIFE (Lebanese Identity Federation Ecosystem) (Lebanon)</Name>
+    <Id>LIFE</Id>
+  </Federation>
+  <Federation>
+    <Name>MAREN (Malawi)</Name>
+    <Id>MAREN</Id>
+  </Federation>
+  <Federation>
+    <Name>safeID (Slovakia)</Name>
+    <Id>SAFEID</Id>
+  </Federation>
+  <Federation>
+    <Name>TARENA Identity Federation (Tajikistan)</Name>
+    <Id>TIDF</Id>
+  </Federation>
+</Federations>

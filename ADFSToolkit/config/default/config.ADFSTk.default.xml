@@ -1,33 +1,27 @@
 <?xml version="1.0"?>
 <configuration>
     <ConfigVersion>1.2</ConfigVersion>
-    <Federation>The name of your federation</Federation>
-    
     <SPHashFile>SPHash.xml</SPHashFile>
     <MetadataCacheFile>metadata.cached.xml</MetadataCacheFile>
     <LocalRelyingPartyFile>get-ADFSTkLocalManualSPSettings.ps1</LocalRelyingPartyFile>
-
-    <MetadataPrefix>A prefix that are added to the Service Provider�s name in AD FS Console</MetadataPrefix>
+    <MetadataPrefix></MetadataPrefix>
     <MetadataPrefixSeparator>:</MetadataPrefixSeparator>
-
-    <eduPersonPrincipalNameRessignable>Does your institution reassign eduPersonPrincipalName to new accounts?</eduPersonPrincipalNameRessignable>
-
+    <eduPersonPrincipalNameRessignable></eduPersonPrincipalNameRessignable>
     <Logging useEventLog="true">
       <LogName>ADFSToolkit</LogName>
       <Source>Import-ADFSTkMetadata</Source>
     </Logging>   
-
-    <metadataURL>The URL to the federated metadata</metadataURL> 
-    <signCertFingerprint>The fingerprint of the certificate that signs the metadata</signCertFingerprint>
+    <metadataURL></metadataURL> 
+    <signCertFingerprint></signCertFingerprint>
 	  <claimsProviders>
         <claimsProvider>Active Directory</claimsProvider>
     </claimsProviders>
     <staticValues>
-		<o>The name of your institution</o>
-        <co>The name of your Country</co>		
-        <c>Country Code</c>
-		<schacHomeOrganization>The DNS name of your institution</schacHomeOrganization>
-		<norEduOrgAcronym>The short name of your institution</norEduOrgAcronym>
+	<o></o>
+        <co></co>		
+        <c></c>
+		<schacHomeOrganization></schacHomeOrganization>
+		<norEduOrgAcronym></norEduOrgAcronym>
 		<schacHomeOrganizationType>urn:schac:homeOrganizationType:eu:educationInstitution</schacHomeOrganizationType>
 		<!-- This value is for EU higher education institution, other allowed values are:
 			urn:schac:homeOrganizationType:eu:educationInstitution
@@ -36,7 +30,7 @@
 			urn:schac:homeOrganizationType:int:NRENAffiliate
 			urn:schac:homeOrganizationType:int:other
 		-->
-		<ADFSExternalDNS>The DNS name of your ADFS</ADFSExternalDNS>
+		<ADFSExternalDNS></ADFSExternalDNS>
 	</staticValues>
     <storeConfig>
         <stores>
@@ -68,15 +62,16 @@
              
              -->
 
-             <!-- Scenario A. Static assignment (default, comment out if you enable another technique -->
+             <!-- Scenario A. Static assignment (default, comment out if you enable another technique
              <attribute type="urn:mace:dir:attribute-def:eduPersonAffiliation" store="Static" >
                <value>member</value>
              </attribute>
+             end Scenario A. Static assignment -->
 
-                <!-- note that in this template this field will be dynamically updated by eduPersonAfilliation above by new-ADFSTkConfiguration baking in the domain -->
+                <!-- note that in this template this field will be dynamically updated by eduPersonAfilliation above by new-ADFSTkConfiguration baking in the domain
               <attribute type="urn:mace:dir:attribute-def:eduPersonScopedAffiliation" store="Static" >
               </attribute>
-             <!-- end Scenario A. Static assignment -->
+              end Scenario A. Static assignment -->
 
 
               <!-- Scenario B. Dynamic assignment 
@@ -103,7 +98,7 @@
                end Scenario B. Dynamic assignment -->
 
 
-           <!-- Scenario C. Attribute assignment
+           <!-- Scenario C. Attribute assignment -->
              
            <attribute type="urn:mace:dir:attribute-def:eduPersonAffiliation" store="Active Directory" name="eduPersonAffiliation">
               <restrictedvalue>faculty</restrictedvalue>
@@ -119,7 +114,7 @@
              <attribute type="urn:mace:dir:attribute-def:eduPersonScopedAffiliation" store="Active Directory" name="eduPersonScopedAffiliation" >
             </attribute>
        
-            end Scenario C. Attribute assignment -->
+            <!-- end Scenario C. Attribute assignment -->
 
             <!-- Attribute filter pivoting on allowedRegistrationAuthorities - useful for GDPR purposes 
 

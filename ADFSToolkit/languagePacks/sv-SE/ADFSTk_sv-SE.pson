@@ -1,0 +1,27 @@
+﻿@{
+    tableLanguage = "sv-SE"
+    cPressAnyKey = "Tryck en tangent för att fortsätta..."
+    cFileAlreadyExists = "Filen finns redan!"
+    cFileDontExist = "'{0}' finns inte!"
+    cFilesFound = "'{0}' filer hittade!"
+    cChosen = "'{0}' vald(a)!"
+    cChooseFederation = "Välj din federation"
+    mainconfStartMessage = @"
+Det här skriptet kommer att skapa en konfigurationsfil för ADFS Toolkit.
+Konfigurationsfilen innehåller information om vilken federation IdP:n är ansluten till och
+den håller också reda på vilka lärosätesspecifika konfigurationsfiler som haterar metadataflödet.
+"@
+    mainconfDoCreateConfigFile = "Vill du skapa en nya konfigurationsfil?`n(den nuvarande kommer att backas upp)"
+    mainconfOldConfigBackedUp = "Den nuvarande konfigurationsfilen sparades här: '{0}'"
+    mainconfChooseFederationMessage = @"
+Välj din federation i listan.
+Om den inte finns där, klicka Avbryt
+"@
+    mainconfChosenFederation = "Vald federation: '{0}'"
+    mainconfSearchForExistingInstConfFile = "Söker efter befintliga lärosätesspecifika konfigurationsfiler..."
+    mainconfSelectConfFilesToAddToMainConf = "Välj den/de konfigurationsfil(er) du vill lägga till i ADFS Toolkit"
+    mainconfSelectInstConfFilesTohandle = "Välj lärosätesspecifika konfigurationsfil(er)..."
+    mainconfNewConfFileCreated = "Ny konfigurationsfil skapad: '{0}'"
+    mainconfAbortDueToExistingConfFile = "Avbryter på grund av att det redan finns en konfigurationsfil."
+    mainconfConfigFileExists = "En konfigurationsfil finns redan!"
+}

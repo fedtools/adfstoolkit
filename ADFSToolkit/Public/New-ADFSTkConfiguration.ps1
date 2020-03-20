@@ -1,537 +1,175 @@
-﻿#Requires -Version 5.1
-
-function New-ADFSTkConfiguration {
-[cmdletbinding()]
-    Param (
-        [parameter(ValueFromPipeline=$True)]
-        [string[]]$MigrationConfig
-    )
-
-    Begin {
-        #$ADFSTkModule = Get-Module ADFSToolkit
-
-        #Get All paths
-        $ADFSTKPaths = Get-ADFSTKPaths
-
-        #$ADFSTkModule = Get-Module -ListAvailable ADFSToolkit | Sort-Object Version -Descending | Select -First 1
-        
-        if (!(Test-Path "Function:\Write-ADFSTkLog"))
-        {
-            . (Join-Path $ADFSTKPaths.modulePath 'Private\Write-ADFSTkLog.ps1')
-        }
-
-        if (!(Test-Path "Function:\Get-ADFSTkAnswer"))
-        {
-            . (Join-Path $ADFSTKPaths.modulePath 'Private\Get-ADFSTkAnswer.ps1')
-        }
-
-        if (!(Test-Path "Function:\Compare-ADFSTkObject"))
-        {
-            . (Join-Path $ADFSTKPaths.modulePath 'Private\Compare-ADFSTkObject.ps1')
-        }
-        
-        #Create main dirs
-        ADFSTk-TestAndCreateDir -Path $ADFSTKPaths.mainDir         -PathName "ADFSTk install directory"
-        ADFSTk-TestAndCreateDir -Path $ADFSTKPaths.moduleConfigDir -PathName "ADFSTk install directory"
-        ADFSTk-TestAndCreateDir -Path $ADFSTKPaths.mainConfigDir   -PathName "Main configuration"
-        ADFSTk-TestAndCreateDir -Path $ADFSTKPaths.cacheDir        -PathName "Cache directory"
-        ADFSTk-TestAndCreateDir -Path $ADFSTKPaths.institutionDir  -PathName "Institution config directory"
-
-        #
-        #Set-ADFSTkConfigItem
-
-        $AllFederations = @()
-                
-        #All this should change when fixing proper language handling
-        if (Test-Path $ADFSTKPaths.moduleConfigDefaultDir)
-        {
-            $dirs = Get-ChildItem -Path $ADFSTKPaths.moduleConfigDefaultDir -Directory
-            $configFoundLanguages = (Compare-ADFSTkObject -FirstSet $dirs.Name `
-                                                            -SecondSet ([System.Globalization.CultureInfo]::GetCultures("SpecificCultures").Name) `
-                                                            -CompareType Intersection).CompareSet
-    
-            $configFoundLanguages | % {
-                $choices = @()
-                $caption = "Select language"
-                $message = "Please select which language you want help text in."
-                $defaultChoice = 0
-                $i = 0
-            }{
-                $choices += New-Object System.Management.Automation.Host.ChoiceDescription "&$([System.Globalization.CultureInfo]::GetCultureInfo($_).DisplayName)","" #if we want more than one language with the same starting letter we need to redo this (number the languages)
-                if ($_ -eq "en-US") {
-                    $defaultChoice = $i
-                }
-                $i++
-            }{
-            
-                $result = $Host.UI.PromptForChoice($caption,$message,[System.Management.Automation.Host.ChoiceDescription[]]$choices,$defaultChoice) 
-            }
-        
-            $configChosenLanguagePath = Join-Path $ADFSTKPaths.moduleConfigDefaultDir ([string[]]$configFoundLanguages)[$result]
-
-            if (Test-Path $configChosenLanguagePath)
-            {
-                $defaultConfigFile = Get-ChildItem -Path $configChosenLanguagePath -File -Filter "config.ADFSTk.default*.xml" | Select -First 1 #Just to be sure
-            }
-            else
-            {
-                #This should'nt happen
-            }
-        }
-        else
-        {
-            #no default configs :(
-        }
-}
-
-# for each configuration we want to handle, we do these steps
-# if given a configuration, we use it to load and set them as defaults and continue with the questions
-# allowing them to hit enter to accept the default to save time and previous responses.
-#
-# if an empty configuration file is entered, we will ask the questions, with no defaults set.
-
-process 
+﻿function New-ADFSTkConfiguration
 {
-    Write-ADFSTkHost "--------------------------------------------------------------------------------------------------------------" -ForegroundColor Cyan
-    
-    Write-ADFSTkHost -En "You are about to create a new configuration file for ADFSToolkit." -ForegroundColor Cyan
-    Write-ADFSTkHost " "
-
- # Detect and prep previousConfig to source values for defaults from it
-    [xml]$previousConfig = ""
-    
-
-    if ([string]::IsNullOrEmpty($MigrationConfig))
-    {
-        Write-Verbose "No Previous Configuration detected"
-    }
-    else
-    {
-        if (Test-Path -Path $MigrationConfig)
-        {
-            $previousConfig = Get-Content $MigrationConfig
-            Write-ADFSTkHost -En "Using previous configuration for defaults (file: $MigrationConfig)`nPLEASE NOTE: Previous hand edits to config must be manually applied again`n" -ForegroundColor Red
-            Write-ADFSTkHost " "
-        }
-        else 
-        {
-            Throw "Error:Migration file $MigrationConfig does not exist, exiting"
-        }
-    }
- 
-    # Use our template from the Module to start with
-
-    [xml]$config = Get-Content $defaultConfigFile.FullName
-
-    Write-ADFSTkHost -En "You will be prompted with questions about metadata, signature fingerprint" -ForegroundColor Cyan
-    Write-ADFSTkHost -En "and other question about your institution." -ForegroundColor Cyan
-    Write-ADFSTkHost " "
-    Write-ADFSTkHost -En "Hit enter to accept the defaults in round brackets" -ForegroundColor Cyan
-    Write-ADFSTkHost " "
-    Write-ADFSTkHost -En "If you make a mistake or want to change a value after this cmdlet is run" -ForegroundColor Cyan
-    Write-ADFSTkHost -En "you can manually open the config file or re-run this command." -ForegroundColor Cyan
-    
-    #if (([string[]]$configFoundLanguages)[$result] -eq "en-US")
-    #{
-    #    Write-ADFSTkHost "You are about to create a new configuration file for ADFSToolkit." -ForegroundColor Cyan
-    #    Write-ADFSTkHost " "
-    #    Write-ADFSTkHost "$previousMsg" -ForegroundColor Red
-    #    Write-ADFSTkHost " "
-    #    Write-ADFSTkHost "You will be prompted with questions about metadata, signature fingerprint" -ForegroundColor Cyan
-    #    Write-ADFSTkHost "and other question about your institution." -ForegroundColor Cyan
-    #    Write-ADFSTkHost " "
-    #    Write-ADFSTkHost "Hit enter to accept the defaults in round brackets" -ForegroundColor Cyan
-    #    Write-ADFSTkHost " "
-    #    Write-ADFSTkHost "If you make a mistake or want to change a value after this cmdlet is run" -ForegroundColor Cyan
-    #    Write-ADFSTkHost "you can manually open the config file or re-run this command." -ForegroundColor Cyan
-    #}
-    #elseif (([string[]]$configFoundLanguages)[$result] -eq "sv-SE")
-    #{
-    #    Write-ADFSTkHost "Skapar ny konfigurationsfil för ADFSToolkit." -ForegroundColor Cyan
-    #    Write-ADFSTkHost " "
-    #    Write-ADFSTkHost "$previousMsg" -ForegroundColor Red
-    #    Write-ADFSTkHost " "
-    #    Write-ADFSTkHost "Du kommer att få svara på frågor kring metadata" -ForegroundColor Cyan
-    #    Write-ADFSTkHost "och andra frågor om ditt lärosäte." -ForegroundColor Cyan
-    #    Write-ADFSTkHost " "
-    #    Write-ADFSTkHost "Tryck enter för att acceptera de förvalda värdena inom hakparenteser" -ForegroundColor Cyan
-    #    Write-ADFSTkHost " "
-    #    Write-ADFSTkHost "Om något blir fel eller om du vill ändra något i efterhand efter du kört klart det här kommandot" -ForegroundColor Cyan
-    #    Write-ADFSTkHost "kan du öppna konfigurationsfilen och ändra i den manuellt eller köra det här kommandot igen." -ForegroundColor Cyan
-    #
-    #}
-    
-    Write-ADFSTkHost "--------------------------------------------------------------------------------------------------------------" -ForegroundColor Cyan
-       
-    Set-ADFSTkConfigItem -XPath "configuration/metadataURL" `
-                         -ExampleValue 'https://metadata.federationOperator.org/path/to/metadata.xml' `
-                         -Config $config `
-                         -DefaultConfig $previousConfig
-                       
-    Set-ADFSTkConfigItem -XPath "configuration/signCertFingerprint" `
-                         -ExampleValue '0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF' `
-                         -Config $config `
-                         -DefaultConfig $previousConfig
-
-    Set-ADFSTkConfigItem -XPath "configuration/MetadataPrefix" `
-                         -ExampleValue 'ADFSTk/SWAMID/CANARIE/INCOMMON' `
-                         -Config $config `
-                         -DefaultConfig $previousConfig
-                  
-    Set-ADFSTkConfigItem -XPath "configuration/staticValues/o" `
-                         -ExampleValue 'ABC University' `
-                         -Config $config `
-                         -DefaultConfig $previousConfig
-
-    Set-ADFSTkConfigItem -XPath "configuration/staticValues/co" `
-                         -ExampleValue 'Canada, Sweden' `
-                         -Config $config `
-                         -DefaultConfig $previousConfig
-
-    Set-ADFSTkConfigItem -XPath "configuration/staticValues/c" `
-                         -ExampleValue 'CA, SE' `
-                         -Config $config `
-                         -DefaultConfig $previousConfig
-
-    Set-ADFSTkConfigItem -XPath "configuration/staticValues/schacHomeOrganization" `
-                         -ExampleValue 'institution.edu' `
-                         -Config $config `
-                         -DefaultConfig $previousConfig
-
-    Set-ADFSTkConfigItem -XPath "configuration/staticValues/norEduOrgAcronym" `
-                         -ExampleValue 'CA' `
-                         -Config $config `
-                         -DefaultConfig $previousConfig
-
-    Set-ADFSTkConfigItem -XPath "configuration/staticValues/ADFSExternalDNS" `
-                         -ExampleValue 'adfs.institution.edu' `
-                         -Config $config `
-                         -DefaultConfig $previousConfig
-
-    Set-ADFSTkConfigItem -XPath "configuration/eduPersonPrincipalNameRessignable" `
-                         -ExampleValue 'false' `
-                         -Config $config `
-                         -DefaultConfig $previousConfig
-
-    $epsa = $config.configuration.storeConfig.attributes.attribute | ? type -eq "urn:mace:dir:attribute-def:eduPersonScopedAffiliation"
-    $epa = $config.configuration.storeConfig.attributes.attribute | ? type -eq "urn:mace:dir:attribute-def:eduPersonAffiliation" 
-
-    $epa.ChildNodes | % {
-        $node = $_.Clone()    
-        $node.'#text' += "@$($config.configuration.staticValues.schacHomeOrganization)"
-
-        $epsa.AppendChild($node) | Out-Null
-    }
-
-    # Post processing to apply some business logic to enhance things
-
-    # Module specific info
-    #$myWorkingPath = (Get-Module -Name ADFSToolkit).ModuleBase
-    #$myWorkingPath = $ADFSTKPaths.modulePath
-    #$myVersion = (Get-Module -Name ADFSToolkit).Version.ToString()
-    #$myVersion = "{0}.{1}" -f $ADFSTkModule.Version.Major.ToString(),$ADFSTkModule.Version.Minor.ToString()
-
-    # set workingpath for base:
-    #$myInstallDir = "c:\ADFSToolkit"
-    #$myMainConfigDir = Join-Path $myInstallDir 'config'
-    #$myADFSTkInstallDir = Join-path $myInstallDir 'institution'
-    #$myCacheDir =  Join-path $myInstallDir 'cache'
-    #$myInstitutionConfigDir = Join-path $myInstallDir 'institution'
-    
-
-    # various useful items for minting our configuration 
-
-    # user entered
-    $myPrefix = (Select-Xml -Xml $config -XPath "configuration/MetadataPrefix").Node.'#text'
-
-    # For the ADFSTk functionality, we desire to associate certain cache files to certain things and bake a certain default location
- 
-    #(Select-Xml -Xml $config -XPath "configuration/WorkingPath").Node.'#text' = "$myADFSTkInstallDir" #Do we really need this?
-    (Select-Xml -Xml $config -XPath "configuration/SPHashFile").Node.'#text' = "$myPrefix-SPHashfile.xml"
-    (Select-Xml -Xml $config -XPath "configuration/MetadataCacheFile").Node.'#text' = "$myPrefix-metadata.cached.xml"
-
-    $configFile = Join-Path $ADFSTKPaths.institutionDir "config.$myPrefix.xml"
-
-    #
-    # Prepare our template for ADFSTkManualSPSettings to be copied into place, safely of course, after directories are confirmed to be there.
-
-    $myADFSTkManualSpSettingsDistroTemplateFile =  Join-Path $ADFSTKPaths.modulePath     -ChildPath "config\default\en-US\get-ADFSTkLocalManualSpSettings-dist.ps1"
-    $myADFSTkManualSpSettingsInstallTemplateFile = Join-Path $ADFSTKPaths.institutionDir -ChildPath "get-ADFSTkLocalManualSpSettings.ps1"
-
-    # create a new file using timestamp removing illegal file characters 
-    $myConfigFileBkpExt = (get-date -Format o).Replace(':','.')
-
-    if (Test-path $configFile)
-    {
-        if (Get-ADFSTkAnswer -Caption "ADFSToolkit:Configuration Exists." `
-                             -Message "Overwrite $configFile with this new configuration?`n(Backup will be created)")
-        {
-            $myConfigFileBkpName = "$configFile.$myConfigFileBkpExt"
-
-            Write-ADFSTkHost "Creating new config in: $configFile"
-            Write-ADFSTkHost "Old configuration: $myConfigFileBkpName"
-
-            Move-Item -Path $configFile -Destination $myConfigFileBkpName
-
-            $config.Save($configFile)
-        } 
-        else 
-        {
-            throw "Safe exit: User decided to not overwrite file, stopping"
-        }
-    }
-    else
-    {
-        Write-ADFSTkHost "No existing file, saving new ADFSTk configuration to: $configFile"
-        $config.Save($configFile)
-    }
-
-    if (Test-path $myADFSTkManualSpSettingsInstallTemplateFile ) 
-    {
-        if (Get-ADFSTkAnswer -Caption "Local Relying Party Settings Exist" `
-                             -Message "Overwrite $myADFSTkManualSpSettingsInstallTemplateFile with new blank configuration?`n(Backup will be created)")
-        {
-            Write-ADFSTkHost "Confirmed, saving new Relying Part/Service Provider customizations to: $myADFSTkManualSpSettingsInstallTemplateFile"
-
-            $mySPFileBkpName = "$myADFSTkManualSpSettingsInstallTemplateFile.$myConfigFileBkpExt"
-
-            Write-ADFSTkHost "Creating new config in: $myADFSTkManualSpSettingsDistroTemplateFile"
-            Write-ADFSTkHost "Old configuration: $mySPFileBkpName"
-
-            # Make backup
-            Move-Item -Path $myADFSTkManualSpSettingsInstallTemplateFile -Destination $mySPFileBkpName
-
-            # Detect and strip signature from file we ship
-            $myFileContent = Get-Content $($myADFSTkManualSpSettingsDistroTemplateFile)
-            $mySigLine = ($myFileContent | Select-String "SIG # Begin signature block").LineNumber
-            $sigOffset = 2
-            $mySigLocation = $mySigLine-$sigOffset
-
-            # detection is anything greater than zero with offset as the signature block will be big.
-            if ($mySigLocation -gt 0 )
-            {
-                $myFileContent = $myFileContent[0..$mySigLocation]
-                Write-ADFSTkHost "File signed, stripping signature and putting in place for you to customize"
-            }
-            else
-            {
-                Write-ADFSTkHost "File was not signed, simple copy being made"
-            }
-            
-            $myFileContent | Set-Content $myADFSTkManualSpSettingsInstallTemplateFile
-        } 
-        else 
-        {
-            Write-ADFSTkHost "User decided to not overwrite existing SP settings file, proceeding to next steps" 
-        }
-    }
-    else
-    {
-        Write-ADFSTkHost "No existing file, saving new configuration to: $myADFSTkManualSpSettingsInstallTemplateFile"
-        Copy-item -Path $myADFSTkManualSpSettingsDistroTemplateFile -Destination $myADFSTkManualSpSettingsInstallTemplateFile
-    }
-
-
-    #Add $configFile to Main Config File
-
-    Write-ADFSTkHost "--------------------------------------------------------------------------------------------------------------" -ForegroundColor Cyan
-
-    Write-ADFSTkHost -En "To be able to (automatically) run Sync-ADFSTkAggregates the configuration file" -ForegroundColor Cyan
-    Write-ADFSTkHost -En "needs to be added to a ADFSTk main configuration file." -ForegroundColor Cyan
-    Write-ADFSTkHost -En "This will be done now." -ForegroundColor Cyan
-
-    #if (([string[]]$configFoundLanguages)[$result] -eq "en-US")
-    #{
-    #    Write-ADFSTkHost "To be able to (automatically) run Sync-ADFSTkAggregates the configuration file" -ForegroundColor Cyan -NoNewline
-    #    Write-ADFSTkHost "needs to be added to a ADFSTk main configuration file." -ForegroundColor Cyan
-    #    Write-ADFSTkHost "This will be done now." -ForegroundColor Cyan
-    #}
-    #elseif (([string[]]$configFoundLanguages)[$result] -eq "sv-SE")
-    #{
-    #    Write-ADFSTkHost "För att kunna köra Sync-ADFSTkAggregates måste konfigurationsfilen" -ForegroundColor Cyan -NoNewline
-    #    Write-ADFSTkHost "läggas till i en huvudkonfiguration i ADFSTk." -ForegroundColor Cyan
-    #    Write-ADFSTkHost "Detta kommer att göras nu." -ForegroundColor Cyan
-    #}
-
-    if (Test-Path (Get-ADFSTkMainConfigurationPath))
-    {
-        Add-ADFSTkMainConfigurationItem -ConfigurationItem $configFile
-    }
-    else
-    {
-        New-ADFSTkMainConfiguration -ConfigurationFile $configFile
-    }
-
-    Write-ADFSTkHost "--------------------------------------------------------------------------------------------------------------" -ForegroundColor Cyan
-
-    Write-ADFSTkHost -En "The configuration file has been saved here:" -ForegroundColor Cyan
-    Write-ADFSTkHost $configFile -ForegroundColor Yellow
-    Write-ADFSTkHost -En "To run the metadata import use the following command:" -ForegroundColor Cyan
-    Write-ADFSTkHost "Sync-ADFSTkAggregates"
-    Write-ADFSTkHost -En "Do you want to create a scheduled task that executes this command every hour?" -ForegroundColor Cyan
-    Write-ADFSTkHost -En "The scheduled task will be disabled when created and you can change triggers as you like." -ForegroundColor Cyan
-    
-    $scheduledTaskQuestion = Write-ADFSTkHost -En "Create ADFSToolkit scheduled task?" -PassThru
-    $scheduledTaskName = Write-ADFSTkHost -En "Import Federated Metadata with ADFSToolkit" -PassThru
-    $scheduledTaskDescription = Write-ADFSTkHost -En "This scheduled task imports the Federated Metadata with ADFSToolkit" -PassThru
-    
-    #if (([string[]]$configFoundLanguages)[$result] -eq "en-US")
-    #{
-    #    Write-ADFSTkHost "The configuration file has been saved here:" -ForegroundColor Cyan
-    #    Write-ADFSTkHost $configFile -ForegroundColor Yellow
-    #    Write-ADFSTkHost "To run the metadata import use the following command:" -ForegroundColor Cyan
-    #    Write-ADFSTkHost 'Sync-ADFSTkAggregates' -ForegroundColor Yellow
-    #    Write-ADFSTkHost "Do you want to create a scheduled task that executes this command every hour?" -ForegroundColor Cyan
-    #    Write-ADFSTkHost "The scheduled task will be disabled when created and you can change triggers as you like." -ForegroundColor Cyan
-    #    
-    #    $scheduledTaskQuestion = "Create ADFSToolkit scheduled task?"
-    #    
-    #    $scheduledTaskName = "Import Federated Metadata with ADFSToolkit"
-    #    $scheduledTaskDescription = "This scheduled task imports the Federated Metadata with ADFSToolkit"
-    #}
-    #elseif (([string[]]$configFoundLanguages)[$result] -eq "sv-SE")
-    #{
-    #    Write-ADFSTkHost "Konfigurationsfilen har sparats här:" -ForegroundColor Cyan
-    #    Write-ADFSTkHost $configFile -ForegroundColor Yellow
-    #    Write-ADFSTkHost "För att starta metadataimporten kör du följande kommando:" -ForegroundColor Cyan
-    #    Write-ADFSTkHost 'Sync-ADFSTkAggregates' -ForegroundColor Yellow
-    #    Write-ADFSTkHost "Vill du skapa ett schemalagt jobb som kör kommandot varje timme?" -ForegroundColor Cyan
-    #    Write-ADFSTkHost "Det schemalagda jobbet kommer att skapas avstängt (disabled) och du kan gå in och ändra inställningar på det om du vill." -ForegroundColor Cyan
-    #    
-    #    $scheduledTaskQuestion = "Skapa ADFSToolkit schemalagt jobb?"
-    #
-    #    $scheduledTaskName = "Import Federated Metadata with ADFSToolkit"
-    #    $scheduledTaskDescription = "This scheduled task imports the Federated Metadata with ADFSToolkit"
-    #}
-
-    if (Get-ADFSTkAnswer $scheduledTaskQuestion)
-    {
-        $stAction = New-ScheduledTaskAction -Execute 'Powershell.exe' `
-                                            -Argument "-NoProfile -WindowStyle Hidden -command 'Get-Module -ListAvailable ADFSToolkit | Sort-Object Version -Descending | Select -First 1 | Import-Module;Sync-ADFSTkAggregates'"
-
-        $stTrigger =  New-ScheduledTaskTrigger -Daily -DaysInterval 1 -At (Get-Date)
-        $stSettings = New-ScheduledTaskSettingsSet -Disable -MultipleInstances IgnoreNew -ExecutionTimeLimit ([timespan]::FromHours(12))
-
-        Register-ScheduledTask -Action $stAction `
-                               -Trigger $stTrigger `
-                               -TaskName $scheduledTaskName `
-                               -Description $scheduledTaskDescription `
-                               -RunLevel Highest `
-                               -Settings $stSettings `
-                               -TaskPath "\ADFSToolkit\"
-    }
-
-    Write-ADFSTkHost "--------------------------------------------------------------------------------------------------------------" -ForegroundColor Cyan
-
-    Write-ADFSTkHost -En "All done!" -ForegroundColor Green
-    
-    #if (([string[]]$configFoundLanguages)[$result] -eq "en-US")
-    #{
-    #    Write-ADFSTkHost "All done!" -ForegroundColor Green
-    #}
-    #elseif (([string[]]$configFoundLanguages)[$result] -eq "sv-SE")
-    #{
-    #    Write-ADFSTkHost "Allt klart!" -ForegroundColor Green
-    #}
-}
-
-<#
-.SYNOPSIS
-Create or migrats an ADFSToolkit configuration file per aggregate.
-
-.DESCRIPTION
-
-This command creates a new or migrates an older configuration to a newer one when invoked.
-
-How this Powershell Cmdlet works:
- 
-When loaded we:
-   -  seek out a template configuration in $Module-home/config/default/en/config.ADFSTk.default*.xml 
-   -- where * is the language designation, usually 'en'
-   -  if invoked with -MigrateConfig, the configuration attempts to detect the previous answers as defaults to the new ones where possible
-
-   
-.INPUTS
-
-zero or more inputs of an array of string to command
-
-.OUTPUTS
-
-configuration file(s) for use with current ADFSToolkit that this command is associated with
-
-.EXAMPLE
-new-ADFSTkConfiguration
-
-.EXAMPLE
-
-"C:\ADFSToolkit\0.0.0.0\config\config.file.xml" | new-ADFSTkConfiguration
-
-.EXAMPLE
-
-"C:\ADFSToolkit\0.0.0.0\config\config.file.xml","C:\ADFSToolkit\0.0.0.0\config\config.file2.xml" | new-ADFSTkConfiguration
-
-#>
-
-}
-
-
-function Write-ADFSTkHost {
-[CmdletBinding(DefaultParameterSetName='Text')]
-param (
-    [Parameter(ParameterSetName='PassThru')]
-    [switch]$PassThru,
-    [Parameter(ParameterSetName='PassThru', Mandatory=$false, Position=1)]
-    [Parameter(ParameterSetName='Text', Mandatory=$false, Position=1)]
-    $Sv,
-    [Parameter(ParameterSetName='PassThru', Mandatory=$false, Position=0)]
-    [Parameter(ParameterSetName='Text', Mandatory=$true, Position=0)]
-    $En,
-    [Parameter(ParameterSetName='Text', Position=2)]
-    [ValidateSet('Black','DarkBlue','DarkGreen','DarkCyan','DarkRed','DarkMagenta','DarkYellow','Gray','DarkGray','Blue','Green','Cyan','Red','Magenta','Yellow','White')]
-    $ForegroundColor,
-    [Parameter(ParameterSetName='Write-ADFSTkHost')]
-    $NoNewLine
+[CmdletBinding(SupportsShouldProcess=$true)]
+param(
+    [switch]$Passthru
 )
 
-    if ([string]::IsNullOrEmpty($Sv))
+    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
     {
-        $Sv = $En
+        $Global:ADFSTkPaths = Get-ADFSTKPaths
+    }
+    
+    if (!(Test-Path "Function:\Get-ADFSTkAnswer"))
+    {
+        . (Join-Path $Global:ADFSTKPaths.modulePath 'Private\Get-ADFSTkAnswer.ps1')
     }
 
-    if (!$PSBoundParameters.ContainsKey('PassThru'))
+    if (!(Test-Path "Function:\Write-ADFSTkLog"))
     {
-        $params = @{}
-        if ($PSBoundParameters.ContainsKey('ForegroundColor'))
-        {
-            $params.ForegroundColor = $ForegroundColor
-        }
-
-        if ($PSBoundParameters.ContainsKey('NoNewLine'))
-        {
-            $params.NoNewLine = $null
-        }
+        . (Join-Path $Global:ADFSTKPaths.modulePath 'Private\Write-ADFSTkLog.ps1')
     }
 
-    if (([string[]]$configFoundLanguages)[$result] -eq "en-US")
+    #Check if the config directory exists
+    ADFSTk-TestAndCreateDir -Path $Global:ADFSTKPaths.mainDir       -PathName "ADFSTk install directory" #C:\ADFSToolkit
+    ADFSTk-TestAndCreateDir -Path $Global:ADFSTKPaths.mainConfigDir -PathName "ADFSTk install directory" #C:\ADFSToolkit\config
+    ADFSTk-TestAndCreateDir -Path $Global:ADFSTKPaths.mainBackupDir -PathName "ADFSTk install directory" #C:\ADFSToolkit\config\backup
+    
+    Write-ADFSTkHost mainconfStartMessage -Style Info -AddLinesOverAndUnder
+    
+    if (Test-Path $Global:ADFSTKPaths.mainConfigFile)
     {
-        if ($PSBoundParameters.ContainsKey('PassThru'))
+        Write-ADFSTkLog -Message (Get-ADFSTkLanguageText mainconfConfigFileExists) -EntryType Warning
+        
+        if (Get-ADFSTkAnswer (Get-ADFSTkLanguageText mainconfDoCreateConfigFile) -Caption (Get-ADFSTkLanguageText cFileAlreadyExists))
         {
-            $En
+            $file = Get-ChildItem $Global:ADFSTKPaths.mainConfigFile
+            $backupFilename = "{0}_backup_{1}{2}" -f $file.BaseName, (Get-Date).tostring("yyyyMMdd_HHmmss"), $file.Extension
+
+            $backupFile = Move-Item -Path $Global:ADFSTKPaths.mainConfigFile -Destination (Join-Path $Global:ADFSTKPaths.mainBackupDir $backupFilename) -PassThru
+            
+            Write-ADFSTkHost mainconfOldConfigBackedUp -f $backupFile.FullName -Style Value
         }
         else
         {
-            Write-ADFSTkLog $En @params
+            Write-ADFSTkLog (Get-ADFSTkLanguageText mainconfAbortDueToExistingConfFile) -EntryType Information
         }
     }
-    elseif (([string[]]$configFoundLanguages)[$result] -eq "sv-SE")
+
+    #select federation
+
+    Write-Host " "
+    Write-ADFSTkHost mainconfChooseFederationMessage -Style Info -AddSpaceAfter
+    Read-Host (Get-ADFSTkLanguageText cPressEnterKey) | Out-Null
+
+    try {
+        $feds = Get-ADFSTkFederations
+        $chosenFed = $feds.Federations.Federation | Out-GridView -Title (Get-ADFSTkLanguageText cChooseFederation) -PassThru
+    
+        Write-ADFSTkHost mainconfChosenFederation -f $chosenFed.Id -Style Value -AddSpaceAfter
+    }
+    catch {
+        #What to do then???
+    }
+    Write-ADFSTkHost -WriteLine -AddSpaceAfter
+
+    #endregion
+
+    #region current institution config files
+
+    Write-ADFSTkHost mainconfSearchForExistingInstConfFile -Style Info
+
+    $currentConfigs = Get-ChildItem $Global:ADFSTKPaths.institutionDir -Filter '*.xml' `
+                                                                -Recurse | ? {$_.Directory.Name -notcontains 'backup'} | `
+                                                                            Select Directory, Name, LastWriteTime | `
+                                                                            Sort Directory,Name
+        
+    if ($currentConfigs.count -eq 0){
+        Write-ADFSTkHost mainconfNoInstConfigsFound -Style Attention -AddLinesOverAndUnder
+    }
+    else
     {
-        if ($PSBoundParameters.ContainsKey('PassThru'))
+        Write-ADFSTkHost cFilesFound -f $currentConfigs.count -Style Value
+        Write-ADFSTkHost -WriteLine
+    }
+
+    if (![string]::IsNullOrEmpty($currentConfigs))
+    {
+        Write-ADFSTkHost mainconfSelectConfFilesToAddToMainConf -Style Info -AddSpaceAfter
+        Read-Host (Get-ADFSTkLanguageText cPressEnterKey) | Out-Null
+        
+        $selectedConfigs = $currentConfigs | Out-GridView -Title (Get-ADFSTkLanguageText mainconfSelectInstConfFilesTohandle) -OutputMode Multiple
+                      
+        Write-ADFSTkHost cChosen -f ($selectedConfigs.Name -join ',') -Style Value -AddSpaceAfter
+        Write-ADFSTkHost -WriteLine -AddSpaceAfter
+    }
+    
+
+    #endregion
+
+    #region Main config
+
+    [xml]$config = New-Object System.Xml.XmlDocument
+    $config.AppendChild($config.CreateXmlDeclaration("1.0",$null,$null)) | Out-Null
+        
+    $configurationNode = $config.CreateNode("element","Configuration",$null)
+        
+    $configVersionNode = $config.CreateNode("element","ConfigVersion",$null)
+    $configVersionNode.InnerText = "1.0"
+
+    $configurationNode.AppendChild($configVersionNode) | Out-Null
+
+    $config.AppendChild($configurationNode) | Out-Null
+    #endregion 
+
+   #region Federation config
+    $federationConfig = $config.CreateNode("element","FederationConfig",$null)
+    
+    $federationConfigFederation = $config.CreateNode("element","Federation",$null)
+
+    $federationConfigFederationName = $config.CreateNode("element","FederationName",$null)
+    
+    if ($chosenFed -ne $null)
+    {
+        $federationConfigFederationName.InnerText = $chosenFed.Id
+    }
+
+    $federationConfigFederation.AppendChild($federationConfigFederationName) | Out-Null
+
+    $federationConfigFederationSigningThumbprint = $config.CreateNode("element","SigningThumbprint",$null)
+    $federationConfigFederation.AppendChild($federationConfigFederationSigningThumbprint) | Out-Null
+
+    $federationConfigFederationURL = $config.CreateNode("element","URL",$null)
+    $federationConfigFederation.AppendChild($federationConfigFederationURL) | Out-Null
+
+    $federationConfig.AppendChild($federationConfigFederation) | Out-Null
+    
+    $config.Configuration.AppendChild($federationConfig) | Out-Null
+
+    #endregion
+
+    #region config files
+    
+    $configFiles = $config.CreateNode("element","ConfigFiles",$null)
+
+    foreach ($selectedConfig in $selectedConfigs)
+    {
+        $node = $config.CreateNode("element","ConfigFile",$null)
+        $node.InnerText = Join-Path $selectedConfig.Directory $selectedConfig.Name
+        $node.SetAttribute("enabled","false")
+        $configFiles.AppendChild($node) | Out-Null
+    }
+
+    $config.Configuration.AppendChild($configFiles) | Out-Null
+       
+    #endregion
+
+    #Don't save the configuration file if -WhatIf is present
+    if($PSCmdlet.ShouldProcess($Global:ADFSTKPaths.mainConfigFile,"Create"))
+    {
+        try 
         {
-            $Sv
+            $config.Save($Global:ADFSTKPaths.mainConfigFile)
+            Write-ADFSTkLog (Get-ADFSTkLanguageText  mainconfNewConfFileCreated -f $Global:ADFSTKPaths.mainConfigFile) -ForegroundColor Green
         }
-        else
+        catch
         {
-            Write-ADFSTkLog $Sv @params
+            throw $_
         }
+    }
+
+    if ($PSBoundParameters.ContainsKey('Passthru'))
+    {
+        return $config.configuration
     }
 }
