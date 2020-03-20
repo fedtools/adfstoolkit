@@ -40,6 +40,8 @@ function Import-ADFSTkMetadata
     process 
     {
 
+    #Get All paths
+    $ADFSTKPaths = Get-ADFSTKPaths
 
     try {
 
@@ -95,8 +97,8 @@ function Import-ADFSTkMetadata
     }
     else
     {
-        $SPHashFile = Join-Path $Settings.configuration.WorkingPath -ChildPath $Settings.configuration.CacheDir | Join-Path -ChildPath $Settings.configuration.SPHashFile
-            Write-ADFSTkLog "Setting SPHashFile to: $SPHashFile" -EventID 2
+        $SPHashFile = Join-Path $ADFSTKPaths.cacheDir $Settings.configuration.SPHashFile
+        Write-ADFSTkLog "Setting SPHashFile to: $SPHashFile" -EventID 2
     }
 
     if (Test-Path $SPHashFile)
@@ -125,8 +127,9 @@ function Import-ADFSTkMetadata
     #region Getting Metadata
 
     #Cached Metadata file
-    $CachedMetadataFile = Join-Path $Settings.configuration.WorkingPath -ChildPath $Settings.configuration.CacheDir | Join-Path -ChildPath $Settings.configuration.MetadataCacheFile
-    #Join-Path $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\cache\') SwamidMetadata.cache.xml
+    #$CachedMetadataFile = Join-Path $Settings.configuration.WorkingPath -ChildPath $Settings.configuration.CacheDir | Join-Path -ChildPath $Settings.configuration.MetadataCacheFile
+    $CachedMetadataFile = Join-Path $ADFSTKPaths.cacheDir $Settings.configuration.MetadataCacheFile
+    
     Write-ADFSTkLog "Setting CachedMetadataFile to: $CachedMetadataFile" -EventID 3
 
 
@@ -196,17 +199,14 @@ function Import-ADFSTkMetadata
             
             try
             {
-               
-
-
-            Write-ADFSTkVerboseLog "Downloading From: $metadataURL to file $CachedMetadataFile" -EntryType Information
+                Write-ADFSTkVerboseLog "Downloading From: $metadataURL to file $CachedMetadataFile" -EntryType Information
                
                 #$Metadata = Invoke-WebRequest $metadataURL -OutFile $CachedMetadataFile -PassThru
-                $myUserAgent = "ADFSToolkit/"+(get-module ADFSToolkit).Version.toString()
+                #$myUserAgent = "ADFSToolkit/"+(get-module ADFSToolkit).Version.toString()
  
                 $webClient = New-Object System.Net.WebClient 
-                $webClient.Headers.Add("user-agent", "$myUserAgent")
-                $webClient.DownloadFile($metadataURL, $CachedMetadataFile) 
+                $webClient.Headers.Add("user-agent", "ADFSToolkit")
+                $webClient.DownloadFile($metadataURL, $CachedMetadataFile)
                 
                 Write-ADFSTkVerboseLog "Successfully downloaded Metadata from $metadataURL" -EntryType Information
             }
@@ -234,25 +234,26 @@ function Import-ADFSTkMetadata
     # Assert that the metadata we are about to process is not zero bytes after all this
 
 
-    if (Test-Path $CachedMetadataFile) {
-
-            $MyFileSize=(Get-Item $CachedMetadataFile).length 
-            if ((Get-Item $CachedMetadataFile).length -gt 0kb) {
-            Write-ADFSTkLog "Metadata file size is $MyFileSize" -EventID 9
-            } else {
+    if (Test-Path $CachedMetadataFile) 
+    {
+        $MyFileSize=(Get-Item $CachedMetadataFile).length 
     
+        if ((Get-Item $CachedMetadataFile).length -gt 0kb) 
+        {
+            Write-ADFSTkLog "Metadata file size is $MyFileSize" -EventID 9
+        } 
+        else 
+        {
             Write-ADFSTkLog "Note: $CachedMetadataFile  is 0 bytes" -EventID 10
-        
-         }
+        }
     }
     #endregion
 
     #Verify Metadata Signing Cert
     Write-ADFSTkVerboseLog "Verifying metadata signing cert..." -EntryType Information
-  
     Write-ADFSTkVerboseLog "Ensuring SHA256 Signature validation is present..." -EntryType Information
+  
     Update-SHA256AlgXmlDSigSupport
-
 
     if (Verify-ADFSTkSigningCert $MetadataXML.EntitiesDescriptor.Signature.KeyInfo.X509Data.X509Certificate)
     {

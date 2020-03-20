@@ -20,12 +20,12 @@ param (
 
     if (Test-Path $Path)
     {
-        Write-ADFSTkLog "$PathName exists at $Path"        
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cPathExistsAtPath -f $PathName, $Path)
     }
     else
     {
-        New-Item -ItemType Directory -Force -Path $Path
-        Write-ADFSTkLog "$PathName did not exist, creating it here: $Path"
+        New-Item -ItemType Directory -Force -Path $Path | Out-Null
+        Write-ADFSTkVerboseLog  (Get-ADFSTkLanguageText cPathNotExistCreatingHere -f $PathName, $Path)
     }
 }
 
