@@ -9,7 +9,10 @@ param (
 )
 
 
-$ManualSPSettings = get-ADFSTkManualSPSettings
+if ([string]::IsNullOrEmpty($Global:ManualSPSettings))
+{
+    $Global:ManualSPSettings = Get-ADFSTkManualSPSettings
+}
 
 #Default rule if nothing overrides it
 $IssuanceAuthorizationRules =
@@ -20,11 +23,11 @@ $IssuanceAuthorizationRules =
 "@
 
 #AllSPs
-if ($ManualSPSettings.ContainsKey('urn:adfstk:allsps') -and `
-    $ManualSPSettings.'urn:adfstk:allsps' -is [System.Collections.Hashtable] -and `
-    $ManualSPSettings.'urn:adfstk:allsps'.ContainsKey('AuthorizationRules'))
+if ($Global:ManualSPSettings.ContainsKey('urn:adfstk:allsps') -and `
+    $Global:ManualSPSettings.'urn:adfstk:allsps' -is [System.Collections.Hashtable] -and `
+    $Global:ManualSPSettings.'urn:adfstk:allsps'.ContainsKey('AuthorizationRules'))
 {
-    $IssuanceAuthorizationRules = $ManualSPSettings.'urn:adfstk:allsps'.AuthorizationRules
+    $IssuanceAuthorizationRules = $Global:ManualSPSettings.'urn:adfstk:allsps'.AuthorizationRules
 }
 
 #AllEduSPs
@@ -43,7 +46,7 @@ if ($EntityId -ne $null)
 
     $settingsDNS = $null
 
-    foreach($setting in $ManualSPSettings.Keys)
+    foreach($setting in $Global:ManualSPSettings.Keys)
     {
         if ($setting.StartsWith('urn:adfstk:entityiddnsendswith:'))
         {
@@ -52,19 +55,19 @@ if ($EntityId -ne $null)
     }
 
     if ($entityDNS.EndsWith($settingsDNS) -and `
-        $ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS" -is [System.Collections.Hashtable] -and `
-        $ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS".ContainsKey('AuthorizationRules'))
+        $Global:ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS" -is [System.Collections.Hashtable] -and `
+        $Global:ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS".ContainsKey('AuthorizationRules'))
 {
-    $IssuanceAuthorizationRules = $ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS".AuthorizationRules
+    $IssuanceAuthorizationRules = $Global:ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS".AuthorizationRules
 }
 
 #Manual SP
 if ($EntityId -ne $null -and `
-    $ManualSPSettings.ContainsKey($EntityId) -and `
-    $ManualSPSettings.$EntityId -is [System.Collections.Hashtable] -and `
-    $ManualSPSettings.$EntityId.ContainsKey('AuthorizationRules'))
+    $Global:ManualSPSettings.ContainsKey($EntityId) -and `
+    $Global:ManualSPSettings.$EntityId -is [System.Collections.Hashtable] -and `
+    $Global:ManualSPSettings.$EntityId.ContainsKey('AuthorizationRules'))
     {
-        $IssuanceAuthorizationRules = $ManualSPSettings.$EntityId.AuthorizationRules
+        $IssuanceAuthorizationRules = $Global:ManualSPSettings.$EntityId.AuthorizationRules
     }
 }
 
