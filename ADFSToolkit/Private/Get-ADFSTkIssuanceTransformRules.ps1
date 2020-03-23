@@ -25,8 +25,17 @@ param (
 )
 
 
-$AllAttributes = Import-ADFSTkAllAttributes
-$AllTransformRules = Import-ADFSTkAllTransformRules
+if ([string]::IsNullOrEmpty($Global:AllAttributes))
+{
+    $Global:AllAttributes = Import-ADFSTkAllAttributes
+}
+
+if ([string]::IsNullOrEmpty($Global:AllTransformRules))
+{
+    $Global:AllTransformRules = Import-ADFSTkAllTransformRules
+}
+
+$AllTransformRules = $Global:AllTransformRules #So we don't need to change anything in the Get-ADFSTkManualSPSettings files
 
 #Add posibility to have manual transform rules
 
@@ -38,8 +47,10 @@ $AllTransformRules = Import-ADFSTkAllTransformRules
 
 $IssuanceTransformRuleCategories = Import-ADFSTkIssuanceTransformRuleCategories -RequestedAttribute $RequestedAttribute -NameIDFormat $NameIDFormat
 
-$ManualSPSettings = get-ADFSTkManualSPSettings
-
+if ([string]::IsNullOrEmpty($Global:ManualSPSettings))
+{
+    $Global:ManualSPSettings = Get-ADFSTkManualSPSettings
+}
 
 ### Transform Entity Categories
 
@@ -51,12 +62,12 @@ $IssuanceTransformRules = [Ordered]@{}
 $ManualSPTransformRules = $null
 
 #Check version of get-ADFSTkLocalManualSpSettings and retrieve the transform rules
-if ($EntityId -ne $null -and $ManualSPSettings.ContainsKey($EntityId))
+if ($EntityId -ne $null -and $Global:ManualSPSettings.ContainsKey($EntityId))
 {
-    if ($ManualSPSettings.$EntityId -is [System.Collections.Hashtable] -and `
-        $ManualSPSettings.$EntityId.ContainsKey('TransformRules'))
+    if ($Global:ManualSPSettings.$EntityId -is [System.Collections.Hashtable] -and `
+        $Global:ManualSPSettings.$EntityId.ContainsKey('TransformRules'))
     {
-        $ManualSPTransformRules = $ManualSPSettings.$EntityId.TransformRules
+        $ManualSPTransformRules = $Global:ManualSPSettings.$EntityId.TransformRules
     }
     elseif ($IssuanceTransformRuleManualSP.$EntityId -is [System.Collections.Specialized.OrderedDictionary])
     {
@@ -71,11 +82,11 @@ if ($EntityId -ne $null -and $ManualSPSettings.ContainsKey($EntityId))
 #Add manually added entity categories if any
 
 if ($EntityId -ne $null -and `
-    $ManualSPSettings.ContainsKey($EntityId) -and `
-    $ManualSPSettings.$EntityId -is [System.Collections.Hashtable] -and `
-    $ManualSPSettings.$EntityId.ContainsKey('EntityCategories'))
+    $Global:ManualSPSettings.ContainsKey($EntityId) -and `
+    $Global:ManualSPSettings.$EntityId -is [System.Collections.Hashtable] -and `
+    $Global:ManualSPSettings.$EntityId.ContainsKey('EntityCategories'))
 {
-    $EntityCategories += $ManualSPSettings.$EntityId.EntityCategories
+    $EntityCategories += $Global:ManualSPSettings.$EntityId.EntityCategories
 }
 
 
@@ -127,7 +138,7 @@ $TransformedEntityCategories | % {
             {
                 $IssuanceTransformRules[$Rule] = $IssuanceTransformRuleCategories[$_][$Rule].Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
                 foreach ($Attribute in $IssuanceTransformRuleCategories[$_][$Rule].Attribute) { 
-                    $AttributesFromStore[$Attribute] = $AllAttributes[$Attribute]
+                    $AttributesFromStore[$Attribute] = $Global:AllAttributes[$Attribute]
                 }
             }
         }
@@ -136,14 +147,14 @@ $TransformedEntityCategories | % {
 #endregion
 
 #AllSPs
-if ($ManualSPSettings.ContainsKey('urn:adfstk:allsps'))
+if ($Global:ManualSPSettings.ContainsKey('urn:adfstk:allsps'))
 {
-    foreach ($Rule in $ManualSPSettings['urn:adfstk:allsps'].TransformRules.Keys) { 
-        if ($ManualSPSettings['urn:adfstk:allsps'].TransformRules[$Rule] -ne $null)
+    foreach ($Rule in $Global:ManualSPSettings['urn:adfstk:allsps'].TransformRules.Keys) { 
+        if ($Global:ManualSPSettings['urn:adfstk:allsps'].TransformRules[$Rule] -ne $null)
         {                
-            $IssuanceTransformRules[$Rule] = $ManualSPSettings['urn:adfstk:allsps'].TransformRules[$Rule].Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
-            foreach ($Attribute in $ManualSPSettings['urn:adfstk:allsps'].TransformRules[$Rule].Attribute) { 
-                $AttributesFromStore[$Attribute] = $AllAttributes[$Attribute]
+            $IssuanceTransformRules[$Rule] = $Global:ManualSPSettings['urn:adfstk:allsps'].TransformRules[$Rule].Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
+            foreach ($Attribute in $Global:ManualSPSettings['urn:adfstk:allsps'].TransformRules[$Rule].Attribute) { 
+                $AttributesFromStore[$Attribute] = $Global:AllAttributes[$Attribute]
             }
         }
     }
@@ -165,7 +176,7 @@ if ($EntityId -ne $null)
 
     $settingsDNS = $null
 
-    foreach($setting in $ManualSPSettings.Keys)
+    foreach($setting in $Global:ManualSPSettings.Keys)
     {
         if ($setting.StartsWith('urn:adfstk:entityiddnsendswith:'))
         {
@@ -174,15 +185,15 @@ if ($EntityId -ne $null)
     }
 
     if ($entityDNS.EndsWith($settingsDNS) -and `
-        $ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS" -is [System.Collections.Hashtable] -and `
-        $ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS".ContainsKey('TransformRules'))
+        $Global:ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS" -is [System.Collections.Hashtable] -and `
+        $Global:ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS".ContainsKey('TransformRules'))
     {
-        foreach ($Rule in $ManualSPSettings["urn:adfstk:entityiddnsendswith:$settingsDNS"].TransformRules.Keys) { 
-            if ($ManualSPSettings["urn:adfstk:entityiddnsendswith:$settingsDNS"].TransformRules[$Rule] -ne $null)
+        foreach ($Rule in $Global:ManualSPSettings["urn:adfstk:entityiddnsendswith:$settingsDNS"].TransformRules.Keys) { 
+            if ($Global:ManualSPSettings["urn:adfstk:entityiddnsendswith:$settingsDNS"].TransformRules[$Rule] -ne $null)
             {                
-                $IssuanceTransformRules[$Rule] = $ManualSPSettings["urn:adfstk:entityiddnsendswith:$settingsDNS"].TransformRules[$Rule].Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
-                foreach ($Attribute in $ManualSPSettings["urn:adfstk:entityiddnsendswith:$settingsDNS"].TransformRules[$Rule].Attribute) { 
-                    $AttributesFromStore[$Attribute] = $AllAttributes[$Attribute]
+                $IssuanceTransformRules[$Rule] = $Global:ManualSPSettings["urn:adfstk:entityiddnsendswith:$settingsDNS"].TransformRules[$Rule].Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
+                foreach ($Attribute in $Global:ManualSPSettings["urn:adfstk:entityiddnsendswith:$settingsDNS"].TransformRules[$Rule].Attribute) { 
+                    $AttributesFromStore[$Attribute] = $Global:AllAttributes[$Attribute]
                 }
             }
         }
@@ -198,7 +209,7 @@ if ($ManualSPTransformRules -ne $null)
         {                
             $IssuanceTransformRules[$Rule] = $ManualSPTransformRules[$Rule].Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
             foreach ($Attribute in $ManualSPTransformRules[$Rule].Attribute) { 
-                $AttributesFromStore[$Attribute] = $AllAttributes[$Attribute]
+                $AttributesFromStore[$Attribute] = $Global:AllAttributes[$Attribute]
             }
         }
     }
@@ -242,9 +253,9 @@ foreach ($attr in $AttributesFromStore.values)
 $removeRules | % {
     
     $AttributesFromStore.Remove($_.type)
-    foreach ($key in $AllTransformRules.Keys) 
+    foreach ($key in $Global:AllTransformRules.Keys) 
     {
-        if ($AllTransformRules.$key.Attribute -eq $_.type) 
+        if ($Global:AllTransformRules.$key.Attribute -eq $_.type) 
         {
             $IssuanceTransformRules.Remove($key)
             break

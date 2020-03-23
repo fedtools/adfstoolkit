@@ -33,19 +33,19 @@ param (
 
     if ([string]::IsNullOrEmpty($NameIDFormat))
     {
-        $TransformRules.'transient-id' = $AllTransformRules.'transient-id'
+        $TransformRules.'transient-id' = $Global:AllTransformRules.'transient-id'
     }
     elseif ($NameIDFormat.Contains('urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'))
     {
-        $TransformRules.'persistent-id' = $AllTransformRules.'persistent-id'
+        $TransformRules.'persistent-id' = $Global:AllTransformRules.'persistent-id'
     }
     elseif ($NameIDFormat.Contains('urn:oasis:names:tc:SAML:2.0:nameid-format:transient'))
     {
-        $TransformRules.'transient-id' = $AllTransformRules.'transient-id'
+        $TransformRules.'transient-id' = $Global:AllTransformRules.'transient-id'
     }
     else
     {
-        $TransformRules.'transient-id' = $AllTransformRules.'transient-id'
+        $TransformRules.'transient-id' = $Global:AllTransformRules.'transient-id'
     }
 
     $IssuanceTransformRuleCategories.Add("NoEntityCategory",$TransformRules)
@@ -54,23 +54,23 @@ param (
 
     $TransformRules = [Ordered]@{}
 
-    #$TransformRules.'transient-id' = $AllTransformRules.'transient-id'
+    #$TransformRules.'transient-id' = $Global:AllTransformRules.'transient-id'
     
-    $TransformRules.displayName = $AllTransformRules.displayName
-    $TransformRules.eduPersonAssurance = $AllTransformRules.eduPersonAssurance
-    $TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
-    $TransformRules.eduPersonScopedAffiliation = $AllTransformRules.eduPersonScopedAffiliation
+    $TransformRules.displayName = $Global:AllTransformRules.displayName
+    $TransformRules.eduPersonAssurance = $Global:AllTransformRules.eduPersonAssurance
+    $TransformRules.eduPersonPrincipalName = $Global:AllTransformRules.eduPersonPrincipalName
+    $TransformRules.eduPersonScopedAffiliation = $Global:AllTransformRules.eduPersonScopedAffiliation
     
     #eduPersonTargetedID should only be released if eduPersonPrincipalName i ressignable
     if (![string]::IsNullOrEmpty($Settings.configuration.eduPersonPrincipalNameRessignable) -and $Settings.configuration.eduPersonPrincipalNameRessignable.ToLower() -eq "true")
     {
-        $TransformRules.eduPersonTargetedID = $AllTransformRules.eduPersonTargetedID
+        $TransformRules.eduPersonTargetedID = $Global:AllTransformRules.eduPersonTargetedID
     }
 
-    $TransformRules.eduPersonUniqueID = $AllTransformRules.eduPersonUniqueID
-    $TransformRules.givenName = $AllTransformRules.givenName
-    $TransformRules.mail = $AllTransformRules.mail
-    $TransformRules.sn = $AllTransformRules.sn
+    $TransformRules.eduPersonUniqueID = $Global:AllTransformRules.eduPersonUniqueID
+    $TransformRules.givenName = $Global:AllTransformRules.givenName
+    $TransformRules.mail = $Global:AllTransformRules.mail
+    $TransformRules.sn = $Global:AllTransformRules.sn
 
     $IssuanceTransformRuleCategories.Add("research-and-scholarship",$TransformRules)
 
@@ -84,76 +84,76 @@ param (
     if ($RequestedAttributes.Count -gt 0)
     {
         if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.6")) {
-            $TransformRules.c = $AllTransformRules.c
+            $TransformRules.c = $Global:AllTransformRules.c
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.3")) {
-            $TransformRules.cn = $AllTransformRules.cn
+            $TransformRules.cn = $Global:AllTransformRules.cn
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:0.9.2342.19200300.100.1.43")) {
-            $TransformRules.co = $AllTransformRules.co
+            $TransformRules.co = $Global:AllTransformRules.co
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:2.16.840.1.113730.3.1.241")) { 
-            $TransformRules.displayName = $AllTransformRules.displayName 
+            $TransformRules.displayName = $Global:AllTransformRules.displayName 
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.6")) { 
-            $TransformRules.countryName = $AllTransformRules.countryName 
+            $TransformRules.countryName = $Global:AllTransformRules.countryName 
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.1")) {
-            $TransformRules.eduPersonAffiliation = $AllTransformRules.eduPersonAffiliation
+            $TransformRules.eduPersonAffiliation = $Global:AllTransformRules.eduPersonAffiliation
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.11")) {
-            $TransformRules.eduPersonAssurance = $AllTransformRules.eduPersonAssurance
+            $TransformRules.eduPersonAssurance = $Global:AllTransformRules.eduPersonAssurance
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.16")) {
-            $TransformRules.eduPersonOrcid = $AllTransformRules.eduPersonOrcid
+            $TransformRules.eduPersonOrcid = $Global:AllTransformRules.eduPersonOrcid
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.6")) { 
-            $TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
+            $TransformRules.eduPersonPrincipalName = $Global:AllTransformRules.eduPersonPrincipalName
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.9")) {
-            $TransformRules.eduPersonScopedAffiliation = $AllTransformRules.eduPersonScopedAffiliation
+            $TransformRules.eduPersonScopedAffiliation = $Global:AllTransformRules.eduPersonScopedAffiliation
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.10")) { 
-            $TransformRules.eduPersonTargetedID = $AllTransformRules.eduPersonTargetedID
+            $TransformRules.eduPersonTargetedID = $Global:AllTransformRules.eduPersonTargetedID
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.13")) { 
-            $TransformRules.eduPersonUniqueID = $AllTransformRules.eduPersonUniqueID
+            $TransformRules.eduPersonUniqueID = $Global:AllTransformRules.eduPersonUniqueID
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:0.9.2342.19200300.100.1.43")) { 
-            $TransformRules.friendlyCountryName = $AllTransformRules.friendlyCountryName 
+            $TransformRules.friendlyCountryName = $Global:AllTransformRules.friendlyCountryName 
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.42")) { 
-            $TransformRules.givenName = $AllTransformRules.givenName 
+            $TransformRules.givenName = $Global:AllTransformRules.givenName 
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:0.9.2342.19200300.100.1.3")) { 
-            $TransformRules.mail = $AllTransformRules.mail
+            $TransformRules.mail = $Global:AllTransformRules.mail
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.2428.90.1.6")) { 
-            $TransformRules.norEduOrgAcronym = $AllTransformRules.norEduOrgAcronym 
+            $TransformRules.norEduOrgAcronym = $Global:AllTransformRules.norEduOrgAcronym 
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.2428.90.1.5")) {
-            $TransformRules.norEduPersonNIN = $AllTransformRules.norEduPersonNIN
+            $TransformRules.norEduPersonNIN = $Global:AllTransformRules.norEduPersonNIN
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.10")) {
-            $TransformRules.o = $AllTransformRules.o
+            $TransformRules.o = $Global:AllTransformRules.o
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.10")) { 
-            $TransformRules.organizationName = $AllTransformRules.organizationName 
+            $TransformRules.organizationName = $Global:AllTransformRules.organizationName 
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.2.752.29.4.13")) {
-            $TransformRules.personalIdentityNumber = $AllTransformRules.personalIdentityNumber
+            $TransformRules.personalIdentityNumber = $Global:AllTransformRules.personalIdentityNumber
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.25178.1.2.3")) {
-            $TransformRules.schacDateOfBirth = $AllTransformRules.schacDateOfBirth
+            $TransformRules.schacDateOfBirth = $Global:AllTransformRules.schacDateOfBirth
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.25178.1.2.9")) { 
-            $TransformRules.schacHomeOrganization = $AllTransformRules.schacHomeOrganization
+            $TransformRules.schacHomeOrganization = $Global:AllTransformRules.schacHomeOrganization
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.25178.1.2.10")) {
-            $TransformRules.schacHomeOrganizationType = $AllTransformRules.schacHomeOrganizationType
+            $TransformRules.schacHomeOrganizationType = $Global:AllTransformRules.schacHomeOrganizationType
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.4")) { 
-            $TransformRules.sn = $AllTransformRules.sn
+            $TransformRules.sn = $Global:AllTransformRules.sn
         }
     }
 
@@ -163,21 +163,21 @@ param (
 
     $TransformRules = [Ordered]@{}
 
-    #$TransformRules.'transient-id' = $AllTransformRules.'transient-id'
-    $TransformRules.eduPersonPrincipalName = $AllTransformRules.eduPersonPrincipalName
-    $TransformRules.eduPersonUniqueID = $AllTransformRules.eduPersonUniqueID
-    $TransformRules.mail = $AllTransformRules.mail
-    $TransformRules.displayName = $AllTransformRules.displayName
-    $TransformRules.cn = $AllTransformRules.cn
-    $TransformRules.givenName = $AllTransformRules.givenName
-    $TransformRules.sn = $AllTransformRules.sn
-    $TransformRules.eduPersonAssurance = $AllTransformRules.eduPersonAssurance
-    $TransformRules.eduPersonScopedAffiliation = $AllTransformRules.eduPersonScopedAffiliation
-    $TransformRules.o = $AllTransformRules.o
-    $TransformRules.norEduOrgAcronym = $AllTransformRules.norEduOrgAcronym
-    $TransformRules.c = $AllTransformRules.c
-    $TransformRules.co = $AllTransformRules.co
-    $TransformRules.schacHomeOrganization = $AllTransformRules.schacHomeOrganization
+    #$TransformRules.'transient-id' = $Global:AllTransformRules.'transient-id'
+    $TransformRules.eduPersonPrincipalName = $Global:AllTransformRules.eduPersonPrincipalName
+    $TransformRules.eduPersonUniqueID = $Global:AllTransformRules.eduPersonUniqueID
+    $TransformRules.mail = $Global:AllTransformRules.mail
+    $TransformRules.displayName = $Global:AllTransformRules.displayName
+    $TransformRules.cn = $Global:AllTransformRules.cn
+    $TransformRules.givenName = $Global:AllTransformRules.givenName
+    $TransformRules.sn = $Global:AllTransformRules.sn
+    $TransformRules.eduPersonAssurance = $Global:AllTransformRules.eduPersonAssurance
+    $TransformRules.eduPersonScopedAffiliation = $Global:AllTransformRules.eduPersonScopedAffiliation
+    $TransformRules.o = $Global:AllTransformRules.o
+    $TransformRules.norEduOrgAcronym = $Global:AllTransformRules.norEduOrgAcronym
+    $TransformRules.c = $Global:AllTransformRules.c
+    $TransformRules.co = $Global:AllTransformRules.co
+    $TransformRules.schacHomeOrganization = $Global:AllTransformRules.schacHomeOrganization
 
     $IssuanceTransformRuleCategories.Add("entity-category-research-and-education",$TransformRules)
 
@@ -185,9 +185,9 @@ param (
 
     $TransformRules = [Ordered]@{}
 
-    #$TransformRules.'transient-id' = $AllTransformRules.'transient-id'
-    $TransformRules.norEduPersonNIN = $AllTransformRules.norEduPersonNIN
-    $TransformRules.eduPersonAssurance = $AllTransformRules.eduPersonAssurance
+    #$TransformRules.'transient-id' = $Global:AllTransformRules.'transient-id'
+    $TransformRules.norEduPersonNIN = $Global:AllTransformRules.norEduPersonNIN
+    $TransformRules.eduPersonAssurance = $Global:AllTransformRules.eduPersonAssurance
 
     $IssuanceTransformRuleCategories.Add("entity-category-sfs-1993-1153",$TransformRules)
 
