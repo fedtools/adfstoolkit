@@ -176,4 +176,14 @@ We will now look if that file already exists or create it.
     "defaultConfiguration_configuration/staticValues/norEduOrgAcronym" = "The short name of your institution"
     "defaultConfiguration_configuration/staticValues/ADFSExternalDNS" = "The DNS name of your ADFS"
     "defaultConfiguration_configuration/eduPersonPrincipalNameRessignable" = "Does your institution reassign eduPersonPrincipalName to new accounts?"
+
+    ################################
+    ### Issuance Transform Rules ###
+    ################################
+
+    rulesFederationEntityCategoryFile = "Loading Federation-specific Entity Categories..."
+    rulesFederationEntityCategoriesFound = "{0} Federation-specific Entity Categories found."
+    rulesFederationEntityCategoryLoadFail = "The Federation Entity Category file '{0}' could not be loaded!"
+    rulesFederationEntityCategoryOverwrite = "The Federation-specific Entity Category '{0}' found and will overwrite the default in ADFS Toolkit."
+    rulesFederationEntityCategoryAdd = "The Federation-specific Entity Category '{0}' found and will be added."
 }
