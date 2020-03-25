@@ -4,7 +4,7 @@ param (
 [Parameter(Mandatory=$false,
                    ValueFromPipelineByPropertyName=$true,
                    Position=0)]
-    $RequestedAttribute,
+    $RequestedAttributes,
     [Parameter(Mandatory=$false,
                    ValueFromPipelineByPropertyName=$true,
                    Position=1)]
@@ -13,19 +13,6 @@ param (
 )
     ### Create AttributeStore variables
     $IssuanceTransformRuleCategories = @{}
-
-    $RequestedAttributes = @{}
-
-    if (![string]::IsNullOrEmpty($RequestedAttribute))
-    {
-        $RequestedAttribute | % {
-            $RequestedAttributes.($_.Name.trimEnd()) = $_.friendlyName
-        }
-    }else
-    {
-    Write-ADFSTkLog "No Requested attributes detected"
-
-    }
 
     ### Released to SP:s without Entity Category
 
@@ -72,10 +59,7 @@ param (
     $TransformRules.mail = $Global:AllTransformRules.mail
     $TransformRules.sn = $Global:AllTransformRules.sn
 
-    $IssuanceTransformRuleCategories.Add("research-and-scholarship",$TransformRules)
-
-    #...
-    #$IssuanceTransformRuleCategories.Add("research-and-scholarship-SWAMID",$TransformRules)
+    $IssuanceTransformRuleCategories.Add("http://refeds.org/category/research-and-scholarship",$TransformRules)
 
     ### GEANT Dataprotection Code of Conduct
     
@@ -83,21 +67,21 @@ param (
 
     if ($RequestedAttributes.Count -gt 0)
     {
-        if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.6")) {
-            $TransformRules.c = $Global:AllTransformRules.c
-        }
+        #if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.6")) {
+        #    $TransformRules.c = $Global:AllTransformRules.c
+        #}
         if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.3")) {
             $TransformRules.cn = $Global:AllTransformRules.cn
         }
-        if ($RequestedAttributes.ContainsKey("urn:oid:0.9.2342.19200300.100.1.43")) {
-            $TransformRules.co = $Global:AllTransformRules.co
-        }
+        #if ($RequestedAttributes.ContainsKey("urn:oid:0.9.2342.19200300.100.1.43")) {
+        #    $TransformRules.co = $Global:AllTransformRules.co
+        #}
         if ($RequestedAttributes.ContainsKey("urn:oid:2.16.840.1.113730.3.1.241")) { 
             $TransformRules.displayName = $Global:AllTransformRules.displayName 
         }
-        if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.6")) { 
-            $TransformRules.countryName = $Global:AllTransformRules.countryName 
-        }
+        #if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.6")) { 
+        #    $TransformRules.countryName = $Global:AllTransformRules.countryName 
+        #}
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.1")) {
             $TransformRules.eduPersonAffiliation = $Global:AllTransformRules.eduPersonAffiliation
         }
@@ -119,27 +103,27 @@ param (
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.13")) { 
             $TransformRules.eduPersonUniqueID = $Global:AllTransformRules.eduPersonUniqueID
         }
-        if ($RequestedAttributes.ContainsKey("urn:oid:0.9.2342.19200300.100.1.43")) { 
-            $TransformRules.friendlyCountryName = $Global:AllTransformRules.friendlyCountryName 
-        }
+        #if ($RequestedAttributes.ContainsKey("urn:oid:0.9.2342.19200300.100.1.43")) { 
+        #    $TransformRules.friendlyCountryName = $Global:AllTransformRules.friendlyCountryName 
+        #}
         if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.42")) { 
             $TransformRules.givenName = $Global:AllTransformRules.givenName 
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:0.9.2342.19200300.100.1.3")) { 
             $TransformRules.mail = $Global:AllTransformRules.mail
         }
-        if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.2428.90.1.6")) { 
-            $TransformRules.norEduOrgAcronym = $Global:AllTransformRules.norEduOrgAcronym 
-        }
-        if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.2428.90.1.5")) {
-            $TransformRules.norEduPersonNIN = $Global:AllTransformRules.norEduPersonNIN
-        }
-        if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.10")) {
-            $TransformRules.o = $Global:AllTransformRules.o
-        }
-        if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.10")) { 
-            $TransformRules.organizationName = $Global:AllTransformRules.organizationName 
-        }
+        #if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.2428.90.1.6")) { 
+        #    $TransformRules.norEduOrgAcronym = $Global:AllTransformRules.norEduOrgAcronym 
+        #}
+        #if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.2428.90.1.5")) {
+        #    $TransformRules.norEduPersonNIN = $Global:AllTransformRules.norEduPersonNIN
+        #}
+        #if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.10")) {
+        #    $TransformRules.o = $Global:AllTransformRules.o
+        #}
+        #if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.10")) { 
+        #    $TransformRules.organizationName = $Global:AllTransformRules.organizationName 
+        #}
         if ($RequestedAttributes.ContainsKey("urn:oid:1.2.752.29.4.13")) {
             $TransformRules.personalIdentityNumber = $Global:AllTransformRules.personalIdentityNumber
         }
@@ -157,39 +141,7 @@ param (
         }
     }
 
-    $IssuanceTransformRuleCategories.Add("ReleaseToCoCo",$TransformRules)
+    $IssuanceTransformRuleCategories.Add("http://www.geant.net/uri/dataprotection-code-of-conduct/v1",$TransformRules)
     
-    ### SWAMID Entity Category Research and Education
-
-    $TransformRules = [Ordered]@{}
-
-    #$TransformRules.'transient-id' = $Global:AllTransformRules.'transient-id'
-    $TransformRules.eduPersonPrincipalName = $Global:AllTransformRules.eduPersonPrincipalName
-    $TransformRules.eduPersonUniqueID = $Global:AllTransformRules.eduPersonUniqueID
-    $TransformRules.mail = $Global:AllTransformRules.mail
-    $TransformRules.displayName = $Global:AllTransformRules.displayName
-    $TransformRules.cn = $Global:AllTransformRules.cn
-    $TransformRules.givenName = $Global:AllTransformRules.givenName
-    $TransformRules.sn = $Global:AllTransformRules.sn
-    $TransformRules.eduPersonAssurance = $Global:AllTransformRules.eduPersonAssurance
-    $TransformRules.eduPersonScopedAffiliation = $Global:AllTransformRules.eduPersonScopedAffiliation
-    $TransformRules.o = $Global:AllTransformRules.o
-    $TransformRules.norEduOrgAcronym = $Global:AllTransformRules.norEduOrgAcronym
-    $TransformRules.c = $Global:AllTransformRules.c
-    $TransformRules.co = $Global:AllTransformRules.co
-    $TransformRules.schacHomeOrganization = $Global:AllTransformRules.schacHomeOrganization
-
-    $IssuanceTransformRuleCategories.Add("entity-category-research-and-education",$TransformRules)
-
-    ### SWAMID Entity Category SFS 1993:1153
-
-    $TransformRules = [Ordered]@{}
-
-    #$TransformRules.'transient-id' = $Global:AllTransformRules.'transient-id'
-    $TransformRules.norEduPersonNIN = $Global:AllTransformRules.norEduPersonNIN
-    $TransformRules.eduPersonAssurance = $Global:AllTransformRules.eduPersonAssurance
-
-    $IssuanceTransformRuleCategories.Add("entity-category-sfs-1993-1153",$TransformRules)
-
     return $IssuanceTransformRuleCategories
 }

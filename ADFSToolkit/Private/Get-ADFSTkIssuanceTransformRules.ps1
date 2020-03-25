@@ -24,6 +24,11 @@ param (
     $NameIDFormat
 )
 
+#Get All paths
+if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
+{
+    $Global:ADFSTkPaths = Get-ADFSTKPaths
+}
 
 if ([string]::IsNullOrEmpty($Global:AllAttributes))
 {
@@ -37,15 +42,60 @@ if ([string]::IsNullOrEmpty($Global:AllTransformRules))
 
 $AllTransformRules = $Global:AllTransformRules #So we don't need to change anything in the Get-ADFSTkManualSPSettings files
 
-#Add posibility to have manual transform rules
 
-#$ManualTransformRules = Import-ADFSTkAllManualTransformRules
-#foreach ($key in $ManualTransformRules.Keys)
-#{
-#    $AllTransformRules.$key = $ManualTransformRules.$key    
-#}
+$RequestedAttributes = @{}
 
-$IssuanceTransformRuleCategories = Import-ADFSTkIssuanceTransformRuleCategories -RequestedAttribute $RequestedAttribute -NameIDFormat $NameIDFormat
+if (![string]::IsNullOrEmpty($RequestedAttribute))
+{
+    $RequestedAttribute | % {
+        $RequestedAttributes.($_.Name.trimEnd()) = $_.friendlyName
+    }
+}
+else
+{
+    Write-ADFSTkLog "No Requested attributes detected"
+}
+
+$IssuanceTransformRuleCategories = Import-ADFSTkIssuanceTransformRuleCategories -RequestedAttributes $RequestedAttributes -NameIDFormat $NameIDFormat
+
+$adfstkConfig = Get-ADFSTkConfiguration
+
+$federationDir = Join-Path $Global:ADFSTkPaths.federationDir $adfstkConfig.FederationConfig.Federation.FederationName
+$fedEntityCategoryFileName = Join-Path $federationDir "$($adfstkConfig.FederationConfig.Federation.FederationName)_entityCategories.ps1"
+
+if (Test-Path $fedEntityCategoryFileName)
+{
+    try {
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationEntityCategoryFile)
+        . $fedEntityCategoryFileName
+        $IssuanceTransformRuleCategoriesFromFederation = Import-ADFSTkIssuanceTransformRuleCategoriesFromFederation -RequestedAttributes $RequestedAttributes
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationEntityCategoriesFound -f $IssuanceTransformRuleCategoriesFromFederation.Count)
+
+        foreach ($entityCategory in $IssuanceTransformRuleCategoriesFromFederation.Keys)
+        {
+            #Add or replace the standard Entoty Category with the federation one
+            if ($IssuanceTransformRuleCategories.ContainsKey($entityCategory))
+            {
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationEntityCategoryOverwrite -f $entityCategory)
+            }
+            else
+            {
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationEntityCategoryAdd -f $entityCategory)
+            }
+
+            $IssuanceTransformRuleCategories.$entityCategory = $IssuanceTransformRuleCategoriesFromFederation.$entityCategory
+        }
+    }
+    catch
+    {
+        Write-ADFSTkLog (Get-ADFSTkLanguageText rulesFederationEntityCategoryLoadFail) -EntryType Error
+    }
+}
+else
+{
+    #Write Verbose
+}
+
 
 if ([string]::IsNullOrEmpty($Global:ManualSPSettings))
 {
@@ -96,27 +146,21 @@ if ($EntityCategories -eq $null)
 }
 else
 {
-    if ($EntityCategories.Contains("http://refeds.org/category/research-and-scholarship")) 
+    foreach ($entityCategory in $IssuanceTransformRuleCategories.Keys)
     {
-        $TransformedEntityCategories += "research-and-scholarship" 
-    }
-
-    if ($EntityCategories.Contains("http://www.geant.net/uri/dataprotection-code-of-conduct/v1")) 
-    {
-        $TransformedEntityCategories += "ReleaseToCoCo" 
-    }
-
-    if ($EntityCategories.Contains("http://www.swamid.se/category/research-and-education") -and `
-        ($EntityCategories.Contains("http://www.swamid.se/category/eu-adequate-protection") -or `
-        $EntityCategories.Contains("http://www.swamid.se/category/nren-service") -or `
-        $EntityCategories.Contains("http://www.swamid.se/category/hei-service")))
-    {
-        $TransformedEntityCategories += "entity-category-research-and-education" 
-    }
-
-    if ($EntityCategories.Contains("http://www.swamid.se/category/sfs-1993-1153"))
-    {
-        $TransformedEntityCategories += "entity-category-sfs-1993-1153" 
+        if ($entityCategory -eq "http://www.swamid.se/category/research-and-education" -and $EntityCategories.Contains($entityCategory))
+        {
+            if ($EntityCategories.Contains("http://www.swamid.se/category/eu-adequate-protection") -or `
+                $EntityCategories.Contains("http://www.swamid.se/category/nren-service") -or `
+                $EntityCategories.Contains("http://www.swamid.se/category/hei-service"))
+            {
+                $TransformedEntityCategories += $entityCategory
+            }
+        }
+        elseif ($EntityCategories.Contains($entityCategory)) 
+        {
+            $TransformedEntityCategories += $entityCategory
+        }
     }
 
     if ($TransformedEntityCategories.Count -eq 0)
