@@ -53,7 +53,7 @@ if (![string]::IsNullOrEmpty($RequestedAttribute))
 }
 else
 {
-    Write-ADFSTkLog "No Requested attributes detected"
+    Write-ADFSTkLog (Get-ADFSTkLanguageText rulesNoRequestedAttributesDetected)
 }
 
 $IssuanceTransformRuleCategories = Import-ADFSTkIssuanceTransformRuleCategories -RequestedAttributes $RequestedAttributes -NameIDFormat $NameIDFormat

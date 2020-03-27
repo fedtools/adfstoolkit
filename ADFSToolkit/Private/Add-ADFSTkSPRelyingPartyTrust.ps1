@@ -19,21 +19,22 @@ function Add-ADFSTkSPRelyingPartyTrust {
         ErrorAction = 'Stop'
     }
 
-    Write-ADFSTkLog "Adding $entityId as SP..." -EntryType Information -EventID 41
+    Write-ADFSTkLog (Get-ADFSTkLanguageText addRPAddingRP -f $entityId) -EntryType Information -EventID 41
      
     ### Name, DisplayName
     $Name = (Split-Path $sp.entityID -NoQualifier).TrimStart('/') -split '/' | select -First 1
 
 
 #region Token Encryption Certificate 
-    Write-ADFSTkVerboseLog "Getting Token Encryption Certificate..."
+    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPGettingEncryptionert)
     
     $CertificateString = ($sp.SPSSODescriptor.KeyDescriptor | ? use -eq "encryption"  | select -ExpandProperty KeyInfo).X509Data.X509Certificate
     
     if ($CertificateString -eq $null)
     {
         #Check if any certificates without 'use'. Should we use this?
-        Write-ADFSTkVerboseLog "Certificate with description `'encryption`' not found. Using default certificate..."
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPEncryptionCertNotFound)
+        
         $CertificateString = ($sp.SPSSODescriptor.KeyDescriptor | ? use -ne "signing"  | select -ExpandProperty KeyInfo).X509Data.X509Certificate #or shoud 'use' not be present?
     }
     
@@ -46,7 +47,7 @@ function Add-ADFSTkSPRelyingPartyTrust {
             #If more than one, choose the one with furthest end date.
 
             $CertificateString | % {
-                Write-ADFSTkVerboseLog "Converting Token Encryption Certificate string to Certificate..."
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPConvertingEncrytionCert)
                 $EncryptionCertificate = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
     
                 $CertificateBytes  = [system.Text.Encoding]::UTF8.GetBytes($_)
@@ -61,17 +62,17 @@ function Add-ADFSTkSPRelyingPartyTrust {
                 {
                     $rpParams.EncryptionCertificate = $EncryptionCertificate
                 }
-                Write-ADFSTkVerboseLog "Convertion of Token Encryption Certificate string to Certificate done!"
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPConvertionEncryptionCertDone)
             }
 
             if ($CertificateString -is [Object[]]) #Just for logging!
             {
-                Write-ADFSTkLog "Multiple encryption certificates found! Chose certificate with thumbprint '$($EncryptionCertificate.Thumbprint)' as encryption certificate." -EntryType Warning -EventID 30
+                Write-ADFSTkLog (Get-ADFSTkLanguageText addRPMultipleEncryptionCertsFound -f $EncryptionCertificate.Thumbprint)  -EntryType Warning -EventID 30
             }
         }
         catch
         {
-            Write-ADFSTkLog "Could not import Token Encryption Certificate!" -EntryType Error -EventID 21
+            Write-ADFSTkLog (Get-ADFSTkLanguageText addRPCouldNotImportEncrytionCert) -EntryType Error -EventID 21
             $Continue = $false
         }
     }
@@ -80,14 +81,14 @@ function Add-ADFSTkSPRelyingPartyTrust {
 #region Token Signing Certificate 
 
     #Add all signing certificates if there are more than one
-    Write-ADFSTkVerboseLog "Getting Token Signing Certificate..."
+    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPGetSigningCert)
     
     #$rpParams.SignatureAlgorithm = "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
     
     $CertificateString = ($sp.SPSSODescriptor.KeyDescriptor | ? use -eq "signing"  | select -ExpandProperty KeyInfo).X509Data.X509Certificate
     if ($CertificateString -eq $null)
     {
-        Write-ADFSTkVerboseLog "Certificate with description `'signing`' not found. Using Token Decryption certificate..."
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPSigningCertNotFound)
         $CertificateString = ($sp.SPSSODescriptor.KeyDescriptor | ? use -ne "encryption"  | select -ExpandProperty KeyInfo).X509Data.X509Certificate #or shoud 'use' not be present?
     }
     
@@ -99,7 +100,7 @@ function Add-ADFSTkSPRelyingPartyTrust {
 
             $CertificateString | % {
 
-                Write-ADFSTkVerboseLog "Converting Token Signing Certificate string to Certificate..."
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPConvertingSigningCert)
 
                 $CertificateBytes  = [system.Text.Encoding]::UTF8.GetBytes($_)
                 
@@ -114,40 +115,40 @@ function Add-ADFSTkSPRelyingPartyTrust {
                 #}
             }
             
-            Write-ADFSTkVerboseLog "Convertion of Token Signing Certificate string to Certificate done!"
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPConvertionSigningCertDone)
         }
         catch
         {
-            Write-ADFSTkLog "Could not import Token Signing Certificate!" -EntryType Error -EventID 22
+            Write-ADFSTkLog (Get-ADFSTkLanguageText addRPCouldNotImportSigningCert) -EntryType Error -EventID 22
             $Continue = $false
         }
     }
 #endregion
 
 #region Get SamlEndpoints
-    Write-ADFSTkVerboseLog "Getting SamlEndpoints..."
+    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPGetSamlEndpoints)
     $rpParams.SamlEndpoint = $sp.SPSSODescriptor.AssertionConsumerService |  % {
         if ($_.Binding -eq "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST")
         {  
-            Write-ADFSTkVerboseLog "HTTP-POST SamlEndpoint found!"
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPHTTPPostFound)
             New-ADFSSamlEndpoint -Binding POST -Protocol SAMLAssertionConsumer -Uri $_.Location -Index $_.index 
         }
         elseif ($_.Binding -eq "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact")
         {
-            Write-ADFSTkVerboseLog "HTTP-Artifact SamlEndpoint found!"
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPHTTPArtifactFound)
             New-ADFSSamlEndpoint -Binding Artifact -Protocol SAMLAssertionConsumer -Uri $_.Location -Index $_.index 
         }
     } 
 
     if ($rpParams.SamlEndpoint -eq $null) 
     {
-        Write-ADFSTkLog "No SamlEndpoints found!" -EntryType Error -EventID 23
+        Write-ADFSTkLog (Get-ADFSTkLanguageText addRPNoSamlEndpointsFound) -EntryType Error -EventID 23
         $Continue = $false
     }
 #endregion
 
 #region Get Issuance Transform Rules from Entity Categories
-    Write-ADFSTkVerboseLog "Getting Entity Categories..."
+    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPGetEntityCategories)
     $EntityCategories = @()
     $EntityCategories += $sp.Extensions.EntityAttributes.Attribute | ? Name -eq "http://macedir.org/entity-category" | select -ExpandProperty AttributeValue | % {
         if ($_ -is [string])
@@ -160,12 +161,12 @@ function Add-ADFSTkSPRelyingPartyTrust {
         }
     }
     
-    Write-ADFSTkVerboseLog "The following Entity Categories found: $($EntityCategories -join ',')"
+    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPFollowingECFound -f ($EntityCategories -join ','))
 
     if ($ForcedEntityCategories)
     {
         $EntityCategories += $ForcedEntityCategories
-        Write-ADFSTkVerboseLog "Added Forced Entity Categories: $($ForcedEntityCategories -join ',')"
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPAddedForcedEC -f ($ForcedEntityCategories -join ','))
     }
 
     $rpParams.IssuanceTransformRules = Get-ADFSTkIssuanceTransformRules $EntityCategories -EntityId $entityID `
@@ -195,7 +196,7 @@ function Add-ADFSTkSPRelyingPartyTrust {
 
             $Name = $NewName
             $NameWithPrefix = "$NamePrefix $Name"
-            Write-ADFSTkVerboseLog "A RelyingPartyTrust already exist with the same name. Changing name to `'$NameWithPrefix`'..."
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPRPAlreadyExistsChangingNameTo -f $NameWithPrefix)
         }
 
         $rpParams.Name = $NameWithPrefix
@@ -204,7 +205,7 @@ function Add-ADFSTkSPRelyingPartyTrust {
         {
             try 
             {
-                Write-ADFSTkVerboseLog "Adding ADFSRelyingPartyTrust `'$entityID`'..."
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPAddingRP -f $entityID)
                 
                 # Invoking the following command leverages 'splatting' for passing the switches for commands
                 # for details, see: https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_splatting?view=powershell-6
@@ -212,12 +213,12 @@ function Add-ADFSTkSPRelyingPartyTrust {
 
                 Add-ADFSRelyingPartyTrust @rpParams
 
-                Write-ADFSTkLog "Successfully added `'$entityId`'!" -EntryType Information -EventID 42
+                Write-ADFSTkLog (Get-ADFSTkLanguageText addRPSuccefullyAddedRP -f $entityId) -EntryType Information -EventID 42
                 Add-ADFSTkEntityHash -EntityID $entityId
             }
             catch
             {
-                Write-ADFSTkLog "Could not add $entityId as SP! Error: $_" -EntryType Error -EventID 24
+                Write-ADFSTkLog (Get-ADFSTkLanguageText addRPCouldNotAddRP -f $entityId, $_) -EntryType Error -EventID 24
                 Add-ADFSTkEntityHash -EntityID $entityId
             }
         }
@@ -229,6 +230,6 @@ function Add-ADFSTkSPRelyingPartyTrust {
     }
     else
     {
-        Write-ADFSTkLog "$entityId already exists as SP!" -EntryType Warning -EventID 25
+        Write-ADFSTkLog (Get-ADFSTkLanguageText addRPRPAlreadyExists -f $entityId) -EntryType Warning -EventID 25
     }                
 }

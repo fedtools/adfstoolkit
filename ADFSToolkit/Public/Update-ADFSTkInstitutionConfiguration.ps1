@@ -101,7 +101,7 @@
     {
         if (!(Test-Path $ConfigurationFile))
         {
-            Write-ADFSTkLog "$ConfigurationFile does not exist!" -MajorFault
+            Write-ADFSTkLog (Get-ADFSTkLanguageText cFileDontExist -f $ConfigurationFile) -MajorFault
         }
 
         $selectedConfigs += Add-ADFSTkConfigurationItem -ConfigurationItem $ConfigurationFile -PassThru 
@@ -122,23 +122,23 @@
             
             if ($currentConfigs -lt 1)
             {
-                Write-ADFSTkLog "Could not find any institution configuration files. Have you run New-ADFSTkInstitutionConfiguration?" -MajorFault
+                Write-ADFSTkLog (Get-ADFSTkLanguageText confNoInstConfFiles) -MajorFault
             }
 
             #Add all selected federation config files to ADFSTk configuration
-            $selectedConfigs += $currentConfigs | Out-GridView -Title "Select institution configuration file(s) to handle..." -PassThru | % {
+            $selectedConfigs += $currentConfigs | Out-GridView -Title (Get-ADFSTkLanguageText confSelectInstConfFileToHandle) -PassThru | % {
                 Add-ADFSTkConfigurationItem -ConfigurationItem (Join-Path $_.Directory $_.Name) -PassThru
             }
         }
         else
         {
-            $selectedConfigs += $allCurrentConfigs | Out-GridView -Title "Select institution configuration file(s) to handle..." -PassThru
+            $selectedConfigs += $allCurrentConfigs | Out-GridView -Title (Get-ADFSTkLanguageText confSelectInstConfFileToHandle) -PassThru
         }
     }
 
     if ($selectedConfigs.Count -lt 1)
     {
-        Write-ADFSTkLog "No institution configuration file(s) selected. Aborting!" -MajorFault
+        Write-ADFSTkLog (Get-ADFSTkLanguageText confNoInstConfigFileSelectedborting) -MajorFault
     }
 
 #endregion

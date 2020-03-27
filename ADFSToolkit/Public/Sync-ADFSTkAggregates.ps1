@@ -10,75 +10,75 @@ param()
     . (Join-Path $ADFSTkModule.ModuleBase 'Private\Write-ADFSTkLog.ps1')
 
 #region Checking configfile
-    Write-ADFSTkVerboseLog "Looking in default location for '$configFile'..."
+    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText syncLookingDefaulLocationFor -f $configFile)
     try
     {
         [xml]$config = Get-Content $configFile -ErrorAction Stop
     }
     catch
     {
-        throw "No main configuration file found!`nRun New-ADFSTkMainConfiguration to create it."
+        Write-ADFSTkLog (Get-ADFSTkLanguageText syncNoADFSTkConfigFile) -MajorFault
     }
 
-    Write-ADFSTkVerboseLog  "Config file found!"
+    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText syncConfigFound)
 
-    Write-ADFSTkVerboseLog  "Checking file for correct XML syntax..."
+    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText syncCheckingXML)
 
     if([string]::IsNullOrEmpty($config.Configuration))
     {
-        throw "Missing Configuration node in ADFS Toolkit configuration file!"
+        Write-ADFSTkLog (Get-ADFSTkLanguageText syncMissingNode -f 'Configuration') -MajorFault
     }
     elseif([string]::IsNullOrEmpty($config.Configuration.ConfigFiles))
     {
-        throw "Missing ConfigFiles node in ADFS Toolkit configuration file!"
+        Write-ADFSTkLog (Get-ADFSTkLanguageText syncMissingNode -f 'ConfigFiles') -MajorFault
     }
     elseif([string]::IsNullOrEmpty($config.Configuration.ConfigFiles.ConfigFile))
     {
-        throw "Missing ConfigFile node in ADFS Toolkit configuration file!"
+        Write-ADFSTkLog (Get-ADFSTkLanguageText syncMissingNode -f 'ConfigFile') -MajorFault
     }
 
-    Write-ADFSTkVerboseLog "Check done successfully!"
+    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText syncCheckDoneSuccessfully)
 #endregion
 
     #Looping through institution configurations 
     #and invoking Import-ADFSTkMetadata for each
     #configuration file
 
-    Write-ADFSTkLog "$($config.Configuration.ConfigFiles.ChildNodes.Count) configurationfile(s) found!" -ForegroundColor Green
+    Write-ADFSTkLog (Get-ADFSTkLanguageText syncFoundConfigFiles -f $config.Configuration.ConfigFiles.ChildNodes.Count) -ForegroundColor Green
 
     foreach ($configFile in $config.Configuration.ConfigFiles.ConfigFile)
     {
-        Write-ADFSTkLog "---"
-        Write-ADFSTkLog "Working with $($configFile.'#text')..."
+        Write-ADFSTkHost -WriteLine
+        Write-ADFSTkLog (Get-ADFSTkLanguageText cWorkingWith -f $configFile.'#text')
 
         if (Test-Path ($configFile.'#text'))
         {
             if ($configFile.enabled -eq "true")
             {
-                Write-ADFSTkVerboseLog "Invoking 'Import-ADFSTkMetadata -ProcessWholeMetadata -ForceUpdate -ConfigFile $($configFile.'#text')'"
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText syncInvokingImportADFSTKMetadata -f $configFile.'#text')
 
                 #Don't invoke Import-ADFSTkMetadata if -WhatIf is present
                 if($PSCmdlet.ShouldProcess($configFile.'#text',"Import-ADFSTkMetadata -ProcessWholeMetadata -ForceUpdate -ConfigFile"))
                 {
                     $params = @{
-                        ProcessWholeMetadata = $null
-                        ForceUpdate = $null
+                        ProcessWholeMetadata = $true
+                        ForceUpdate = $true
                         ConfigFile = $configFile.'#text'
                     }
 
                     Import-ADFSTkMetadata @params
                 }
 
-                Write-ADFSTkLog "Done!" -ForegroundColor Green
+                Write-ADFSTkLog (Get-ADFSTkLanguageText cDone) -ForegroundColor Green
             }
             else
             {
-                Write-ADFSTkLog "Config file not enabled, skipping..." -ForegroundColor Yellow
+                Write-ADFSTkLog (Get-ADFSTkLanguageText syncConfigNotEnabledSkipping) -ForegroundColor Yellow
             }
         }
         else
         {
-            Write-Warning "File could not be found on disk! Skipping..."
+            Write-Warning (Get-ADFSTkLanguageText syncFileNotFoundSkipping)
         }
     }
 }

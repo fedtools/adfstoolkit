@@ -11,7 +11,7 @@ param (
         $signCertificate.Import($signCertificateBytes)
     }
     catch {
-        Write-ADFSTkVerboseLog "Could not convert signingCertString to X509 certificate" -MajorFault
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText importCouldNotConvertSigningSert) -MajorFault
     }
         
    
@@ -21,7 +21,7 @@ param (
     if ([string]::IsNullOrEmpty($Settings.configuration.signCertFingerprint))
     {
 
-        Write-ADFSTkVerboseLog "Certificate Fingerprint from configuration was null" -MajorFault
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText importNoCertFingerprintInConfig) -MajorFault
 
     }
     else
@@ -30,7 +30,7 @@ param (
         $signCertificateHashCompare = $Settings.configuration.signCertFingerprint -replace ":"
     }
     
-    Write-ADFSTkLog "Comparing aggregate certificate hash of: $($signCertificateHash.Hash) to $signCertificateHashCompare" -EntryType Information
+    Write-ADFSTkLog (Get-ADFSTkLanguageText importComparingCertHashes -f $signCertificateHash.Hash, $signCertificateHashCompare) -EntryType Information
 
     return ($signCertificateHash.Hash -eq $signCertificateHashCompare)
     
