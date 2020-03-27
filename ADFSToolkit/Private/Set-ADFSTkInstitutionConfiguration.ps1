@@ -13,20 +13,20 @@ param(
         $Global:ADFSTkPaths = Get-ADFSTKPaths
     }
         
-    if (Test-Path $ADFSTkPaths.mainConfigFile)
+    if (Test-Path $Global:ADFSTkPaths.mainConfigFile)
     {
-        [xml]$config = Get-Content $ADFSTkPaths.mainConfigFile
+        [xml]$config = Get-Content $Global:ADFSTkPaths.mainConfigFile
         
         if ([string]::IsNullOrEmpty($config.Configuration.ConfigFiles))
         {
-            Write-ADFSTkLog (Get-ADFSTkLanguageText cFileDontExist -f $ADFSTkPaths.mainConfigFile) -MajorFault
+            Write-ADFSTkLog (Get-ADFSTkLanguageText cFileDontExist -f $Global:ADFSTkPaths.mainConfigFile) -MajorFault
         }
 
         $selectedConfigItem = $config.Configuration.ConfigFiles.ConfigFile | ? InnerText -eq $ConfigurationItem
         
         if ([string]::IsNullOrEmpty($selectedConfigItem))
         {
-            Write-ADFSTkLog (Get-ADFSTkLanguageText mainconfConfItemNotFound -f $ADFSTkPaths.mainConfigFile) -MajorFault
+            Write-ADFSTkLog (Get-ADFSTkLanguageText mainconfConfItemNotFound -f $Global:ADFSTkPaths.mainConfigFile) -MajorFault
         }
         else
         {
@@ -42,16 +42,16 @@ param(
     }
     else
     {
-        Write-ADFSTkLog (Get-ADFSTkLanguageText mainconfADFSTkConfigFileNotFound -f $ADFSTkPaths.mainConfigFile) -MajorFault
+        Write-ADFSTkLog (Get-ADFSTkLanguageText mainconfADFSTkConfigFileNotFound -f $Global:ADFSTkPaths.mainConfigFile) -MajorFault
     }
         
     #Don't save the configuration file if -WhatIf is present
-    if($PSCmdlet.ShouldProcess($ADFSTkPaths.mainConfigFile,"Save"))
+    if($PSCmdlet.ShouldProcess($Global:ADFSTkPaths.mainConfigFile,"Save"))
     {
         try 
         {
-            $config.Save($ADFSTkPaths.mainConfigFile)
-            Write-ADFSTkLog (Get-ADFSTkLanguageText mainconfChangedSuccessfully -f $ADFSTkPaths.mainConfigFile)
+            $config.Save($Global:ADFSTkPaths.mainConfigFile)
+            Write-ADFSTkLog (Get-ADFSTkLanguageText mainconfChangedSuccessfully -f $Global:ADFSTkPaths.mainConfigFile)
         }
         catch
         {

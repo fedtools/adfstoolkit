@@ -10,7 +10,11 @@ param (
     $languageFileName = "ADFSTk_{0}.pson"
     $selectedLanguage = $null
 
-    
+    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
+    {
+        $Global:ADFSTkPaths = Get-ADFSTKPaths
+    }
+  
     if ($PSBoundParameters.ContainsKey('Language'))
     {
         $selectedLanguage = $Language
@@ -19,49 +23,98 @@ param (
     #chosen by user. The value should be the language code i.e. en-US
     elseif ([string]::IsNullOrEmpty($Global:selectedLanguage))
     {
-        if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
+        $selectedLanguage = $null
+        #We need to be able to proceed without a ADFSTk Config file
+        if (Test-Path ($Global:ADFSTkPaths.mainConfigFile))
         {
-            $Global:ADFSTkPaths = Get-ADFSTKPaths
-        }
-
-        $languagePacks = Join-Path $Global:ADFSTKPaths.modulePath "languagePacks" 
-
-        #Get all directories that contains a language file with the right name
-        $possibleLanguageDirs = Get-ChildItem $languagePacks -Directory | ? {Test-Path (Join-Path $_.FullName ($languageFileName -f $_.Name))}
-
-        #Filter out the directories that doesn't have a correct name
-        $configFoundLanguages = (Compare-ADFSTkObject -FirstSet $possibleLanguageDirs.Name `
-                                                            -SecondSet ([System.Globalization.CultureInfo]::GetCultures("SpecificCultures").Name) `
-                                                            -CompareType Intersection).CompareSet
-    
-        $configFoundLanguages | % {
-            $choices = @()
-            $caption = "Select language"
-            $message = "Please select which language you want help text in."
-            $defaultChoice = 0
-            $i = 0
-        }{
-            $choices += New-Object System.Management.Automation.Host.ChoiceDescription "&$([System.Globalization.CultureInfo]::GetCultureInfo($_).DisplayName)","" #if we want more than one language with the same starting letter we need to redo this (number the languages)
-            if ($_ -eq "en-US") {
-                $defaultChoice = $i
+            try 
+            {
+                [xml]$config = Get-Content $Global:ADFSTKPaths.mainConfigFile
+                $selectedLanguage = $config.Configuration.OutputLanguage
             }
-            $i++
-        }{
-            
-            $result = $Host.UI.PromptForChoice($caption,$message,[System.Management.Automation.Host.ChoiceDescription[]]$choices,$defaultChoice) 
+            catch
+            {
+                
+            }
         }
 
-        if ($result -eq -1)
+        if ([string]::IsNullOrEmpty($selectedLanguage))
         {
-            #If the user clicks cancel/X
-            $selectedLanguage = 'en-US'
+            $languagePacks = Join-Path $Global:ADFSTKPaths.modulePath "languagePacks" 
+
+            #Get all directories that contains a language file with the right name
+            $possibleLanguageDirs = Get-ChildItem $languagePacks -Directory | ? {Test-Path (Join-Path $_.FullName ($languageFileName -f $_.Name))}
+
+            #Filter out the directories that doesn't have a correct name
+            $configFoundLanguages = (Compare-ADFSTkObject -FirstSet $possibleLanguageDirs.Name `
+                                                                -SecondSet ([System.Globalization.CultureInfo]::GetCultures("SpecificCultures").Name) `
+                                                                -CompareType Intersection).CompareSet
+    
+            $configFoundLanguages | % {
+                $choices = @()
+                $caption = "Select language"
+                $message = "Please select which language you want help text in."
+                $defaultChoice = 0
+                $i = 0
+            }{
+                $choices += New-Object System.Management.Automation.Host.ChoiceDescription "&$([System.Globalization.CultureInfo]::GetCultureInfo($_).DisplayName)","" #if we want more than one language with the same starting letter we need to redo this (number the languages)
+                if ($_ -eq "en-US") {
+                    $defaultChoice = $i
+                }
+                $i++
+            }{
+            
+                $result = $Host.UI.PromptForChoice($caption,$message,[System.Management.Automation.Host.ChoiceDescription[]]$choices,$defaultChoice) 
+            }
+
+            if ($result -eq -1)
+            {
+                #If the user clicks cancel/X
+                $selectedLanguage = 'en-US'
+            }
+            else
+            {
+                $selectedLanguage = ([string[]]$configFoundLanguages)[$result]
+            }
+
+            $Global:selectedLanguage = $selectedLanguage
+
+            ### ToDo: Add the selected language to ADFSTK Config file! ###
+            if (Test-Path $Global:ADFSTkPaths.mainConfigFile)
+            {
+                [xml]$config = Get-Content $Global:ADFSTkPaths.mainConfigFile
+        
+                if ($config.Configuration.OutputLanguage -eq $null)
+                {
+                    Add-ADFSTkXML -NodeName "OutputLanguage" -XPathParentNode "Configuration" -RefNodeName "ConfigVersion" -Value $selectedLanguage
+                }
+                else
+                {
+                    $OutpuLanguageNode = Select-Xml -Xml $config -XPath "Configuration/OutputLanguage"
+                    $OutpuLanguageNode.Node.innerText = $selectedLanguage
+                }
+                
+                  
+                #Don't save the configuration file if -WhatIf is present
+                if($PSCmdlet.ShouldProcess($Global:ADFSTkPaths.mainConfigFile,"Save"))
+                {
+                    try 
+                    {
+                        $config.Save($Global:ADFSTkPaths.mainConfigFile)
+                        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText mainconfChangedSuccessfully -f $Global:ADFSTkPaths.mainConfigFile)
+                    }
+                    catch
+                    {
+                        throw $_
+                    }
+                }
+            }
         }
         else
         {
-            $selectedLanguage = ([string[]]$configFoundLanguages)[$result]
+            #$selectedLanguage = $Configuration.OutputLanguage
+            $Global:selectedLanguage = $selectedLanguage
         }
-
-        $Global:selectedLanguage = $selectedLanguage
     }
     else
     {
@@ -120,4 +173,22 @@ param (
         return [string]::Empty
         #What to do? Log to eventlog and return empty? Maybe Write Verbose at least!
     }
+}
+
+function Add-ADFSTkXML {
+param (
+    $NodeName,
+    $XPathParentNode,
+    $RefNodeName,
+    $Value = [string]::Empty
+)
+
+    $configurationNode = Select-Xml -Xml $config -XPath $XPathParentNode
+    $configurationNodeChild = $config.CreateNode("element",$NodeName,$null)
+    $configurationNodeChild.InnerText = $Value
+
+    #$configurationNode.Node.AppendChild($configurationNodeChild) | Out-Null
+    $refNode = Select-Xml -Xml $config -XPath "$XPathParentNode/$RefNodeName"
+    $configurationNode.Node.InsertAfter($configurationNodeChild, $refNode.Node) | Out-Null
+
 }

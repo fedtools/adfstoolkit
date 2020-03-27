@@ -109,6 +109,11 @@ param(
 
     $configurationNode.AppendChild($configVersionNode) | Out-Null
 
+    $OutputLanguageNode = $config.CreateNode("element","OutputLanguage",$null)
+    $OutputLanguageNode.InnerText = $Global:selectedLanguage
+
+    $configurationNode.AppendChild($OutputLanguageNode) | Out-Null
+
     $config.AppendChild($configurationNode) | Out-Null
     #endregion 
 

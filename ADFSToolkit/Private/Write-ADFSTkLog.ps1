@@ -130,11 +130,11 @@ Begin {
             $FilePath = $SetLogFilePath.SubString(0,$SetLogFilePath.LastIndexOf('\'))
             if (! (Test-Path ($FilePath)))
             {
-                Write-Warning "The path `'$FilePath`' doesn't exist! Please create it and try again..."
+                Write-Warning (Get-ADFSTkLanguageText logPathNotFound -f $FilePath)
             }
             else
             {
-                Write-Verbose "Setting LogFilePath to `'$SetLogFilePath`'..."
+                Write-Verbose (Get-ADFSTkLanguageText logSettingXPathTo -f 'LogFilePath', $SetLogFilePath)
                 $global:LogFilePath = $SetLogFilePath                    
             }
         }
@@ -145,26 +145,26 @@ Begin {
             {
                 $TestEventLog = Get-EventLog $SetEventLogName -Newest 1
                 
-                Write-Verbose "Setting EventLogName to `'$SetEventLogName`'..."
+                Write-Verbose (Get-ADFSTkLanguageText logSettingXPathTo -f 'EventLogName', $SetEventLogName)
                 $global:EventLogName = $SetEventLogName 
             }
             catch
             {
-                Write-Warning "The EventLogName provided does not exist! Please try again with another namne..."
+                Write-Warning (Get-ADFSTkLanguageText logEventLogNameNotExist)
             }
         }
         
         if ($SetEventLogSource -ne [string]::Empty)
         { 
-            Write-Verbose "Setting EventLogSource to `'$SetEventLogSource`'..."
+            Write-Verbose (Get-ADFSTkLanguageText logSettingXPathTo -f 'SetEventLogSource', $SetLogFilePath)
             $global:EventLogSource = $SetEventLogSource
         }
     }
     elseif ($PsCmdlet.ParameterSetName -eq "Get")
     {
-        if ($GetLogFilePath) { Write-Host "LogFilePath: `'$LogFilePath`'" }
-        if ($GetEventLogName) { Write-Host "EventLogName: `'$EventLogName`'" }
-        if ($GetEventLogSource) { Write-Host "EventLogSource: `'$EventLogSource`'" }
+        if ($GetLogFilePath) { Write-ADFSTkHost logFogFilePath -f $LogFilePath -Style Value }
+        if ($GetEventLogName) { Write-ADFSTkHost logEventLogName -f $EventLogName -Style Value }
+        if ($GetEventLogSource) { Write-ADFSTkHost logEventLogSource -f $EventLogSource -Style Value }
     }
 }
 Process {
@@ -228,7 +228,7 @@ Process {
         
         if ($File) 
         {
-            if ($LogFilePath -eq [string]::Empty) { Write-Warning "The LogFilePath is not set! Use -SetLogFilePath first!" }
+            if ($LogFilePath -eq [string]::Empty) { Write-Warning (Get-ADFSTkLanguageText logLogFilePathNotSet) }
             else
             {
                 $FileMessage = ""
@@ -246,8 +246,8 @@ Process {
         
         if ($EventLog)
         { 
-            if ($EventLogName -eq [string]::Empty) { Write-Warning "The SetEventLogName is not set! Use -SetEventLogName first!" }
-            elseif ($EventLogSource -eq [string]::Empty) { Write-Warning "The EventLogSource is not set! Use -SetEventLogSource first!" }
+            if ($EventLogName -eq [string]::Empty) { Write-Warning (Get-ADFSTkLanguageText logEventLogNameNotSet) }
+            elseif ($EventLogSource -eq [string]::Empty) { Write-Warning (Get-ADFSTkLanguageText logEventSourceNotSet) }
             else
             {
                 #Write-Verbose "Logging to EventLog `'$EventLogName`' as Source `'$EventLogSource`'..." 

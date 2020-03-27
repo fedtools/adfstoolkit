@@ -19,7 +19,8 @@ param (
     }
     catch
     {
-        Write-ADFSTkVerboseLog "Could not get cached entity or compute the hash for it..."
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText processRPCouldNotGetChachedEntity)
+
     }
     
     #if (![string]::IsNullOrEmpty($SP))

@@ -8,18 +8,18 @@ param(
         $Global:ADFSTkPaths = Get-ADFSTKPaths
     }
     
-    if(!(Test-Path $ADFSTKPaths.mainConfigFile))
+    if(!(Test-Path $Global:ADFSTKPaths.mainConfigFile))
     {
-        Write-ADFSTkLog "No ADFSTk main configuration file found!" -MajorFault
+        Write-ADFSTkLog (Get-ADFSTkLanguageText mainconfNoConfigFileFound) -MajorFault
     }
     
     try 
     {
-        [xml]$config = Get-Content $ADFSTKPaths.mainConfigFile
+        [xml]$config = Get-Content $Global:ADFSTKPaths.mainConfigFile
     }
     catch
     {
-        Write-ADFSTkLog "Could not open or parse the ADFSTk main configuration file!`r`n$_" -MajorFault
+        Write-ADFSTkLog (Get-ADFSTkLanguageText mainconfCouldNotParseConfigFile -f $_) -MajorFault
     }
 
     if ($PSBoundParameters.ContainsKey('ConfigFilesOnly'))
