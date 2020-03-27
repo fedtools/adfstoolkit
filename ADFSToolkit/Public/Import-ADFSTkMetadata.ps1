@@ -83,7 +83,7 @@ process
     $myVersion=(get-module ADFSToolkit).version.ToString()
 
     Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText importStarted) -EntryType Information
-    Write-ADFSTkLog (Get-ADFSTkLanguageText importCurrentPath) -EventID 1
+    Write-ADFSTkLog (Get-ADFSTkLanguageText importCurrentPath -f $Global:ADFSTkPaths.modulePath) -EventID 1
 
     #endregion
 
