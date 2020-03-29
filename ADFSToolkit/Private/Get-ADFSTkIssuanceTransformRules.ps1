@@ -68,22 +68,30 @@ if (Test-Path $fedEntityCategoryFileName)
     try {
         Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationEntityCategoryFile)
         . $fedEntityCategoryFileName
-        $IssuanceTransformRuleCategoriesFromFederation = Import-ADFSTkIssuanceTransformRuleCategoriesFromFederation -RequestedAttributes $RequestedAttributes
-        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationEntityCategoriesFound -f $IssuanceTransformRuleCategoriesFromFederation.Count)
 
-        foreach ($entityCategory in $IssuanceTransformRuleCategoriesFromFederation.Keys)
+        if (Test-Path function:Import-ADFSTkIssuanceTransformRuleCategoriesFromFederation)
         {
-            #Add or replace the standard Entoty Category with the federation one
-            if ($IssuanceTransformRuleCategories.ContainsKey($entityCategory))
-            {
-                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationEntityCategoryOverwrite -f $entityCategory)
-            }
-            else
-            {
-                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationEntityCategoryAdd -f $entityCategory)
-            }
+            $IssuanceTransformRuleCategoriesFromFederation = Import-ADFSTkIssuanceTransformRuleCategoriesFromFederation -RequestedAttributes $RequestedAttributes
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationEntityCategoriesFound -f $IssuanceTransformRuleCategoriesFromFederation.Count)
 
-            $IssuanceTransformRuleCategories.$entityCategory = $IssuanceTransformRuleCategoriesFromFederation.$entityCategory
+            foreach ($entityCategory in $IssuanceTransformRuleCategoriesFromFederation.Keys)
+            {
+                #Add or replace the standard Entoty Category with the federation one
+                if ($IssuanceTransformRuleCategories.ContainsKey($entityCategory))
+                {
+                    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationEntityCategoryOverwrite -f $entityCategory)
+                }
+                else
+                {
+                    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationEntityCategoryAdd -f $entityCategory)
+                }
+
+                $IssuanceTransformRuleCategories.$entityCategory = $IssuanceTransformRuleCategoriesFromFederation.$entityCategory
+            }
+        }
+        else
+        {
+            #Write Verbose
         }
     }
     catch

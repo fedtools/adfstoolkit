@@ -213,11 +213,6 @@ function New-ADFSTkInstitutionConfiguration {
                          -DefaultConfig $defaultConfig `
                          -NewConfig $newConfig
                   
-    Set-ADFSTkConfigItem -XPath "configuration/staticValues/o" `
-                         -ExampleValue 'University Of Example' `
-                         -DefaultConfig $defaultConfig `
-                         -NewConfig $newConfig
-
     Set-ADFSTkConfigItem -XPath "configuration/staticValues/co" `
                          -ExampleValue 'Canada, Sweden, USA' `
                          -DefaultConfig $defaultConfig `
@@ -225,6 +220,11 @@ function New-ADFSTkInstitutionConfiguration {
 
     Set-ADFSTkConfigItem -XPath "configuration/staticValues/c" `
                          -ExampleValue 'CA, SE, US' `
+                         -DefaultConfig $defaultConfig `
+                         -NewConfig $newConfig
+
+    Set-ADFSTkConfigItem -XPath "configuration/staticValues/o" `
+                         -ExampleValue 'University Of Example' `
                          -DefaultConfig $defaultConfig `
                          -NewConfig $newConfig
 
