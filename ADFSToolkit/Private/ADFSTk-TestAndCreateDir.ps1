@@ -11,13 +11,6 @@ param (
     $PathName = 'The directory'
 )
 
-    $ADFSTkModule = Get-Module -ListAvailable ADFSToolkit | Sort-Object Version -Descending | Select -First 1
-
-    if (!(Test-Path "Function:\Write-ADFSTkLog"))
-    {
-        . (Join-Path $ADFSTkModule.ModuleBase 'Private\Write-ADFSTkLog.ps1')
-    }
-
     if (Test-Path $Path)
     {
         Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cPathExistsAtPath -f $PathName, $Path)
