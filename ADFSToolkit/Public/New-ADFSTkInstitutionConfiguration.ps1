@@ -89,7 +89,7 @@ function New-ADFSTkInstitutionConfiguration {
         
         #Check if the federation dir exists and if not, create it
         ADFSTk-TestAndCreateDir -Path $defaultFederationConfigDir -PathName "$federationName config directory"
-        a
+        
         $defaultFederationConfigFiles = Get-ChildItem -Path $defaultFederationConfigDir -Filter "*_defaultConfigFile.xml"
         
         if ($defaultFederationConfigFiles -eq $null)
