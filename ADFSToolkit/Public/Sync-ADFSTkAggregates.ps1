@@ -48,6 +48,8 @@ param()
 
     foreach ($configFile in $config.Configuration.ConfigFiles.ConfigFile)
     {
+        $Global:CurrentInstitutionConfig = $configFile
+
         Write-ADFSTkHost -WriteLine
         Write-ADFSTkLog (Get-ADFSTkLanguageText cWorkingWith -f $configFile.'#text')
 

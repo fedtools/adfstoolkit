@@ -196,6 +196,7 @@ We will now look if that file already exists or create it.
     rulesFederationEntityCategoryOverwrite = "The Federation-specific Entity Category '{0}' found and will overwrite the default in ADFS Toolkit."
     rulesFederationEntityCategoryAdd = "The Federation-specific Entity Category '{0}' found and will be added."
     rulesNoRequestedAttributesDetected = "No Requested attributes detected"
+    rulesTypeConfiguredMoreThanonce = "The type '{0}' is configured {1} times! Please fix this in your institution configuration file ({2})."
 
     ###############################
     ### Manual SP Settings [ms] ###

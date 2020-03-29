@@ -7,6 +7,10 @@ param (
     
 )
     $currentAttribute = $Settings.configuration.storeConfig.attributes.attribute | ? type -eq $Type
+    if ($currentAttribute -is [System.Array])
+    {
+        Write-ADFSTkLog (Get-ADFSTkLanguageText rulesTypeConfiguredMoreThanonce -f $Type, $currentAttribute.count, $Global:CurrentInstitutionConfig) -MajorFault
+    }
     
     if ($currentAttribute.store -eq "Static")
     {
