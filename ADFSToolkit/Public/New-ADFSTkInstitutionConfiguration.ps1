@@ -86,6 +86,11 @@ function New-ADFSTkInstitutionConfiguration {
         Read-Host (Get-ADFSTkLanguageText cPressEnterKey) | Out-Null
 
         $defaultFederationConfigDir = Join-Path $Global:ADFSTkPaths.federationDir $federationName
+        if (!(Test-Path $defaultFederationConfigDir))
+        {
+            New-Item -ItemType Directory -Force -Path $defaultFederationConfigDir | Out-Null
+        }
+
         $defaultFederationConfigFiles = Get-ChildItem -Path $defaultFederationConfigDir -Filter "*_defaultConfigFile.xml"
         
         if ($defaultFederationConfigFiles -eq $null)
