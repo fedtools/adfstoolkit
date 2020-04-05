@@ -73,7 +73,8 @@ param(
                                                                 -Recurse | ? {$_.Directory.Name -notcontains 'backup'} | `
                                                                             Select Directory, Name, LastWriteTime | `
                                                                             Sort Directory,Name
-        
+    $selectedConfigs = $null
+    
     if ($currentConfigs.count -eq 0){
         Write-ADFSTkHost mainconfNoInstConfigsFound -Style Attention -AddLinesOverAndUnder
     }

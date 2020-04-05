@@ -1,4 +1,4 @@
-﻿function Update-ADFSTkInstitutionConfiguration 
+﻿function Upgrade-ADFSTkInstitutionConfiguration 
 {
     [CmdletBinding(SupportsShouldProcess=$true)]
     param(
@@ -20,7 +20,7 @@
     catch {
         #inform that we need a main config and that we will call that now
         Write-ADFSTkHost confNeedMainConfigurationMessage -Style Info
-        $mainConfiguration = New-ADFSTkConfiguration
+        $mainConfiguration = New-ADFSTkConfiguration -Passthru
     }
     
     $defaultConfigFile = $Global:ADFSTkPaths.defaultConfigFile
@@ -29,17 +29,16 @@
     
     if (![string]::IsNullOrEmpty($federationName))
     {
-        Write-ADFSTkHost -WriteLine -AddSpaceAfter
-        Write-ADFSTkHost confCopyFederationDefaultFolderMessage -Style Info -AddSpaceAfter -f $Global:ADFSTkPaths.federationDir
-        
-        Read-Host (Get-ADFSTkLanguageText cPressEnterKey) | Out-Null
-
         $defaultFederationConfigDir = Join-Path $Global:ADFSTkPaths.federationDir $federationName
         
         #Check if the federation dir exists and if not, create it
         ADFSTk-TestAndCreateDir -Path $defaultFederationConfigDir -PathName "$federationName config directory"
 
-        $defaultFederationConfigDir = Join-Path $Global:ADFSTkPaths.federationDir $federationName
+        Write-ADFSTkHost -WriteLine -AddSpaceAfter
+        Write-ADFSTkHost confCopyFederationDefaultFolderMessage -Style Info -AddSpaceAfter -f $defaultFederationConfigDir
+        
+        Read-Host (Get-ADFSTkLanguageText cPressEnterKey) | Out-Null
+
         $allDefaultFederationConfigFiles = Get-ChildItem -Path $defaultFederationConfigDir -Filter "*_defaultConfigFile.xml" -Recurse
         
         if ($allDefaultFederationConfigFiles -eq $null)
@@ -52,7 +51,7 @@
         }
         elseif ($allDefaultFederationConfigFiles -is [System.Array])
         {
-            $defaultFederationConfigFile = $allDefaultFederationConfigFiles | Out-GridView -Title (Get-ADFSTkLanguageText confSelectDefaultFedConfigFile) -OutputMode Single
+            $defaultFederationConfigFile = $allDefaultFederationConfigFiles | Out-GridView -Title (Get-ADFSTkLanguageText confSelectDefaultFedConfigFile) -OutputMode Single | Select -ExpandProperty Fullname
         }
         else
         {
@@ -66,6 +65,20 @@
                 Write-ADFSTkLog (Get-ADFSTkLanguageText confFederationDefaultConfigNotFound) -MajorFault
             }
         }
+        else
+        {
+            try {
+                [xml]$defaultFederationConfig = Get-Content $defaultFederationConfigFile
+
+                if ($defaultFederationConfig.configuration.ConfigVersion -ne $currentConfigVersion)
+                {
+                    Write-ADFSTkHost confNotAValidVersionWarning -Style Attention
+                }
+            }
+            catch {
+                Write-ADFSTkLog (Get-ADFSTkLanguageText confCouldNotOpenFederationDefaultConfig -f $defaultFederationConfig,$_) -MajorFault
+            }
+        }
     }
 
     #Try to open default config
@@ -76,41 +89,7 @@
         Write-ADFSTkLog (Get-ADFSTkLanguageText confCouldNotOpenDefaultConfig -f $defaultConfigFile,$_) -MajorFault
     }
 
-    #Try to open federation config (if any)
-
-    Write-ADFSTkHost confCopyFederationDefaultFolderMessage -Style Info -AddSpaceAfter -f $Global:ADFSTkPaths.federationDir
-    Read-Host (Get-ADFSTkLanguageText cPressEnterKey) | Out-Null
-
-    $defaultFederationConfigFiles = Get-ChildItem -Path $defaultFederationConfigDir -Filter "*_defaultConfigFile.xml"
-        
-    if ($defaultFederationConfigFiles -eq $null)
-    {
-        $defaultConfigFile = $null
-    }
-    elseif ($defaultFederationConfigFiles -is [System.IO.FileSystemInfo])
-    {
-        $defaultConfigFile = $defaultFederationConfigFiles.FullName
-        #[xml]$config = Get-Content $defaultFederationConfigFiles.FullName
-    }
-    elseif ($defaultFederationConfigFiles -is [System.Array])
-    {
-        $defaultConfigFile = $defaultFederationConfigFiles | Out-GridView -Title "Select the default federation configuration file you want to use" -OutputMode Single | Select -ExpandProperty FullName
-    }
-    else
-    {
-        #We should never be here...
-    }
-    try {
-        [xml]$defaultFederationConfig = Get-Content $defaultFederationConfigFile
-
-        if ($defaultFederationConfig.configuration.ConfigVersion -ne $currentConfigVersion)
-        {
-            Write-ADFSTkHost confNotAValidVersionWarning -Style Attention
-        }
-    }
-    catch {
-        Write-ADFSTkLog (Get-ADFSTkLanguageText confCouldNotOpenFederationDefaultConfig -f $defaultFederationConfig,$_) -MajorFault
-    }
+    
 
 #region Select Institution config(s)
     
@@ -134,19 +113,42 @@
             $currentConfigs = @()
             $currentConfigs += Get-ChildItem $Global:ADFSTkPaths.mainDir -Filter '*.xml' `
                                                          -Recurse | ? {$_.Directory.Name -notcontains 'cache' -and `
-                                                                       $_.Directory.Name -notcontains 'federation' -and `
+                                                                       $_.Directory.Name -notcontains 'federation' -and`
+                                                                       $_.Name -ne 'config.ADFSTk.xml' -and -not`
+                                                                       $_.Name.EndsWith('_defaultConfigFile.xml') -and `
                                                                        $_.Directory.Name -notcontains 'backup'} | `
                                                                     Select Directory, Name, LastWriteTime | `
                                                                     Sort Directory,Name
             
-            if ($currentConfigs -lt 1)
+            if ($currentConfigs.Count -eq 0)
             {
                 Write-ADFSTkLog (Get-ADFSTkLanguageText confNoInstConfFiles) -MajorFault
             }
 
             #Add all selected federation config files to ADFSTk configuration
-            $selectedConfigs += $currentConfigs | Out-GridView -Title (Get-ADFSTkLanguageText confSelectInstConfFileToHandle) -PassThru | % {
-                Add-ADFSTkConfigurationItem -ConfigurationItem (Join-Path $_.Directory $_.Name) -PassThru
+            $selectedConfigsTemp = $currentConfigs | Out-GridView -Title (Get-ADFSTkLanguageText confSelectInstConfFileToHandle) -PassThru
+
+            foreach ($selectedConfig in $selectedConfigsTemp)
+            {
+                #Check if it's an old file that neds to be copied to the institution dir
+                if ($selectedConfig.Directory -ne $Global:ADFSTkPaths.institutionDir)
+                {
+                    $newFileName = Join-Path $Global:ADFSTkPaths.institutionDir $selectedConfig.Name
+                    if (Test-Path $newFileName)
+                    {
+                        Write-ADFSTkLog (Get-ADFSTkLanguageText confInstConfFileAlreadyUpgraded -f (Join-Path $selectedConfig.Directory $selectedConfig.name), $newFileName) -MajorFault
+                    }
+                    else
+                    {
+                        ADFSTk-TestAndCreateDir -Path $Global:ADFSTkPaths.institutionDir        -PathName "Institution config directory" #C:\ADFSToolkit\config\institution
+                        ADFSTk-TestAndCreateDir -Path $Global:ADFSTkPaths.institutionBackupDir  -PathName "Institution backup directory" #C:\ADFSToolkit\config\institution\backup
+                        
+                        Copy-Item (Join-Path $selectedConfig.Directory $selectedConfig.name) $newFileName
+                        $selectedConfig.Directory = $Global:ADFSTkPaths.institutionDir
+                    }
+                }
+
+                $selectedConfigs += Add-ADFSTkConfigurationItem -ConfigurationItem (Join-Path $selectedConfig.Directory $selectedConfig.Name) -PassThru
             }
         }
         else
@@ -155,7 +157,7 @@
         }
     }
 
-    if ($selectedConfigs.Count -lt 1)
+    if ($selectedConfigs.Count -eq 0)
     {
         Write-ADFSTkLog (Get-ADFSTkLanguageText confNoInstConfigFileSelectedborting) -MajorFault
     }

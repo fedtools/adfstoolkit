@@ -157,6 +157,12 @@ We will now look if that file already exists or create it.
     confNoInstConfFiles = "Could not find any institution configuration files. Have you run New-ADFSTkInstitutionConfiguration?"
     confSelectInstConfFileToHandle = "Select institution configuration file(s) to handle..."
     confNoInstConfigFileSelectedborting = "No institution configuration file(s) selected. Aborting!"
+    confInstConfFileAlreadyUpgraded = @"
+The chosen institution config file ({0}) already exists at the new location ({1}).
+It has probably already been upgraded.
+Check which file(s) you should upgrade and try again.
+Aborting!
+"@
 
     #######################################
     ### Federation cmdlets [federation] ###

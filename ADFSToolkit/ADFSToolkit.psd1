@@ -23,13 +23,13 @@ ModuleVersion = '2.0.0.0'
 GUID = '47b8b820-ef33-4f09-9a64-272fd1f1c808'
 
 # Author of this module
-Author = 'Chris Phillips and Johan Peterson'
+Author = 'Chris Phillips, Johan Peterson and Tommy Larsson'
 
 # Company or vendor of this module
 CompanyName = 'CANARIE and SWAMID'
 
 # Copyright statement for this module
-Copyright = '(c) 2017 Chris Phillips CANARIE, Johan Peterson SWAMID http://www.apache.org/licenses/LICENSE-2.0'
+Copyright = '(c) 2017 Chris Phillips CANARIE, Johan Peterson and Tommy Larsson SWAMID http://www.apache.org/licenses/LICENSE-2.0'
 
 # Description of the functionality provided by this module
 Description = 'Module to handle SAML2 federation aggregates.'
@@ -71,7 +71,7 @@ PowerShellVersion = '5.0'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Import-ADFSTkMetadata', 'New-ADFSTkConfiguration', 'Unpublish-ADFSTkAggregate', 'Get-ADFSTkTransformRuleObjects', 'Update-ADFSTkInstitutionConfiguration', 'Sync-ADFSTkAggregates', 'New-ADFSTkInstitutionConfiguration', 'Enable-ADFSTkInstitutionConfiguration'
+FunctionsToExport = 'Import-ADFSTkMetadata', 'New-ADFSTkConfiguration', 'Unpublish-ADFSTkAggregate', 'Get-ADFSTkTransformRuleObjects', 'Upgrade-ADFSTkInstitutionConfiguration', 'Sync-ADFSTkAggregates', 'New-ADFSTkInstitutionConfiguration', 'Enable-ADFSTkInstitutionConfiguration'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 #CmdletsToExport = @(Import-Metadata)
