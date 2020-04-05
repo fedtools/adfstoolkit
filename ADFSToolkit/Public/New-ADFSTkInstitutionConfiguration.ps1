@@ -82,13 +82,13 @@ function New-ADFSTkInstitutionConfiguration {
     }
     else
     {
-        Write-ADFSTkHost confCopyFederationDefaultFolderMessage -Style Info -AddSpaceAfter -f $Global:ADFSTkPaths.federationDir
-        Read-Host (Get-ADFSTkLanguageText cPressEnterKey) | Out-Null
-
         $defaultFederationConfigDir = Join-Path $Global:ADFSTkPaths.federationDir $federationName
         
         #Check if the federation dir exists and if not, create it
         ADFSTk-TestAndCreateDir -Path $defaultFederationConfigDir -PathName "$federationName config directory"
+
+        Write-ADFSTkHost confCopyFederationDefaultFolderMessage -Style Info -AddSpaceAfter -f $Global:ADFSTkPaths.federationDir
+        Read-Host (Get-ADFSTkLanguageText cPressEnterKey) | Out-Null
         
         $defaultFederationConfigFiles = Get-ChildItem -Path $defaultFederationConfigDir -Filter "*_defaultConfigFile.xml"
         

@@ -32,16 +32,12 @@
         Write-ADFSTkHost -WriteLine -AddSpaceAfter
         Write-ADFSTkHost confCopyFederationDefaultFolderMessage -Style Info -AddSpaceAfter -f $Global:ADFSTkPaths.federationDir
         
-    
-        if (Test-Path variable:global:psISE)
-        {
-            Read-Host (Get-ADFSTkLanguageText cPressEnterKey) | Out-Null
-        }
-        else
-        {
-            Write-ADFSTkHost cPressAnyKey -Style Attention            
-            [System.Console]::ReadKey() | Out-Null
-        }
+        Read-Host (Get-ADFSTkLanguageText cPressEnterKey) | Out-Null
+
+        $defaultFederationConfigDir = Join-Path $Global:ADFSTkPaths.federationDir $federationName
+        
+        #Check if the federation dir exists and if not, create it
+        ADFSTk-TestAndCreateDir -Path $defaultFederationConfigDir -PathName "$federationName config directory"
 
         $defaultFederationConfigDir = Join-Path $Global:ADFSTkPaths.federationDir $federationName
         $allDefaultFederationConfigFiles = Get-ChildItem -Path $defaultFederationConfigDir -Filter "*_defaultConfigFile.xml" -Recurse
@@ -81,6 +77,29 @@
     }
 
     #Try to open federation config (if any)
+
+    Write-ADFSTkHost confCopyFederationDefaultFolderMessage -Style Info -AddSpaceAfter -f $Global:ADFSTkPaths.federationDir
+    Read-Host (Get-ADFSTkLanguageText cPressEnterKey) | Out-Null
+
+    $defaultFederationConfigFiles = Get-ChildItem -Path $defaultFederationConfigDir -Filter "*_defaultConfigFile.xml"
+        
+    if ($defaultFederationConfigFiles -eq $null)
+    {
+        $defaultConfigFile = $null
+    }
+    elseif ($defaultFederationConfigFiles -is [System.IO.FileSystemInfo])
+    {
+        $defaultConfigFile = $defaultFederationConfigFiles.FullName
+        #[xml]$config = Get-Content $defaultFederationConfigFiles.FullName
+    }
+    elseif ($defaultFederationConfigFiles -is [System.Array])
+    {
+        $defaultConfigFile = $defaultFederationConfigFiles | Out-GridView -Title "Select the default federation configuration file you want to use" -OutputMode Single | Select -ExpandProperty FullName
+    }
+    else
+    {
+        #We should never be here...
+    }
     try {
         [xml]$defaultFederationConfig = Get-Content $defaultFederationConfigFile
 

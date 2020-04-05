@@ -9,15 +9,17 @@
             [string]$FilterString = "ADFStk:"
     )
 
+    ### ToDo: User Get-ADFSTkAnswer to veiw which SPs that will be deleted.
+
     if ($PSCmdlet.ShouldProcess($FilterString)) {
 
-            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText unpubSearchingRPsWithFilter -f $FilterString)
+            Write-ADFSTkLog (Get-ADFSTkLanguageText unpubSearchingRPsWithFilter -f $FilterString)
 
             $CurrentSPs = Get-ADFSRelyingPartyTrust | ? {$_.Name -like "$FilterString*"} | select -ExpandProperty Identifier
 
             $numSPs=$CurrentSPs.count
 
-            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText unpubRPsFound -f $numSPs)
+            Write-ADFSTkLog (Get-ADFSTkLanguageText unpubRPsFound -f $numSPs)
             
             foreach ($rp in $CurrentSPs)
             {
@@ -25,7 +27,7 @@
                 try 
                 {
                     Remove-ADFSRelyingPartyTrust -TargetIdentifier $rp -Confirm:$false -ErrorAction Stop
-                    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText unpubRPDeleted -f $rp)
+                    Write-ADFSTkLog (Get-ADFSTkLanguageText unpubRPDeleted -f $rp)
                 }
                 catch
                 {
@@ -34,7 +36,7 @@
                 }
 
             }
-            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText unpubJobCompleated)
+            Write-ADFSTkLog (Get-ADFSTkLanguageText unpubJobCompleated)
       }
 
 }
