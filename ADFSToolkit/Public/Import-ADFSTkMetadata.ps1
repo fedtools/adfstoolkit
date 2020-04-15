@@ -70,17 +70,14 @@ process
             Write-ADFSTkLog -SetEventLogName $Settings.configuration.logging.LogName -SetEventLogSource $Settings.configuration.logging.Source
 
         }
-        else {
-
+        else 
+        {
             # No Event logging is enabled, just this one to a file
-            Throw "Missing eventlog settings in config,"   
-    
-    }
+            Write-ADFSTkLog (Get-ADFSTkLanguageText importEventLogMissingInSettings) -MajorFault            
+        }
 
     #region Get static values from configuration file
     $mypath= $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\')
-
-    $myVersion=(get-module ADFSToolkit).version.ToString()
 
     Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText importStarted) -EntryType Information
     Write-ADFSTkLog (Get-ADFSTkLanguageText importCurrentPath -f $Global:ADFSTkPaths.modulePath) -EventID 1
@@ -199,9 +196,6 @@ process
             {
                 Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText importDownloadingFromTo -f $metadataURL, $CachedMetadataFile) -EntryType Information
                
-                #$Metadata = Invoke-WebRequest $metadataURL -OutFile $CachedMetadataFile -PassThru
-                #$myUserAgent = "ADFSToolkit/"+(get-module ADFSToolkit).Version.toString()
- 
                 $webClient = New-Object System.Net.WebClient 
                 $webClient.Headers.Add("user-agent", "ADFSToolkit")
                 $webClient.DownloadFile($metadataURL, $CachedMetadataFile)
@@ -321,10 +315,17 @@ process
                 {
                     for ($i = 1; $i -le $batches; $i++)
                     {
-                        $ADFSTkModuleBase= Join-Path (get-module ADFSToolkit).ModuleBase ADFSToolkit.psm1
+                        $ADFSTkModuleBase = Join-Path $Global:ADFSTkPaths.modulePath ADFSToolkit.psm1
                         Write-ADFSTkLog (Get-ADFSTkLanguageText importWorkingWithBatch -f $i, $batches, $ADFSTkModuleBase) -EventID 14
                        
-                        Start-Process -WorkingDirectory $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') -FilePath "$env:SystemRoot\system32\WindowsPowerShell\v1.0\powershell.exe" -ArgumentList "-NoExit", "-Command & {Get-Module -ListAvailable ADFSToolkit |Import-Module ; Import-ADFSTkMetadata -MaxSPAdditions $MaxSPAdditions -CacheTime -1 -ForceUpdate -ConfigFile '$ConfigFile' ;Exit}" -Wait -NoNewWindow
+                        $runCommand = "-Command & {Import-ADFSTkMetadata -MaxSPAdditions $MaxSPAdditions -CacheTime -1 -ForceUpdate -ConfigFile '$ConfigFile'"
+                        if ($PSBoundParameters.ContainsKey("Silent") -and $Silent -ne $false)
+                        {
+                            $runCommand += " -Silent"
+                        }
+                        $runCommand += " ;Exit}"
+
+                        Start-Process -WorkingDirectory $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') -FilePath "$env:SystemRoot\system32\WindowsPowerShell\v1.0\powershell.exe" -ArgumentList "-NoExit", $runCommand -Wait -NoNewWindow
                         Write-ADFSTkLog (Get-ADFSTkLanguageText cDone) -EventID 15
                     }
                 }

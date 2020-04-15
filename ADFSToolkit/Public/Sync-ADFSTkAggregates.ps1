@@ -1,19 +1,38 @@
 function Sync-ADFSTkAggregates {
 [CmdletBinding(SupportsShouldProcess=$true)]
-param()
+param(
+    [switch]$Silent
+)
 
-    $configFile = 'C:\ADFSToolkit\config\config.ADFSTk.xml'
+    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
+    {
+        $Global:ADFSTkPaths = Get-ADFSTKPaths
+    }
+    
+#region Check and setup Event Log
+    # set appropriate logging via EventLog mechanisms
 
-    $ADFSTkModule = Get-Module -ListAvailable ADFSToolkit | Sort-Object Version -Descending | Select -First 1
-    Import-module $ADFSTkModule
+    $LogName = 'ADFSToolkit'
+    $Source = 'Sync-ADFSTkAggregates'
+    if (Verify-ADFSTkEventLogUsage -LogName $LogName -Source $Source)
+    {
+        #If we evaluated as true, the eventlog is now set up and we link the WriteADFSTklog to it
+        Write-ADFSTkLog -SetEventLogName $LogName -SetEventLogSource $Source
+    }
+    else 
+    {
+        # No Event logging is enabled, just this one to a file
+        Write-ADFSTkLog (Get-ADFSTkLanguageText importEventLogMissingInSettings) -MajorFault            
+    }
+#endregion
 
-    . (Join-Path $ADFSTkModule.ModuleBase 'Private\Write-ADFSTkLog.ps1')
+    Write-ADFSTkLog (Get-ADFSTkLanguageText syncStart) -EventID 35
 
 #region Checking configfile
-    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText syncLookingDefaulLocationFor -f $configFile)
+    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText syncLookingDefaulLocationFor -f $Global:ADFSTkPaths.mainConfigFile)
     try
     {
-        [xml]$config = Get-Content $configFile -ErrorAction Stop
+        [xml]$config = Get-Content $Global:ADFSTkPaths.mainConfigFile -ErrorAction Stop
     }
     catch
     {
@@ -50,8 +69,25 @@ param()
     {
         $Global:CurrentInstitutionConfig = $configFile
 
+        # set appropriate logging via EventLog mechanisms
+        [xml]$Settings = Get-Content $configFile.'#text'
+
+        $LogName = $Settings.configuration.logging.LogName
+        $Source = $Settings.configuration.logging.Source
+
+        if (Verify-ADFSTkEventLogUsage -LogName $LogName -Source $Source)
+        {
+            #If we evaluated as true, the eventlog is now set up and we link the WriteADFSTklog to it
+            Write-ADFSTkLog -SetEventLogName $LogName -SetEventLogSource $Source
+        }
+        else 
+        {
+            # No Event logging is enabled, just this one to a file
+            Write-ADFSTkLog (Get-ADFSTkLanguageText importEventLogMissingInSettings) -MajorFault            
+        }
+
         Write-ADFSTkHost -WriteLine
-        Write-ADFSTkLog (Get-ADFSTkLanguageText cWorkingWith -f $configFile.'#text')
+        Write-ADFSTkLog (Get-ADFSTkLanguageText cWorkingWith -f $configFile.'#text') -EventID 31
 
         if (Test-Path ($configFile.'#text'))
         {
@@ -68,14 +104,19 @@ param()
                         ConfigFile = $configFile.'#text'
                     }
 
+                    if ($PSBoundParameters.ContainsKey('Silent') -and $Silent -ne $false)
+                    {
+                        $params.Silent = $true
+                    }
+
                     Import-ADFSTkMetadata @params
                 }
 
-                Write-ADFSTkLog (Get-ADFSTkLanguageText cDone) -ForegroundColor Green
+                Write-ADFSTkLog (Get-ADFSTkLanguageText syncProcesseDone -f $configFile.'#text') -ForegroundColor Green -EventID 32
             }
             else
             {
-                Write-ADFSTkLog (Get-ADFSTkLanguageText syncConfigNotEnabledSkipping) -ForegroundColor Yellow
+                Write-ADFSTkLog (Get-ADFSTkLanguageText syncConfigNotEnabledSkipping) -ForegroundColor Yellow -EventID 33
             }
         }
         else
@@ -83,4 +124,11 @@ param()
             Write-Warning (Get-ADFSTkLanguageText syncFileNotFoundSkipping)
         }
     }
+    # set appropriate logging via EventLog mechanisms
+
+    $LogName = 'ADFSToolkit'
+    $Source = 'Sync-ADFSTkAggregates'
+    Write-ADFSTkLog -SetEventLogName $LogName -SetEventLogSource $Source
+
+    Write-ADFSTkLog (Get-ADFSTkLanguageText syncFinished) -EventID 34
 }

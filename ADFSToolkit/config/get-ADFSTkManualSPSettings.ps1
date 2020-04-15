@@ -10,6 +10,8 @@ function get-ADFSTkManualSPSettings
 # We attempt to detect existance of the function which should contain the collection
 # of service provider
 
+    $ManualSPSettings = @{}
+
     #Get All paths
     if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
     {

@@ -3,7 +3,7 @@
 param (
     [switch]$Force
 )
-
+#https://technical.edugain.org/api.php?action=list_feds
     #Get All paths
     if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
     {
@@ -47,7 +47,8 @@ param (
      switch ($Selection)
      {
          'URL' {
-            $url = 'https://technical.edugain.org/status'
+            #$url = 'https://technical.edugain.org/status'
+            $url = 'https://technical.edugain.org/api.php?action=list_feds_full'
 
             Write-ADFSTkHost federationDownloadCanTakeTimeWarning -Style Info
             Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText federationGetFederationFromURL -f $url)
@@ -55,23 +56,31 @@ param (
             try {
                 $web = Invoke-WebRequest -Uri $url 
 
-                $federations = $web.AllElements | ? { $_.Class -eq 'member-div' }
+                #$federations = $web.AllElements | ? { $_.Class -eq 'member-div' }
+                $federations = ConvertFrom-Json $web.Content
 
                 [xml]$fedXML = New-Object System.Xml.XmlDocument
                 $fedXML.AppendChild($fedXML.CreateXmlDeclaration("1.0",$null,$null)) | Out-Null
         
                 $federationsNode = $fedXML.CreateNode("element","Federations",$null)
     
-                foreach ($federation in $federations)
+                foreach ($federation in $federations.PsObject.Properties)
                 {
                     $federationMainNode = $fedXML.CreateNode("element","Federation",$null)
         
                     $federationNode = $fedXML.CreateNode("element","Name",$null)
-                    $federationNode.InnerText = $federation.innerText.TrimStart().TrimEnd()
+                    #$federationNode.InnerText = $federation.innerText.TrimStart().TrimEnd()
+                    $countries = $federation.Value.countries -join ','
+                    if ([string]::IsNullOrEmpty($countries))
+                    {
+                        $countries = $federation.Value.fed_id
+                    }
+                    $federationNode.InnerText = "{0} ({1})" -f $federation.Value.Name, $countries
                     $federationMainNode.AppendChild($federationNode) | Out-Null
 
                     $federationNode = $fedXML.CreateNode("element","Id",$null)
-                    $federationNode.InnerText = $federation.data_value
+                    #$federationNode.InnerText = $federation.data_value
+                    $federationNode.InnerText = $federation.Value.code
                     $federationMainNode.AppendChild($federationNode) | Out-Null
 
                     $federationsNode.AppendChild($federationMainNode) | Out-Null

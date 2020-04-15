@@ -157,22 +157,44 @@ param (
         $Global:LanguageTables.$selectedLanguage = $languageData
     }
 
-    if ($Global:LanguageTables.$selectedLanguage.ContainsKey($TextID))
+    if ($PSBoundParameters.ContainsKey('f'))
     {
-        if ($PSBoundParameters.ContainsKey('f'))
+        if ($Global:LanguageTables.$selectedLanguage.ContainsKey($TextID))
         {
             return $Global:LanguageTables.$selectedLanguage.$TextID -f $f
         }
+        elseif($selectedLanguage -ne "en-US")
+        {
+            #Log an warning
+            Write-ADFSTkVerboseLog "The languageID: '$TextID' could not be found in '$selectedLanguage'. We will try to find it in 'en-US'"
+            return Get-ADFSTkLanguageText $TextID -f $f -Language 'en-US'
+        }
         else
         {
-            return $Global:LanguageTables.$selectedLanguage.$TextID
+            #at least log an error
+            return "[ErrorLanguageStringNotFound: $TextID]"
         }
     }
     else
     {
-        return [string]::Empty
-        #What to do? Log to eventlog and return empty? Maybe Write Verbose at least!
+        if ($Global:LanguageTables.$selectedLanguage.ContainsKey($TextID))
+        {
+            return $Global:LanguageTables.$selectedLanguage.$TextID
+        }
+        elseif($selectedLanguage -ne "en-US")
+        {
+            #Log an warning
+            Write-ADFSTkVerboseLog "The languageID: '$TextID' could not be found in '$selectedLanguage'. We will try to find it in 'en-US'"
+            return Get-ADFSTkLanguageText $TextID -Language 'en-US'
+        }
+        else
+        {
+            #at least log an error 
+            #return string 
+            return "[ErrorLanguageStringNotFound: $TextID]"
+        }
     }
+        
 }
 
 function Add-ADFSTkXML {

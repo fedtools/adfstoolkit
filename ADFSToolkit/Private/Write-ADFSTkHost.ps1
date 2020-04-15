@@ -78,24 +78,27 @@ param (
         $Parameters.NoNewLine = $true
     }
 
-    if ($PSBoundParameters.ContainsKey('AddSpaceBefore'))
+    if ($PSBoundParameters.ContainsKey('AddSpaceBefore') -and -not $Silent)
     {
         Write-Host " "
     }
 
-    if ($PSBoundParameters.ContainsKey('AddLinesOverAndUnder'))
+    if ($PSBoundParameters.ContainsKey('AddLinesOverAndUnder') -and -not $Silent)
     {
         Write-Host "--------------------------------------------------------------------------------------------------------------`r`n" @Parameters
     }
 
-    Write-Host $Text @Parameters
+    if (!$Silent)
+    {
+        Write-Host $Text @Parameters
+    }
 
-    if ($PSBoundParameters.ContainsKey('AddLinesOverAndUnder'))
+    if ($PSBoundParameters.ContainsKey('AddLinesOverAndUnder') -and -not $Silent)
     {
         Write-Host "`r`n--------------------------------------------------------------------------------------------------------------" @Parameters
     }
 
-    if ($PSBoundParameters.ContainsKey('AddSpaceAfter'))
+    if ($PSBoundParameters.ContainsKey('AddSpaceAfter') -and -not $Silent)
     {
         Write-Host " "
     }

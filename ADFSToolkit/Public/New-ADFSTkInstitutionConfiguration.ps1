@@ -11,24 +11,7 @@ function New-ADFSTkInstitutionConfiguration {
     {
         $Global:ADFSTkPaths = Get-ADFSTKPaths
     }
-
-    #$ADFSTkModule = Get-Module -ListAvailable ADFSToolkit | Sort-Object Version -Descending | Select -First 1
-    
-    if (!(Test-Path "Function:\Write-ADFSTkLog"))
-    {
-        . (Join-Path $Global:ADFSTkPaths.modulePath 'Private\Write-ADFSTkLog.ps1')
-    }
-
-    if (!(Test-Path "Function:\Get-ADFSTkAnswer"))
-    {
-        . (Join-Path $Global:ADFSTkPaths.modulePath 'Private\Get-ADFSTkAnswer.ps1')
-    }
-
-    if (!(Test-Path "Function:\Compare-ADFSTkObject"))
-    {
-        . (Join-Path $Global:ADFSTkPaths.modulePath 'Private\Compare-ADFSTkObject.ps1')
-    }
-    
+   
     #Create main dirs
     ADFSTk-TestAndCreateDir -Path $Global:ADFSTkPaths.mainDir               -PathName "ADFSTk install directory" #C:\ADFSToolkit
     ADFSTk-TestAndCreateDir -Path $Global:ADFSTkPaths.mainConfigDir         -PathName "Main configuration" #C:\ADFSToolkit\config
@@ -378,7 +361,7 @@ function New-ADFSTkInstitutionConfiguration {
     if (Get-ADFSTkAnswer (Get-ADFSTkLanguageText confCreateScheduledTask))
     {
         $stAction = New-ScheduledTaskAction -Execute 'Powershell.exe' `
-                                            -Argument "-NoProfile -WindowStyle Hidden -command 'Get-Module -ListAvailable ADFSToolkit | Sort-Object Version -Descending | Select -First 1 | Import-Module;Sync-ADFSTkAggregates'"
+                                            -Argument "-NoProfile -WindowStyle Hidden -Command 'Sync-ADFSTkAggregates'"
 
         $stTrigger =  New-ScheduledTaskTrigger -Daily -DaysInterval 1 -At (Get-Date)
         $stSettings = New-ScheduledTaskSettingsSet -Disable -MultipleInstances IgnoreNew -ExecutionTimeLimit ([timespan]::FromHours(12))

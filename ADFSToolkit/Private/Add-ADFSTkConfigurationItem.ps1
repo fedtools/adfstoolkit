@@ -11,16 +11,6 @@ param
         $Global:ADFSTkPaths = Get-ADFSTKPaths
     }
 
-    if (!(Test-Path "Function:\Write-ADFSTkLog"))
-    {
-        . (Join-Path $ADFSTkModule.ModuleBase 'Private\Write-ADFSTkLog.ps1')
-    }
-
-    if (!(Test-Path $Global:ADFSTkPaths.mainConfigFile))
-    {
-        Write-ADFSTkLog (Get-ADFSTkLanguageText mainconfFileNotExists)  -MajorFault
-    }
-
     [xml]$config = Get-Content $Global:ADFSTkPaths.mainConfigFile
 
     if (![string]::IsNullOrEmpty($config.Configuration.ConfigFiles.HasChildNodes) -and ($config.Configuration.ConfigFiles.ConfigFile.InnerText).Contains($ConfigurationItem))

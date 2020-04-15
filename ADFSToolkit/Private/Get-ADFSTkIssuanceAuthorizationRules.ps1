@@ -22,54 +22,57 @@ $IssuanceAuthorizationRules =
      Value = "true");
 "@
 
-#AllSPs
-if ($Global:ManualSPSettings.ContainsKey('urn:adfstk:allsps') -and `
-    $Global:ManualSPSettings.'urn:adfstk:allsps' -is [System.Collections.Hashtable] -and `
-    $Global:ManualSPSettings.'urn:adfstk:allsps'.ContainsKey('AuthorizationRules'))
-{
-    $IssuanceAuthorizationRules = $Global:ManualSPSettings.'urn:adfstk:allsps'.AuthorizationRules
-}
-
-#AllEduSPs
-
-if ($EntityId -ne $null)
-{
-    
-    #First remove http:// or https://
-    $entityDNS = $EntityId.ToLower().Replace('http://','').Replace('https://','')
-
-    #Second get rid of all ending sub paths
-    $entityDNS = $entityDNS -split '/' | select -First 1
-
-    #Last fetch the last two words and join them with a .
-    #$entityDNS = ($entityDNS -split '\.' | select -Last 2) -join '.'
-
-    $settingsDNS = $null
-
-    foreach($setting in $Global:ManualSPSettings.Keys)
+#if ($Global:ManualSPSettings -ne $null)
+#{
+    #AllSPs
+    if ($Global:ManualSPSettings.ContainsKey('urn:adfstk:allsps') -and `
+        $Global:ManualSPSettings.'urn:adfstk:allsps' -is [System.Collections.Hashtable] -and `
+        $Global:ManualSPSettings.'urn:adfstk:allsps'.ContainsKey('AuthorizationRules'))
     {
-        if ($setting.StartsWith('urn:adfstk:entityiddnsendswith:'))
+        $IssuanceAuthorizationRules = $Global:ManualSPSettings.'urn:adfstk:allsps'.AuthorizationRules
+    }
+
+    #AllEduSPs
+
+    if ($EntityId -ne $null)
+    {
+    
+        #First remove http:// or https://
+        $entityDNS = $EntityId.ToLower().Replace('http://','').Replace('https://','')
+
+        #Second get rid of all ending sub paths
+        $entityDNS = $entityDNS -split '/' | select -First 1
+
+        #Last fetch the last two words and join them with a .
+        #$entityDNS = ($entityDNS -split '\.' | select -Last 2) -join '.'
+
+        $settingsDNS = $null
+
+        foreach($setting in $Global:ManualSPSettings.Keys)
         {
-            $settingsDNS = $setting -split ':' | select -Last 1
+            if ($setting.StartsWith('urn:adfstk:entityiddnsendswith:'))
+            {
+                $settingsDNS = $setting -split ':' | select -Last 1
+            }
+        }
+
+        if ($entityDNS.EndsWith($settingsDNS) -and `
+            $Global:ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS" -is [System.Collections.Hashtable] -and `
+            $Global:ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS".ContainsKey('AuthorizationRules'))
+    {
+        $IssuanceAuthorizationRules = $Global:ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS".AuthorizationRules
+    }
+
+    #Manual SP
+    if ($EntityId -ne $null -and `
+        $Global:ManualSPSettings.ContainsKey($EntityId) -and `
+        $Global:ManualSPSettings.$EntityId -is [System.Collections.Hashtable] -and `
+        $Global:ManualSPSettings.$EntityId.ContainsKey('AuthorizationRules'))
+        {
+            $IssuanceAuthorizationRules = $Global:ManualSPSettings.$EntityId.AuthorizationRules
         }
     }
-
-    if ($entityDNS.EndsWith($settingsDNS) -and `
-        $Global:ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS" -is [System.Collections.Hashtable] -and `
-        $Global:ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS".ContainsKey('AuthorizationRules'))
-{
-    $IssuanceAuthorizationRules = $Global:ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS".AuthorizationRules
-}
-
-#Manual SP
-if ($EntityId -ne $null -and `
-    $Global:ManualSPSettings.ContainsKey($EntityId) -and `
-    $Global:ManualSPSettings.$EntityId -is [System.Collections.Hashtable] -and `
-    $Global:ManualSPSettings.$EntityId.ContainsKey('AuthorizationRules'))
-    {
-        $IssuanceAuthorizationRules = $Global:ManualSPSettings.$EntityId.AuthorizationRules
-    }
-}
+#}
 
 $IssuanceAuthorizationRules
 

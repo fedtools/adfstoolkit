@@ -1,5 +1,8 @@
 ﻿@{
     tableLanguage = "en-US"
+    tableVersion = "1.0"
+    tableCreatedBy = "SWAMID"
+    tableContactAddress = "operations@swamid.se"
 
     ########################
     ### Common texts [c] ###
@@ -305,11 +308,13 @@ Aborting!
     importNoSPsFound = "No SP's found!"
     importNothingToDo = "Invoked without -ProcessWholeMetadata <no args> , -EntityID <with quoted URL>, nothing to do, exiting"
     importScriptEnded = "Script ended!"
+    importEventLogMissingInSettings = "Missing eventlog settings in config."
 
     #############################
     ### Sync Aggregate [sync] ###
     #############################
 
+    syncStart = "Sync-ADFSTkAggregates started!"
     syncLookingDefaulLocationFor = "Looking in default location for '{0}'..."
     syncNoADFSTkConfigFile = "No ADFS Toolkit configuration file found!`nRun New-ADFSTkConfiguration to create it."
     syncConfigFound = "Config file found!"
@@ -320,6 +325,8 @@ Aborting!
     syncInvokingImportADFSTKMetadata = "Invoking 'Import-ADFSTkMetadata -ProcessWholeMetadata -ForceUpdate -ConfigFile {0}'"
     syncConfigNotEnabledSkipping = "Config file not enabled, skipping..."
     syncFileNotFoundSkipping = "File could not be found on disk! Skipping..."
+    syncProcesseDone = "'{0}' done processing..."
+    syncFinished = "Sync-ADFSTkAggregates Finished!"
 
     ###################################
     ### Unpublish Aggregate [unpub] ###
