@@ -30,12 +30,12 @@ if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
     $Global:ADFSTkPaths = Get-ADFSTKPaths
 }
 
-if ([string]::IsNullOrEmpty($Global:AllAttributes))
+if ([string]::IsNullOrEmpty($Global:AllAttributes) -or $Global:AllAttributes.Count -eq 0)
 {
     $Global:AllAttributes = Import-ADFSTkAllAttributes
 }
 
-if ([string]::IsNullOrEmpty($Global:AllTransformRules))
+if ([string]::IsNullOrEmpty($Global:AllTransformRules) -or $Global:AllTransformRules.Count -eq 0)
 {
     $Global:AllTransformRules = Import-ADFSTkAllTransformRules
 }
@@ -321,73 +321,78 @@ $removeRules | % {
 #region Create Stores
 if ($AttributesFromStore.Count)
 {
-    $FirstRule = ""
+#    $FirstRule = ""
+#
+#    foreach ($store in ($Settings.configuration.storeConfig.stores.store | sort order))
+#    {
+#        #region Active Directory Store
+#        if ($store.storetype -eq "Active Directory")
+#        {
+#            $currentStoreAttributes = $AttributesFromStore.Values | ? store -eq $store.name
+#            if ($currentStoreAttributes -ne $null)
+#            {
+#                $FirstRule += @"
+#
+#                @RuleName = "Retrieve Attributes from AD"
+#                c:[Type == "$($store.type)", Issuer == "$($store.issuer)"]
+#                => add(store = "$($store.name)", 
+#                types = ("$($currentStoreAttributes.type -join '","')"), 
+#                query = ";$($currentStoreAttributes.name -join ',');{0}", param = c.Value);
+#
+#"@
+#            }
+#        }
+#        #endregion
+#
+#        #region SQL Store
+#        if ($store.storetype -eq "SQL")
+#        {
+#            $currentStoreAttributes = $AttributesFromStore.Values | ? store -eq $store.name
+#            if ($currentStoreAttributes -ne $null)
+#            {
+#                $FirstRule += @"
+#
+#            @RuleName = "Retrieve Attributes from $($store.name)"
+#            c:[Type == "$($store.type)", Issuer == "$($store.issuer)"]
+#                => add(store = "$($store.name)", 
+#                types = ("$($currentStoreAttributes.type -join '","')"), 
+#                query = "$($store.query)", param = c.Value);
+#
+#"@
+#            }
+#        }
+#        #endregion
+#
+#        #region LDAP Store
+#
+#        #endregion
+#
+#        #region Custom Store
+#        if ($store.storetype -eq "Custom Store")
+#        {
+#            $currentStoreAttributes = $AttributesFromStore.Values | ? store -eq $store.name
+#            if ($currentStoreAttributes -ne $null)
+#            {
+#                $FirstRule += @"
+#
+#                @RuleName = "Retrieve Attributes from Custom Store"
+#                c:[Type == "$($store.type)", Issuer == "$($store.issuer)"]
+#                => add(store = "$($store.name)", 
+#                types = ("$($currentStoreAttributes.type -join '","')"), 
+#                query = ";$($currentStoreAttributes.name -join ',');{0}", param = "[ReplaceWithSPNameQualifier]", param = c.Value);
+#
+#"@
+#            }
+#        }
+#        #endregion
+#    }
+#
+#    return $FirstRule.Replace("[ReplaceWithSPNameQualifier]",$EntityId) + $IssuanceTransformRules.Values
+    $FirstRule = Get-ADFSTkStoreRule -Stores $Settings.configuration.storeConfig.stores.store `
+                                     -AttributesFromStore $AttributesFromStore `
+                                     -EntityId $EntityId 
 
-    foreach ($store in ($Settings.configuration.storeConfig.stores.store | sort order))
-    {
-        #region Active Directory Store
-        if ($store.storetype -eq "Active Directory")
-        {
-            $currentStoreAttributes = $AttributesFromStore.Values | ? store -eq $store.name
-            if ($currentStoreAttributes -ne $null)
-            {
-                $FirstRule += @"
-
-                @RuleName = "Retrieve Attributes from AD"
-                c:[Type == "$($store.type)", Issuer == "$($store.issuer)"]
-                => add(store = "$($store.name)", 
-                types = ("$($currentStoreAttributes.type -join '","')"), 
-                query = ";$($currentStoreAttributes.name -join ',');{0}", param = c.Value);
-
-"@
-            }
-        }
-        #endregion
-
-        #region SQL Store
-        if ($store.storetype -eq "SQL")
-        {
-            $currentStoreAttributes = $AttributesFromStore.Values | ? store -eq $store.name
-            if ($currentStoreAttributes -ne $null)
-            {
-                $FirstRule += @"
-
-            @RuleName = "Retrieve Attributes from $($store.name)"
-            c:[Type == "$($store.type)", Issuer == "$($store.issuer)"]
-                => add(store = "$($store.name)", 
-                types = ("$($currentStoreAttributes.type -join '","')"), 
-                query = "$($store.query)", param = c.Value);
-
-"@
-            }
-        }
-        #endregion
-
-        #region LDAP Store
-
-        #endregion
-
-        #region Custom Store
-        if ($store.storetype -eq "Custom Store")
-        {
-            $currentStoreAttributes = $AttributesFromStore.Values | ? store -eq $store.name
-            if ($currentStoreAttributes -ne $null)
-            {
-                $FirstRule += @"
-
-                @RuleName = "Retrieve Attributes from Custom Store"
-                c:[Type == "$($store.type)", Issuer == "$($store.issuer)"]
-                => add(store = "$($store.name)", 
-                types = ("$($currentStoreAttributes.type -join '","')"), 
-                query = ";$($currentStoreAttributes.name -join ',');{0}", param = "[ReplaceWithSPNameQualifier]", param = c.Value);
-
-"@
-            }
-        }
-        #endregion
-    }
-
-    return $FirstRule.Replace("[ReplaceWithSPNameQualifier]",$EntityId) + $IssuanceTransformRules.Values
+    return  $FirstRule + $IssuanceTransformRules.Values
 }
 else
 {

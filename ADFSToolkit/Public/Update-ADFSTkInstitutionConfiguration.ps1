@@ -142,6 +142,7 @@
                 #Check if it's an old file that neds to be copied to the institution dir
                 if ($selectedConfig.Directory -ne $Global:ADFSTkPaths.institutionDir)
                 {
+                    #Copy the configuration file to new location
                     $newFileName = Join-Path $Global:ADFSTkPaths.institutionDir $selectedConfig.Name
                     if (Test-Path $newFileName)
                     {
@@ -151,6 +152,27 @@
                     {
                         Copy-Item (Join-Path $selectedConfig.Directory $selectedConfig.name) $newFileName
                         $selectedConfig.Directory = $Global:ADFSTkPaths.institutionDir
+                    }
+
+                    #Copy the ManualSP file to new location
+                    [xml]$selectedConfigSettings = Get-Content (Join-Path $selectedConfig.Directory $selectedConfig.name)
+                    $selectedConfigManualSP = $selectedConfigSettings.configuration.LocalRelyingPartyFile
+                    
+                    $oldManualSPFile = Join-Path $selectedConfig.Directory $selectedConfigManualSP
+                    $newManualSPFile = Join-Path $Global:ADFSTkPaths.institutionDir $selectedConfigManualSP
+
+                    if (Test-Path $oldManualSPFile)
+                    {
+                        if (Test-Path $newManualSPFile)
+                        {
+                            Write-ADFSTkLog (Get-ADFSTkLanguageText confManualSPFileAlreadyExists -f $oldManualSPFile, $Global:ADFSTkPaths.institutionDir) -EntryType Warning
+                        }
+                        else
+                        {
+                            Copy-Item $oldManualSPFile $newManualSPFile
+                            Write-ADFSTkLog (Get-ADFSTkLanguageText confManualSPFileCopied -f $oldManualSPFile, $Global:ADFSTkPaths.institutionDir) -EntryType Information
+
+                        }
                     }
                 }
 
