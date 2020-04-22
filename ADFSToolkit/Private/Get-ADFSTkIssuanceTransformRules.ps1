@@ -151,7 +151,7 @@ if ($AttributesFromStore.Count)
         if ($store.name -eq "Active Directory")
         {
             $currentStoreAttributes = $AttributesFromStore.Values | ? store -eq $store.name
-            if ($currentStoreAttributes.Count -gt 0)
+            if ($currentStoreAttributes.Count -ne $null)
             {
                 $FirstRule += @"
 
