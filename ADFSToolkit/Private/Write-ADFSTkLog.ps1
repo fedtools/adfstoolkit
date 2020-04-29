@@ -162,9 +162,9 @@ Begin {
     }
     elseif ($PsCmdlet.ParameterSetName -eq "Get")
     {
-        if ($GetLogFilePath) { Write-ADFSTkHost logFogFilePath -f $LogFilePath -Style Value }
-        if ($GetEventLogName) { Write-ADFSTkHost logEventLogName -f $EventLogName -Style Value }
-        if ($GetEventLogSource) { Write-ADFSTkHost logEventLogSource -f $EventLogSource -Style Value }
+        if ($GetLogFilePath) { $LogFilePath }
+        if ($GetEventLogName) { $EventLogName }
+        if ($GetEventLogSource) { $EventLogSource }
     }
 }
 Process {

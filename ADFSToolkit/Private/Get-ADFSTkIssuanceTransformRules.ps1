@@ -127,9 +127,9 @@ if ($EntityId -ne $null -and $Global:ManualSPSettings.ContainsKey($EntityId))
     {
         $ManualSPTransformRules = $Global:ManualSPSettings.$EntityId.TransformRules
     }
-    elseif ($IssuanceTransformRuleManualSP.$EntityId -is [System.Collections.Specialized.OrderedDictionary])
+    elseif ($Global:ManualSPSettings.$EntityId -is [System.Collections.Specialized.OrderedDictionary])
     {
-        $ManualSPTransformRules = $IssuanceTransformRuleManualSP.$EntityId
+        $ManualSPTransformRules = $Global:ManualSPSettings.$EntityId
     }
     else
     {
