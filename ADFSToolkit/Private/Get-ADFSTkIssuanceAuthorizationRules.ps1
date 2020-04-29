@@ -1,4 +1,4 @@
-﻿function Get-ADFSTkIssuanceAuthorizationRules
+function Get-ADFSTkIssuanceAuthorizationRules
 {
 param (
 

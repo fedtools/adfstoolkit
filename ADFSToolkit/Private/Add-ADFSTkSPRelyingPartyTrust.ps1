@@ -15,7 +15,6 @@ function Add-ADFSTkSPRelyingPartyTrust {
         EncryptionCertificateRevocationCheck = 'None'
         SigningCertificateRevocationCheck = 'None'
         ClaimsProviderName = @("Active Directory")
-        IssuanceAuthorizationRules = Get-ADFSTkIssuanceAuthorizationRules -EntityId $entityID
         ErrorAction = 'Stop'
     }
 
@@ -176,6 +175,7 @@ function Add-ADFSTkSPRelyingPartyTrust {
 #endregion
 
     $rpParams.SignatureAlgorithm = Get-ADFSTkSecureHashAlgorithm -EntityId $entityID -CertificateSignatureAlgorithm $SigningCertificate.SignatureAlgorithm.Value
+    $rpParams.IssuanceAuthorizationRules = Get-ADFSTkIssuanceAuthorizationRules -EntityId $entityID
 
 
     if ((Get-ADFSRelyingPartyTrust -Identifier $entityID) -eq $null)
