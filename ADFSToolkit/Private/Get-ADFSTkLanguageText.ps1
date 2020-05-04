@@ -55,6 +55,7 @@ param (
                 $caption = "Select language"
                 $message = "Please select which language you want help text in."
                 $defaultChoice = 0
+                $result = 0
                 $i = 0
             }{
                 $choices += New-Object System.Management.Automation.Host.ChoiceDescription "&$([System.Globalization.CultureInfo]::GetCultureInfo($_).DisplayName)","" #if we want more than one language with the same starting letter we need to redo this (number the languages)
@@ -64,7 +65,10 @@ param (
                 $i++
             }{
             
-                $result = $Host.UI.PromptForChoice($caption,$message,[System.Management.Automation.Host.ChoiceDescription[]]$choices,$defaultChoice) 
+                if ($choices.count -ne 1) #If only one choice, no need to ask. $result will be 0 which is the only option
+                {
+                    $result = $Host.UI.PromptForChoice($caption,$message,[System.Management.Automation.Host.ChoiceDescription[]]$choices,$defaultChoice) 
+                }
             }
 
             if ($result -eq -1)
