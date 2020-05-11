@@ -9,7 +9,7 @@ param (
     {
         if ($SPHashList.ContainsKey($SP.EntityID))
         {
-            $currentSPHash = [System.BitConverter]::ToString($md5.ComputeHash($utf8.GetBytes($SP)))
+            $currentSPHash = [System.BitConverter]::ToString($md5.ComputeHash($utf8.GetBytes($SP.InnerXML)))
             return $currentSPHash -ne $SPHashList.($SP.EntityID)
         }
         else
