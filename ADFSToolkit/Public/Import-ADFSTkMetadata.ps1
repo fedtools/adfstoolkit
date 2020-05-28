@@ -281,7 +281,6 @@ process
         Write-ADFSTkLog (Get-ADFSTkLanguageText importProcessingWholeMetadata) -EntryType Information -EventID 13
    
         $AllSPs = $MetadataXML.EntitiesDescriptor.EntityDescriptor | ? {$_.SPSSODescriptor -ne $null}
-#        $AllSPs = $MetadataXML.EntitiesDescriptor.EntityDescriptor | ? {$_.SPSSODescriptor -ne $null -and $_.Extensions -ne $null}
 
         $myAllSPsCount= $ALLSPs.count
         Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText importNumberOfSPsAfterFilter -f $myAllSPsCount)
@@ -319,11 +318,23 @@ process
                         $ADFSTkModuleBase = Join-Path $Global:ADFSTkPaths.modulePath ADFSToolkit.psm1
                         Write-ADFSTkLog (Get-ADFSTkLanguageText importWorkingWithBatch -f $i, $batches, $ADFSTkModuleBase) -EventID 14
                        
-                        $runCommand = "-Command & {Import-ADFSTkMetadata -MaxSPAdditions $MaxSPAdditions -CacheTime -1 -ForceUpdate -ConfigFile '$ConfigFile'"
+                        $runCommand = "-Command & {Import-ADFSTkMetadata -MaxSPAdditions $MaxSPAdditions -CacheTime -1 -ConfigFile '$ConfigFile'"
+                        
                         if ($PSBoundParameters.ContainsKey("Silent") -and $Silent -ne $false)
                         {
                             $runCommand += " -Silent"
                         }
+                        
+                        if ($PSBoundParameters.ContainsKey("ForceUpdate") -and $ForceUpdate -ne $false)
+                        {
+                            $runCommand += " -ForceUpdate"
+                        }
+                        
+                        if ($PSBoundParameters.ContainsKey("WhatIf") -and $WhatIf -ne $false)
+                        {
+                            $runCommand += " -WhatIf"
+                        }
+                        
                         $runCommand += " ;Exit}"
 
                         Start-Process -WorkingDirectory $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('.\') -FilePath "$env:SystemRoot\system32\WindowsPowerShell\v1.0\powershell.exe" -ArgumentList "-NoExit", $runCommand -Wait -NoNewWindow

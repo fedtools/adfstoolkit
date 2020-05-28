@@ -181,7 +181,7 @@ function Add-ADFSTkSPRelyingPartyTrust {
     if ((Get-ADFSRelyingPartyTrust -Identifier $entityID) -eq $null)
     {
         $NamePrefix = $Settings.configuration.MetadataPrefix 
-        $Sep= $Settings.configuration.MetadataPrefixSeparator      
+        $Sep = $Settings.configuration.MetadataPrefixSeparator      
         $NameWithPrefix = "$NamePrefix$Sep$Name"
 
         if ((Get-ADFSRelyingPartyTrust -Name $NameWithPrefix) -ne $null)
@@ -190,12 +190,10 @@ function Add-ADFSTkSPRelyingPartyTrust {
             Do
             {
                 $n++
-                $NewName = "$Name ($n)"
+                $NameWithPrefix = "$NamePrefix$Sep$Name ($n)"
             }
-            Until ((Get-ADFSRelyingPartyTrust -Name "$NamePrefix $NewName") -eq $null)
+            Until ((Get-ADFSRelyingPartyTrust -Name $NameWithPrefix) -eq $null)
 
-            $Name = $NewName
-            $NameWithPrefix = "$NamePrefix $Name"
             Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPRPAlreadyExistsChangingNameTo -f $NameWithPrefix)
         }
 
