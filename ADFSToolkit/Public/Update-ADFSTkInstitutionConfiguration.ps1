@@ -1,4 +1,4 @@
-function Update-ADFSTkInstitutionConfiguration 
+﻿function Update-ADFSTkInstitutionConfiguration 
 {
     [CmdletBinding(SupportsShouldProcess=$true)]
     param(

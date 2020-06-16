@@ -47,7 +47,7 @@
             <attribute type="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" store="Active Directory" name="givenname" />
             <attribute type="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname" store="Active Directory" name="sn" />
             <attribute type="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/displayname" store="Active Directory" name="displayname" />
-            <attribute type="http://schemas.xmlsoap.org/claims/CommonName" store="Active Directory" name="cn" />
+            <attribute type="http://schemas.xmlsoap.org/claims/CommonName" store="Active Directory" name="displayname" />
             <attribute type="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name" store="Active Directory" name="name" />
             <attribute type="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress" store="Active Directory" name="mail" />
            
