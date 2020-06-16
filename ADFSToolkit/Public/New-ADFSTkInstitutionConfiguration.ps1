@@ -233,8 +233,8 @@ function New-ADFSTkInstitutionConfiguration {
 
     
     #Adding eduPersonScopedAffiliation based on eduPersonAffiliation added with @schackHomeOrganization
-    $epa = $newConfig.configuration.storeConfig.attributes.attribute | ? type -eq "urn:mace:dir:attribute-def:eduPersonAffiliation" 
-    $epsa = $newConfig.configuration.storeConfig.attributes.attribute | ? type -eq "urn:mace:dir:attribute-def:eduPersonScopedAffiliation"
+    $epa = $newConfig.configuration.attributes.attribute | ? type -eq "urn:mace:dir:attribute-def:eduPersonAffiliation" 
+    $epsa = $newConfig.configuration.attributes.attribute | ? type -eq "urn:mace:dir:attribute-def:eduPersonScopedAffiliation"
     
 
     $epa.ChildNodes | % {

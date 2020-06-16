@@ -167,7 +167,7 @@ $TransformRules."transient-id" = [PSCustomObject]@{
     $TransformRules.eduPersonPrincipalName = [PSCustomObject]@{
     Rule=@"
     @RuleName = "compose eduPersonPrincipalName"
-    c:[Type == "$(($Settings.configuration.storeConfig.transformRules.rule | ? name -eq "ADFSTkExtractSubjectUniqueId").originClaim )" ]
+    c:[Type == "$(($Settings.configuration.transformRules.rule | ? name -eq "ADFSTkExtractSubjectUniqueId").originClaim )" ]
      => issue(Type = "urn:oid:1.3.6.1.4.1.5923.1.1.1.6", 
      Value = RegexReplace(c.Value, "@.*$", "") +"@$($Settings.configuration.StaticValues.schacHomeOrganization)", 
      Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");

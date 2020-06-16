@@ -172,6 +172,7 @@ The Manual SP Settings file '{0}' already exists in the new location '{1}', no c
 After the upgrade, make sure that the correct file is in the new location!
 "@
     confManualSPFileCopied = "The Manual SP Settings file '{0}' were successfully copied to the new location '{1}'."
+    confMoveNodeFromStoreConfigToConfig = "The XML node {0} were moved from the storeConfig node to the configuration node."
 
     #######################################
     ### Federation cmdlets [federation] ###

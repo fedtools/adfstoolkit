@@ -6,7 +6,7 @@
     )
 
     #This is ther version we can upgrade to
-    $currentConfigVersion = '1.2'
+    $currentConfigVersion = '1.3'
 
     #Get All paths
     if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
@@ -111,7 +111,24 @@
             Write-ADFSTkLog (Get-ADFSTkLanguageText cFileDontExist -f $ConfigurationFile) -MajorFault
         }
 
-        $selectedConfigs += Add-ADFSTkConfigurationItem -ConfigurationItem $ConfigurationFile -PassThru 
+        $ConfigurationFilePath = Get-ChildItem $ConfigurationFile
+
+        #Check if it's an old file that neds to be copied to the institution dir
+        if ($ConfigurationFilePath.Directory.FullName -ne $Global:ADFSTkPaths.institutionDir)
+        {
+            #Copy the configuration file to new location
+            $newFileName = Join-Path $Global:ADFSTkPaths.institutionDir $ConfigurationFilePath.Name
+            if (Test-Path $newFileName)
+            {
+                Write-ADFSTkLog (Get-ADFSTkLanguageText confInstConfFileAlreadyUpgraded -f (Join-Path $ConfigurationFilePath.Directory $ConfigurationFilePath.name), $newFileName) -MajorFault
+            }
+            else
+            {
+                Copy-Item $ConfigurationFilePath.FullName $newFileName
+            }
+        }
+
+        $selectedConfigs += Add-ADFSTkConfigurationItem -ConfigurationItem $newFileName -PassThru 
     }
     else
     {
@@ -319,6 +336,31 @@
 
                     #$RemoveCache = $true
                     
+                    $config.configuration.ConfigVersion = $newVersion
+                    $config.Save($configFile.configFile);
+                }
+
+                #v1.2 --> v1.3
+                $currentVersion = '1.2'
+                $newVersion     = '1.3'
+                if ($config.configuration.ConfigVersion -eq $currentVersion)
+                {
+                    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText confUpdatingInstConfigFromTo -f $currentVersion, $newVersion)
+
+                    if (![string]::IsNullOrEmpty($config.configuration.storeConfig.transformRules))
+                    {
+                        Write-ADFSTkLog (Get-ADFSTkLanguageText confMoveNodeFromStoreConfigToConfig -f 'transformRules')
+                        $config.configuration.AppendChild($config.configuration.storeConfig.transformRules) | Out-Null
+                    }
+
+                    if (![string]::IsNullOrEmpty($config.configuration.storeConfig.attributes))
+                    {
+                        Write-ADFSTkLog (Get-ADFSTkLanguageText confMoveNodeFromStoreConfigToConfig -f 'attributes')
+                        $config.configuration.AppendChild($config.configuration.storeConfig.attributes) | Out-Null
+                    }
+
+
+
                     $config.configuration.ConfigVersion = $newVersion
                     $config.Save($configFile.configFile);
                 }
