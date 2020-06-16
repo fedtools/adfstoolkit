@@ -1,4 +1,4 @@
-﻿function Update-ADFSTkInstitutionConfiguration 
+function Update-ADFSTkInstitutionConfiguration 
 {
     [CmdletBinding(SupportsShouldProcess=$true)]
     param(
@@ -395,7 +395,7 @@ param (
 )
 
     $node = $config.SelectSingleNode($XPath)
-    if (![string]::IsNullOrEmpty($null))
+    if (![string]::IsNullOrEmpty($node))
     {
         $node.ParentNode.RemoveChild($node) | Out-Null
     }
