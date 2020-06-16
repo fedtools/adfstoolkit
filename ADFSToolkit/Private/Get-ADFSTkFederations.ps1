@@ -60,7 +60,7 @@ param (
                 $federations = ConvertFrom-Json $web.Content
 
                 [xml]$fedXML = New-Object System.Xml.XmlDocument
-                $fedXML.AppendChild($fedXML.CreateXmlDeclaration("1.0",$null,$null)) | Out-Null
+                $fedXML.AppendChild($fedXML.CreateXmlDeclaration("1.0","UTF-8",$null)) | Out-Null
         
                 $federationsNode = $fedXML.CreateNode("element","Federations",$null)
     

@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <ConfigVersion>1.2</ConfigVersion>
     <SPHashFile>SPHash.xml</SPHashFile>
@@ -128,6 +128,8 @@
                 <group name="Terena Personal Certificate Admin" value="urn:mace:terena.org:tcs:personal-admin" />
                 <group name="Terena Personal Certificate Admin" value="urn:mace:terena.org:tcs:escience-admin" />
             </attribute>
+
+            <!-- Attention! Never send any AssuranceLevel(s) your institution isn't certified for -->
             <attribute type="urn:mace:dir:attribute-def:eduPersonAssurance" store="Static">
                 <value>http://www.EXAMPLE.COM/policy/assurance/al1</value>
                 <value>http://www.EXAMPLE.COM/policy/assurance/al2</value>

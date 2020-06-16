@@ -95,7 +95,7 @@ param(
     #region Main config
 
     [xml]$config = New-Object System.Xml.XmlDocument
-    $config.AppendChild($config.CreateXmlDeclaration("1.0",$null,$null)) | Out-Null
+    $config.AppendChild($config.CreateXmlDeclaration("1.0","UTF-8",$null)) | Out-Null
         
     $configurationNode = $config.CreateNode("element","Configuration",$null)
         
