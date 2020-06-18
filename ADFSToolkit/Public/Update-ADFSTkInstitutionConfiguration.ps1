@@ -286,7 +286,11 @@
                     $config.configuration.ConfigVersion = $newVersion
                     $config.Save($configFile.configFile);
 
-                    $RemoveCache = $true
+                    if ($RemoveCache -eq $false)
+                    {
+                        $RemoveCache = $true
+                        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText confCacheNeedsToBeRemoved)
+                    }
                 }
 
                 #v1.1 --> v1.2
@@ -317,24 +321,24 @@
                         }
                     }
 
-                    #$RemoveCache = $true
-                    
                     $config.configuration.ConfigVersion = $newVersion
                     $config.Save($configFile.configFile);
                 }
 
                 Write-ADFSTkLog (Get-ADFSTkLanguageText confUpdatedInstConfigDone -f $configFile.configFile, $oldConfigVersion, $currentConfigVersion) -EntryType Information
-
             }
         }
     }
 
     Write-ADFSTkLog (Get-ADFSTkLanguageText confUpdatedInstConfigAllDone) -EntryType Information
-
-    #if ($RemoveCache -and Get-ADFSTkAnswer "We recommend you start over without cache OK?")
-    #{
-
-    #}
+    if ($RemoveCache)
+    {
+        Write-ADFSTkHost confDeleteCacheWarning -Style Attention
+        if (Get-ADFSTkAnswer (Get-ADFSTkLanguageText confDeleteCacheQuestion) -DefaultYes)
+        {
+            Get-ChildItem $Global:ADFSTkPaths.cacheDir | Remove-Item -Confirm:$false
+        }
+    }
 #endregion
 }
 #endregion
