@@ -271,7 +271,7 @@ if ($ManualSPTransformRules -ne $null)
 #$removeRules = @()
 #foreach ($rule in $IssuanceTransformRules.Keys)
 #{
-#    $attribute = $Settings.configuration.storeConfig.attributes.attribute | ? name -eq $rule
+#    $attribute = $Settings.configuration.attributes.attribute | ? name -eq $rule
 #    if ($attribute -ne $null -and $attribute.allowedRegistrationAuthorities -ne $null)
 #    {
 #        $allowedRegistrationAuthorities = @()
@@ -290,7 +290,7 @@ if ($ManualSPTransformRules -ne $null)
 $removeRules = @()
 foreach ($attr in $AttributesFromStore.values)
 {
-    $attribute = $Settings.configuration.storeConfig.attributes.attribute | ? type -eq $attr.type
+    $attribute = $Settings.configuration.attributes.attribute | ? type -eq $attr.type
     if ($attribute -ne $null -and $attribute.allowedRegistrationAuthorities -ne $null)
     {
         $allowedRegistrationAuthorities = @()

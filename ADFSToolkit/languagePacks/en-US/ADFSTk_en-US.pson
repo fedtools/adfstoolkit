@@ -172,6 +172,7 @@ The Manual SP Settings file '{0}' already exists in the new location '{1}', no c
 After the upgrade, make sure that the correct file is in the new location!
 "@
     confManualSPFileCopied = "The Manual SP Settings file '{0}' were successfully copied to the new location '{1}'."
+    confMoveNodeFromStoreConfigToConfig = "The XML node {0} were moved from the storeConfig node to the configuration node."
     confCacheNeedsToBeRemoved = "CacheRemove is set to $true"
     confDeleteCacheWarning = "The new features of ADFSToolkit needs to be deployed on all SP's. Therefore the cache files needs to be deleted. Doing this the next sync will take more time and all SP's will be updated."
     confDeleteCacheQuestion = "Do you wnat to proceed and delete the cache?"
@@ -318,6 +319,10 @@ After the upgrade, make sure that the correct file is in the new location!
     importNothingToDo = "Invoked without -ProcessWholeMetadata <no args> , -EntityID <with quoted URL>, nothing to do, exiting"
     importScriptEnded = "Script ended!"
     importEventLogMissingInSettings = "Missing eventlog settings in config."
+    importIncompatibleInstitutionConfigVersion = @"
+The provided Institution Configuration File is incompatible with this version of ADFS Toolkit!
+The Institution Configuration File version is {0} and the minimum version needs to be {1}.
+"@
 
     #############################
     ### Sync Aggregate [sync] ###

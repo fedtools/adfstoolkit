@@ -39,6 +39,7 @@ function Import-ADFSTkMetadata
 
 process 
 {
+    $CompatibleConfigVersion = "1.3"
 
     #Get All paths
     if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
@@ -61,7 +62,6 @@ process
             [xml]$Settings = Get-Content ($ConfigFile)
         }
 
-
         # set appropriate logging via EventLog mechanisms
 
         if (Verify-ADFSTkEventLogUsage)
@@ -74,6 +74,12 @@ process
         {
             # No Event logging is enabled, just this one to a file
             Write-ADFSTkLog (Get-ADFSTkLanguageText importEventLogMissingInSettings) -MajorFault            
+        }
+
+        #Check against compatible version
+        if ([float]$Settings.configuration.ConfigVersion -lt [float]$CompatibleConfigVersion)
+        {
+            Write-ADFSTkLog (Get-ADFSTkLanguageText importIncompatibleInstitutionConfigVersion -f $Settings.configuration.ConfigVersion, $CompatibleConfigVersion) -MajorFault
         }
 
     #region Get static values from configuration file
