@@ -105,7 +105,7 @@ param(
     $configurationNode.AppendChild($configVersionNode) | Out-Null
 
     $OutputLanguageNode = $config.CreateNode("element","OutputLanguage",$null)
-    $OutputLanguageNode.InnerText = $Global:selectedLanguage
+    $OutputLanguageNode.InnerText = $Global:ADFSTkselectedLanguage
 
     $configurationNode.AppendChild($OutputLanguageNode) | Out-Null
 

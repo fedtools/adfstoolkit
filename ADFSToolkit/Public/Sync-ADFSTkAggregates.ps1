@@ -67,7 +67,7 @@ param(
 
     foreach ($configFile in $config.Configuration.ConfigFiles.ConfigFile)
     {
-        $Global:CurrentInstitutionConfig = $configFile
+        $Global:ADFSTkCurrentInstitutionConfig = $configFile
 
         # set appropriate logging via EventLog mechanisms
         [xml]$Settings = Get-Content $configFile.'#text'

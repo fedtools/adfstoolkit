@@ -10,9 +10,9 @@ param (
 )
 
 
-if ([string]::IsNullOrEmpty($Global:ManualSPSettings))
+if ([string]::IsNullOrEmpty($Global:ADFSTkManualSPSettings))
 {
-    $Global:ManualSPSettings = Get-ADFSTkManualSPSettings
+    $Global:ADFSTkManualSPSettings = Get-ADFSTkManualSPSettings
 }
 
 #Default hash algorithm if nothing overrides it
@@ -25,11 +25,11 @@ if ($SignatureAlgorithm -eq '1.2.840.113549.1.1.11')
 }
 
 #AllSPs
-if ($Global:ManualSPSettings.ContainsKey('urn:adfstk:allsps') -and `
-    $Global:ManualSPSettings.'urn:adfstk:allsps' -is [System.Collections.Hashtable] -and `
-    $Global:ManualSPSettings.'urn:adfstk:allsps'.ContainsKey('HashAlgorithm'))
+if ($Global:ADFSTkManualSPSettings.ContainsKey('urn:adfstk:allsps') -and `
+    $Global:ADFSTkManualSPSettings.'urn:adfstk:allsps' -is [System.Collections.Hashtable] -and `
+    $Global:ADFSTkManualSPSettings.'urn:adfstk:allsps'.ContainsKey('HashAlgorithm'))
 {
-    $SignatureAlgorithm = $Global:ManualSPSettings.'urn:adfstk:allsps'.HashAlgorithm
+    $SignatureAlgorithm = $Global:ADFSTkManualSPSettings.'urn:adfstk:allsps'.HashAlgorithm
 }
 
 #AllEduSPs
@@ -48,7 +48,7 @@ if ($EntityId -ne $null)
 
     $settingsDNS = $null
 
-    foreach($setting in $Global:ManualSPSettings.Keys)
+    foreach($setting in $Global:ADFSTkManualSPSettings.Keys)
     {
         if ($setting.StartsWith('urn:adfstk:entityiddnsendswith:'))
         {
@@ -57,19 +57,19 @@ if ($EntityId -ne $null)
     }
 
     if ($entityDNS.EndsWith($settingsDNS) -and `
-        $Global:ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS" -is [System.Collections.Hashtable] -and `
-        $Global:ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS".ContainsKey('HashAlgorithm'))
+        $Global:ADFSTkManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS" -is [System.Collections.Hashtable] -and `
+        $Global:ADFSTkManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS".ContainsKey('HashAlgorithm'))
 {
-    $SignatureAlgorithm = $Global:ManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS".HashAlgorithm
+    $SignatureAlgorithm = $Global:ADFSTkManualSPSettings."urn:adfstk:entityiddnsendswith:$settingsDNS".HashAlgorithm
 }
 
 #Manual SP
 if ($EntityId -ne $null -and `
-    $Global:ManualSPSettings.ContainsKey($EntityId) -and `
-    $Global:ManualSPSettings.$EntityId -is [System.Collections.Hashtable] -and `
-    $Global:ManualSPSettings.$EntityId.ContainsKey('HashAlgorithm'))
+    $Global:ADFSTkManualSPSettings.ContainsKey($EntityId) -and `
+    $Global:ADFSTkManualSPSettings.$EntityId -is [System.Collections.Hashtable] -and `
+    $Global:ADFSTkManualSPSettings.$EntityId.ContainsKey('HashAlgorithm'))
     {
-        $SignatureAlgorithm = $Global:ManualSPSettings.$EntityId.HashAlgorithm
+        $SignatureAlgorithm = $Global:ADFSTkManualSPSettings.$EntityId.HashAlgorithm
     }
 }
 

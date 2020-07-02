@@ -21,7 +21,7 @@ param (
     }
     #selectedLanguage is a global variable that holds the current selected language
     #chosen by user. The value should be the language code i.e. en-US
-    elseif ([string]::IsNullOrEmpty($Global:selectedLanguage))
+    elseif ([string]::IsNullOrEmpty($Global:ADFSTkSelectedLanguage))
     {
         $selectedLanguage = $null
         #We need to be able to proceed without a ADFSTk Config file
@@ -81,7 +81,7 @@ param (
                 $selectedLanguage = ([string[]]$configFoundLanguages)[$result]
             }
 
-            $Global:selectedLanguage = $selectedLanguage
+            $Global:ADFSTkSelectedLanguage = $selectedLanguage
 
             ### ToDo: Add the selected language to ADFSTK Config file! ###
             if (Test-Path $Global:ADFSTkPaths.mainConfigFile)
@@ -117,23 +117,23 @@ param (
         else
         {
             #$selectedLanguage = $Configuration.OutputLanguage
-            $Global:selectedLanguage = $selectedLanguage
+            $Global:ADFSTkSelectedLanguage = $selectedLanguage
         }
     }
     else
     {
-        $selectedLanguage = $Global:selectedLanguage
+        $selectedLanguage = $Global:ADFSTkSelectedLanguage
     }
 
     #LanguageTables is a global variable that contains one or more language table.
     #The key is the language code i.e. en-US and the value is a hash table read from
     #a language file. 
-    if ([string]::IsNullOrEmpty($Global:LanguageTables))
+    if ([string]::IsNullOrEmpty($Global:ADFSTkLanguageTables))
     {
-        $Global:LanguageTables = @{}
+        $Global:ADFSTkLanguageTables = @{}
     }
 
-    if (!$Global:LanguageTables.ContainsKey($selectedLanguage))
+    if (!$Global:ADFSTkLanguageTables.ContainsKey($selectedLanguage))
     {
         if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
         {
@@ -158,14 +158,14 @@ param (
             Write-ADFSTkLog "Could not open language file!" -MajorFault
         }
 
-        $Global:LanguageTables.$selectedLanguage = $languageData
+        $Global:ADFSTkLanguageTables.$selectedLanguage = $languageData
     }
 
     if ($PSBoundParameters.ContainsKey('f'))
     {
-        if ($Global:LanguageTables.$selectedLanguage.ContainsKey($TextID))
+        if ($Global:ADFSTkLanguageTables.$selectedLanguage.ContainsKey($TextID))
         {
-            return $Global:LanguageTables.$selectedLanguage.$TextID -f $f
+            return $Global:ADFSTkLanguageTables.$selectedLanguage.$TextID -f $f
         }
         elseif($selectedLanguage -ne "en-US")
         {
@@ -181,9 +181,9 @@ param (
     }
     else
     {
-        if ($Global:LanguageTables.$selectedLanguage.ContainsKey($TextID))
+        if ($Global:ADFSTkLanguageTables.$selectedLanguage.ContainsKey($TextID))
         {
-            return $Global:LanguageTables.$selectedLanguage.$TextID
+            return $Global:ADFSTkLanguageTables.$selectedLanguage.$TextID
         }
         elseif($selectedLanguage -ne "en-US")
         {
