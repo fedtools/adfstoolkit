@@ -1,6 +1,20 @@
 ﻿function Get-ADFSTkHealth {
 [cmdletbinding()]
-param ()
+param (
+    $ConfigFile,
+    [ValidateSet("CriticalOnly", "Full")]
+    $HealthCheckMode = "Full" #Do a full Health Check as default
+)
+
+$healtChecks = @{
+    signatureCheck = $true
+    versionCheck = $true
+}
+
+if ($HealthCheckMode -eq "CriticalOnly")
+{
+    $healtChecks.signatureCheck = $false
+}
 
 #Get All paths
 if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
@@ -11,49 +25,119 @@ if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
 $finalResult = $true
 
 #region check script signatures
-    $signatureCheck = $true
-    Write-ADFSTkVerboseLog "Checking signature on module scipts..."
-    $Signatures = Get-ChildItem -Path $Global:ADFSTkPaths.modulePath -Filter *.ps1 -Recurse | Get-AuthenticodeSignature
-    $validSignatures = ($Signatures | ? Status -eq Valid).Count
-    $invalidSignatures = ($Signatures | ? Status -eq HashMismatch).Count
-    $missingSignatures = ($Signatures | ? Status -eq NotSigned).Count
+    if ($healtChecks.signatureCheck)
+    {
+        $signatureCheckResult = $true
+
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckSignatureStartMessage)
+        $Signatures = Get-ChildItem -Path $Global:ADFSTkPaths.modulePath -Filter *.ps1 -Recurse | Get-AuthenticodeSignature
+        $validSignatures = ($Signatures | ? Status -eq Valid).Count
+        $invalidSignatures = ($Signatures | ? Status -eq HashMismatch).Count
+        $missingSignatures = ($Signatures | ? Status -eq NotSigned).Count
     
-    Write-ADFSTkVerboseLog ("{0} scripts found with valid signature(s)..." -f $validSignatures)
-    Write-ADFSTkVerboseLog ("{0} scripts found with invalid signature(s)..." -f $invalidSignatures)
-    Write-ADFSTkVerboseLog ("{0} scripts found with missing signature(s)..." -f $missingSignatures)
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckSignatureValidSignaturesResult -f $validSignatures)
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckSignatureInvalidSignaturesResult -f $invalidSignatures)
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckSignatureMissingSignaturesResult -f $missingSignatures)
 
-    if ($invalidSignatures -gt 0)
-    {
-        $signatureCheck = $false
-        Write-ADFSTkLog (@"
-The script(s) below have invalid signatures. The code can have been changed so they don't work as expected! 
-If you don't know why this occurred, reinstallation of ADFS Toolkit is recommended.
+        if ($invalidSignatures -gt 0)
+        {
+            $signatureCheckResult = $false
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckSignatureInvalidSignaturesMessage -f ($Signatures | ? Status -eq HashMismatch | Select -ExpandProperty Path | Out-String)) -EntryType Warning
+        }
 
-{0} 
-"@ -f ($Signatures | ? Status -eq HashMismatch | Select -ExpandProperty Path | Out-String)) -EntryType Warning
-    }
+        if ($missingSignatures -gt 0)
+        {
+            if ($Global:ADFSTkSkipNotSignedHealthCheck -eq $true)
+            {
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckSignatureSkipNotSignedMessage)
+            }
+            else
+            {
+                $signatureCheckResult = $false
+                Write-ADFSTkLog (Get-ADFSTkLanguageText healthCheckSignatureMissingSignaturesMessage -f ($Signatures | ? Status -eq NotSigned | Select -ExpandProperty Path | Out-String)) -EntryType Warning
+            }
+        }
 
-    if ($missingSignatures -gt 0 -and $Global:ADFSTkSkipNotSignedCheck -ne $true)
-    {
-        $signatureCheck = $false
-        Write-ADFSTkLog (@"
-The script(s) below have one or more missing signature(s). An unreleased version of ADFS Toolkit might be used and the functionality cannot be guaranteed! 
-If you don't know why this occurred, reinstallation of ADFS Toolkit is recommended.
-
-{0} 
-"@ -f ($Signatures | ? Status -eq NotSigned | Select -ExpandProperty Path | Out-String)) -EntryType Warning
-    }
-
-    if ($signatureCheck -eq $true)
-    {
-        Write-Verbose "Signaturecheck PASSED!"   
-    }
-    else
-    {
-        Write-Verbose "Signaturecheck FAILED!"
-        $finalResult = $false
+        if ($signatureCheckResult -eq $true)
+        {
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckSignaturePass)
+        }
+        else
+        {
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckSignatureFail)
+            $finalResult = $false
+        }
     }
 #endregion
+
+#region check config version
+    if ($healtChecks.versionCheck)
+    {
+        $configVersionCheckResult = $true
+        $CompatibleConfigVersion = "1.3"
+
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionStartMessage)
+
+        $configFiles = @()
+        if ($PSBoundParameters.ContainsKey('configFile'))
+        {
+            $configFiles += $configFile
+        }
+        else
+        {
+            $configFiles = Get-ADFSTkConfiguration -ConfigFilesOnly | ? Enabled -eq $true | select -ExpandProperty ConfigFile
+        }
+
+        foreach ($cf in $configFiles)
+        {
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healhCheckConfigVersionVerifyingPath -f $cf)
+            if (Test-Path $cf)
+            {
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healhCheckConfigVersionVerifyingPathSucceeded)
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healhCheckConfigVersionVerifyingXMLParse)
+                try 
+                {
+                    [xml]$xmlCf = Get-Content $cf
+                    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healhCheckConfigVersionVerifyingXMLParseSucceeded)
+
+                    #Check against compatible version
+                    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionVerifyingVersionStart)
+                    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionVerifyingVersionCompareVersions -f $xmlCf.configuration.ConfigVersion, $CompatibleConfigVersion)
+                    if ([float]$xmlCf.configuration.ConfigVersion -ge [float]$CompatibleConfigVersion)
+                    {
+                        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionVerifyingVersionSucceeded)
+                    }
+                    else
+                    {
+                        $configVersionCheckResult = $false
+                        Write-ADFSTkLog (Get-ADFSTkLanguageText healthIncompatibleInstitutionConfigVersion -f $xmlCf.configuration.ConfigVersion, $CompatibleConfigVersion) -EntryType Warning
+                    }
+                }
+                catch
+                {
+                    $configVersionCheckResult = $false
+                    Write-ADFSTkLog (Get-ADFSTkLanguageText healhCheckConfigVersionVerifyingXMLParseFailed -f $cf) -EntryType Warning
+                }
+            }
+            else
+            {
+                $configVersionCheckResult = $false
+                Write-ADFSTkLog (Get-ADFSTkLanguageText cFileDontExist -f $ConfigFile) -EntryType Warning
+            }
+        }
+
+        if ($configVersionCheckResult -eq $true)
+        {
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionPass)
+        }
+        else
+        {
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionFail)
+            $finalResult = $false
+        }
+    }
+#endregion
+
     
     return $finalResult
 }

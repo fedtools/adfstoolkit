@@ -33,13 +33,14 @@ function Import-ADFSTkMetadata
         #The maximum SPs to add in one run (to prevent throttling). Is used when the script recusrive calls itself
         [int]
         $MaxSPAdditions = 80,
-        [switch]$Silent
+        [switch]$Silent,
+        [switch]$criticalHealthChecksOnly
     )
 
 
 process 
 {
-    $CompatibleConfigVersion = "1.3"
+    #$CompatibleConfigVersion = "1.3"
 
     #Get All paths
     if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
@@ -77,9 +78,22 @@ process
         }
 
         #Check against compatible version
-        if ([float]$Settings.configuration.ConfigVersion -lt [float]$CompatibleConfigVersion)
+        #if ([float]$Settings.configuration.ConfigVersion -lt [float]$CompatibleConfigVersion)
+        #{
+        #    Write-ADFSTkLog (Get-ADFSTkLanguageText importIncompatibleInstitutionConfigVersion -f $Settings.configuration.ConfigVersion, $CompatibleConfigVersion) -MajorFault
+        #}
+        if ($PSBoundParameters.ContainsKey('criticalHealthChecksOnly') -and $criticalHealthChecksOnly -ne $false)
         {
-            Write-ADFSTkLog (Get-ADFSTkLanguageText importIncompatibleInstitutionConfigVersion -f $Settings.configuration.ConfigVersion, $CompatibleConfigVersion) -MajorFault
+            $healthCheckResult = Get-ADFSTkHealth -ConfigFile $ConfigFile -HealthCheckMode CriticalOnly
+        }
+        else
+        {
+            $healthCheckResult = Get-ADFSTkHealth -ConfigFile $ConfigFile -HealthCheckMode Full
+        }
+
+        if ($healthCheckResult -eq $false)
+        {
+            Write-ADFSTkLog "The Health Check of ADFS Toolkit did not pass! Check earlier log entries to see what's wrong." -MajorFault
         }
 
     #region Get static values from configuration file

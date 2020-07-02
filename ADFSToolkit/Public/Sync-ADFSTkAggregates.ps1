@@ -109,7 +109,14 @@ param(
                         $params.Silent = $true
                     }
 
-                    Import-ADFSTkMetadata @params
+                    try 
+                    {
+                        Import-ADFSTkMetadata @params
+                    }
+                    catch 
+                    {
+                        $_
+                    }
                 }
 
                 Write-ADFSTkLog (Get-ADFSTkLanguageText syncProcesseDone -f $configFile.'#text') -ForegroundColor Green -EventID 32

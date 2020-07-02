@@ -319,10 +319,6 @@ After the upgrade, make sure that the correct file is in the new location!
     importNothingToDo = "Invoked without -ProcessWholeMetadata <no args> , -EntityID <with quoted URL>, nothing to do, exiting"
     importScriptEnded = "Script ended!"
     importEventLogMissingInSettings = "Missing eventlog settings in config."
-    importIncompatibleInstitutionConfigVersion = @"
-The provided Institution Configuration File is incompatible with this version of ADFS Toolkit!
-The Institution Configuration File version is {0} and the minimum version needs to be {1}.
-"@
 
     #############################
     ### Sync Aggregate [sync] ###
@@ -367,4 +363,43 @@ The Institution Configuration File version is {0} and the minimum version needs 
     logEventLogUsed = "EventLog Being Used on this run"
     logEventLogCreated = "ADFSToolkit EventLog Created"
     logCouldNotCreateEventLog = "EventLog creation failure: config has no LogName or Source"
+
+    #############################
+    ### ADFSTkHealth [health] ###
+    #############################
+    
+    healthIncompatibleInstitutionConfigVersion = @"
+The provided Institution Configuration File is incompatible with this version of ADFS Toolkit!
+The Institution Configuration File version is {0} and the minimum version needs to be {1}.
+"@
+    healthCheckSignatureStartMessage = "Checking signature on module scipts..."
+    healthCheckSignatureValidSignaturesResult = "{0} scripts found with valid signature(s)..."
+    healthCheckSignatureInvalidSignaturesResult = "{0} scripts found with invalid signature(s)..."
+    healthCheckSignatureMissingSignaturesResult = "{0} scripts found with missing signature(s)..."
+    healthCheckSignatureInvalidSignaturesMessage = @"
+The script(s) below have invalid signatures. The code can have been changed so they don't work as expected! 
+If you don't know why this occurred, reinstallation of ADFS Toolkit is recommended.
+
+{0} 
+"@
+    healthCheckSignatureSkipNotSignedMessage = "Missing signatures check skipped due to ADFSTkSkipNotSignedHealthCheck set!"
+    healthCheckSignatureMissingSignaturesMessage = @"
+The script(s) below have one or more missing signature(s). An unreleased version of ADFS Toolkit might be used and the functionality cannot be guaranteed! 
+If you don't know why this occurred, reinstallation of ADFS Toolkit is recommended.
+
+{0} 
+"@
+    healthCheckSignaturePass = "Signaturecheck PASSED!"
+    healthCheckSignatureFail = "Signaturecheck FAILED!"
+    healthCheckConfigVersionStartMessage = "Checking for compatible institution configuration file version..."
+    healhCheckConfigVersionVerifyingPath = "Verifying path for '{0}'..."
+    healhCheckConfigVersionVerifyingPathSucceeded = "Path test succeeded!"
+    healhCheckConfigVersionVerifyingXMLParse = "Verifying open and xml parsing..."
+    healhCheckConfigVersionVerifyingXMLParseSucceeded = "Open and XML parse succeeded!"
+    healhCheckConfigVersionVerifyingXMLParseFailed = "Could not open or parse the institution configuration file '{0}'. Health check failed!"
+    healthCheckConfigVersionVerifyingVersionStart = "Verifying compatible version..."
+    healthCheckConfigVersionVerifyingVersionCompareVersions = "Config version: {0} - Compatible version: {1}"
+    healthCheckConfigVersionVerifyingVersionSucceeded = "Compatible version succeeded!"
+    healthCheckConfigVersionPass = "Versioncheck PASSED!"
+    healthCheckConfigVersionFail = "Versioncheck FAILED!"
 }
