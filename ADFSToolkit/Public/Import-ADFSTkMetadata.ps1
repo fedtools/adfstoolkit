@@ -263,31 +263,33 @@ process
     #endregion
 
     #Verify Metadata Signing Cert
-    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText importVerifyingSigningCert) -EntryType Information
-    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText importEnsuringSHA256) -EntryType Information
+    if ($Global:ADFSTkSkipMetadataSignatureCheck -ne $true)
+    {
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText importVerifyingSigningCert) -EntryType Information
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText importEnsuringSHA256) -EntryType Information
   
-    Update-SHA256AlgXmlDSigSupport
+        Update-SHA256AlgXmlDSigSupport
 
-    if (Verify-ADFSTkSigningCert $MetadataXML.EntitiesDescriptor.Signature.KeyInfo.X509Data.X509Certificate)
-    {
-        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText importSuccessfullyVerifiedMetadataCert) -EntryType Information
-    }
-    else
-    {
-        Write-ADFSTkLog (Get-ADFSTkLanguageText importMetadataCertIncorrect) -MajorFault -EventID 11
-    }
+        if (Verify-ADFSTkSigningCert $MetadataXML.EntitiesDescriptor.Signature.KeyInfo.X509Data.X509Certificate)
+        {
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText importSuccessfullyVerifiedMetadataCert) -EntryType Information
+        }
+        else
+        {
+            Write-ADFSTkLog (Get-ADFSTkLanguageText importMetadataCertIncorrect) -MajorFault -EventID 11
+        }
 
-    #Verify Metadata Signature
-    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText importVerifyingMetadataSignature) -EntryType Information
-    if (Verify-ADFSTkMetadataSignature $MetadataXML)
-    {
-        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText importSuccessfullyVerifiedMetadataSignature) -EntryType Information
+        #Verify Metadata Signature
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText importVerifyingMetadataSignature) -EntryType Information
+        if (Verify-ADFSTkMetadataSignature $MetadataXML)
+        {
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText importSuccessfullyVerifiedMetadataSignature) -EntryType Information
+        }
+        else
+        {
+            Write-ADFSTkLog (Get-ADFSTkLanguageText importMetadataSignatureFailed) -MajorFault -EventID 12
+        }
     }
-    else
-    {
-        Write-ADFSTkLog (Get-ADFSTkLanguageText importMetadataSignatureFailed) -MajorFault -EventID 12
-    }
-
     #region Read/Create file with 
 
 
