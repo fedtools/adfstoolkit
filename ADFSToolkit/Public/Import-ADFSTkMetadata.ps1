@@ -342,7 +342,7 @@ process
 
                         if ($Global:ADFSTkSkipNotSignedHealthCheck -eq $true)
                         {
-                            $runCommand += "$Global:ADFSTkSkipNotSignedHealthCheck = $true;"
+                            $runCommand += '$Global:ADFSTkSkipNotSignedHealthCheck = $true;'
                         }
                         
                         $runCommand += "Import-ADFSTkMetadata -MaxSPAdditions $MaxSPAdditions -CacheTime -1 -ConfigFile '$ConfigFile'"
