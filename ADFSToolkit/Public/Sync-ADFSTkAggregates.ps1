@@ -109,7 +109,8 @@ param(
                     {
                         $params.Silent = $true
                     }
-                    if ($PSBoundParameters.ContainsKey('criticalHealthChecksOnly') -and $criticalHealthChecksOnly -eq $false)
+
+                    if ($PSBoundParameters.ContainsKey('criticalHealthChecksOnly') -and $criticalHealthChecksOnly -ne $false)
                     {
                         $params.criticalHealthChecksOnly = $true
                     }
