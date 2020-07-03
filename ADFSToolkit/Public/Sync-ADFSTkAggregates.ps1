@@ -1,7 +1,8 @@
 function Sync-ADFSTkAggregates {
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
-    [switch]$Silent
+    [switch]$Silent,
+    [switch]$criticalHealthChecksOnly
 )
 
     if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
@@ -107,6 +108,10 @@ param(
                     if ($PSBoundParameters.ContainsKey('Silent') -and $Silent -ne $false)
                     {
                         $params.Silent = $true
+                    }
+                    if ($PSBoundParameters.ContainsKey('criticalHealthChecksOnly') -and $criticalHealthChecksOnly -eq $false)
+                    {
+                        $params.criticalHealthChecksOnly = $true
                     }
 
                     try 

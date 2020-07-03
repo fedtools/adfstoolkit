@@ -338,11 +338,23 @@ process
                         $ADFSTkModuleBase = Join-Path $Global:ADFSTkPaths.modulePath ADFSToolkit.psm1
                         Write-ADFSTkLog (Get-ADFSTkLanguageText importWorkingWithBatch -f $i, $batches, $ADFSTkModuleBase) -EventID 14
                        
-                        $runCommand = "-Command & {Import-ADFSTkMetadata -MaxSPAdditions $MaxSPAdditions -CacheTime -1 -ConfigFile '$ConfigFile'"
+                        $runCommand = "-Command & {"
+
+                        if ($Global:ADFSTkSkipNotSignedHealthCheck -eq $true)
+                        {
+                            $runCommand += "$Global:ADFSTkSkipNotSignedHealthCheck = $true;"
+                        }
+                        
+                        $runCommand += "Import-ADFSTkMetadata -MaxSPAdditions $MaxSPAdditions -CacheTime -1 -ConfigFile '$ConfigFile'"
                         
                         if ($PSBoundParameters.ContainsKey("Silent") -and $Silent -ne $false)
                         {
                             $runCommand += " -Silent"
+                        }
+
+                        if ($PSBoundParameters.ContainsKey("criticalHealthChecksOnly") -and $criticalHealthChecksOnly -ne $false)
+                        {
+                            $runCommand += " -criticalHealthChecksOnly"
                         }
                         
                         if ($PSBoundParameters.ContainsKey("ForceUpdate") -and $ForceUpdate -ne $false)
