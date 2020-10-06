@@ -126,7 +126,8 @@ function Add-ADFSTkSPRelyingPartyTrust {
 
 #region Get SamlEndpoints
     Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPGetSamlEndpoints)
-    $rpParams.SamlEndpoint = $sp.SPSSODescriptor.AssertionConsumerService |  % {
+    $rpParams.SamlEndpoint = @()
+    $rpParams.SamlEndpoint += $sp.SPSSODescriptor.AssertionConsumerService |  % {
         if ($_.Binding -eq "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST")
         {  
             Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPHTTPPostFound)
@@ -139,11 +140,27 @@ function Add-ADFSTkSPRelyingPartyTrust {
         }
     } 
 
-    if ($rpParams.SamlEndpoint -eq $null) 
+    if ($rpParams.SamlEndpoint.Count -eq 0) 
     {
         Write-ADFSTkLog (Get-ADFSTkLanguageText addRPNoSamlEndpointsFound) -EntryType Error -EventID 23
         $Continue = $false
     }
+#endregion
+
+#region Get LogoutEndpoints
+Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPGetLogoutEndpoints) 
+$rpParams.SamlEndpoint += $sp.SPSSODescriptor.SingleLogoutService |  % {
+    if ($_.Binding -eq "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST")
+    {  
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPLogoutPostFound)
+        New-ADFSSamlEndpoint -Binding POST -Protocol SAMLLogout -ResponseUri $_.Location -Uri ("https://{0}/adfs/ls/?wa=wsignout1.0" -f $Settings.configuration.staticValues.ADFSExternalDNS)
+    }
+    elseif ($_.Binding -eq "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect")
+    {
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPLogoutRedirectFound)
+        New-ADFSSamlEndpoint -Binding Redirect -Protocol SAMLLogout -ResponseUri $_.Location -Uri ("https://{0}/adfs/ls/?wa=wsignout1.0" -f $Settings.configuration.staticValues.ADFSExternalDNS)
+    }
+} 
 #endregion
 
 #region Get Issuance Transform Rules from Entity Categories
