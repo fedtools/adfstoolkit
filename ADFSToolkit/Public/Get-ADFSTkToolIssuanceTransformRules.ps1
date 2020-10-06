@@ -73,7 +73,7 @@ param (
             }
         }
 
-        if ($AttributesFromStore.Count)
+        if ($AttributesFromStore.Count -ne $null)
         {
             $FirstRule = Get-ADFSTkStoreRule -Stores $Settings.configuration.storeConfig.stores.store `
                                              -AttributesFromStore $AttributesFromStore `
