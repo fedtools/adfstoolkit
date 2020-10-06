@@ -17,13 +17,13 @@ param (
     {
         Write-ADFSTkHost confNoInstConfFiles -Style Attention
     }
-    elseif ($configFiles -is [System.Object])
+    elseif ($configFiles -is [Object[]])
     {
-        $configFile = $configFiles
+        $configFile = $configFiles | Out-GridView -Title (Get-ADFSTkLanguageText confSelectInstConfFileToHandle) -OutputMode Single
     }
     else
     {
-        $configFile = $configFiles | Out-GridView -Title (Get-ADFSTkLanguageText confSelectInstConfFileToHandle) -OutputMode Single
+        $configFile = $configFiles
     }
 
     [xml]$settings = Get-Content $configFile.ConfigFile
