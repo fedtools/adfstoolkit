@@ -135,6 +135,8 @@
 			<value>http://www.EXAMPLE.COM/policy/assurance/al1</value>
 			<value>http://www.EXAMPLE.COM/policy/assurance/al2</value>
 		</attribute>
+
+		<attribute type="urn:mace:dir:attribute-def:eduPersonUniqueID" store="Active Directory" name="objectGUID" />
 		<attribute type="http://schemas.xmlsoap.org/claims/samaccountname" store="Active Directory" name="samaccountname" />
 		<attribute type="http://schemas.xmlsoap.org/claims/Group" store="Active Directory" name="tokenGroups" />
 	</attributes>
