@@ -1,0 +1,408 @@
+﻿@{
+    tableLanguage = "en-US"
+    tableVersion = "1.0"
+    tableCreatedBy = "SWAMID"
+    tableContactAddress = "operations@swamid.se"
+
+    ########################
+    ### Common texts [c] ###
+    ########################
+
+    cMultiText = "text1: {0} Text2: {1}"
+    cPressAnyKey = "Press any key to continue..."
+    cPressEnterKey = "Press the enter key to continue..."
+    cFileAlreadyExists = "File already exists!"
+    cFileDontExist = "'{0}' does not exist!"
+    cFilesFound = "'{0}' file(s) found!"
+    cChosen = "'{0}' chosen!"
+    cChooseFederation = "Choose your federation"
+    cPleaseProvideValueFor = "Please provide a value for {0}"
+    cYouHaveToProvideValue = "You have to provide a value."
+    cDone = "Done!"
+    cCreated = "Created!"
+    cAllDone = "All done!"
+    cPathExistsAtPath = "{0} exists at {1}"
+    cPathNotExistCreatingHere = "{0} did not exist, creating it here: {1}"
+    cWorkingWith = "Working with '{0}'..."
+    cRemoving = "Removing '{0}'..."
+    cCouldNotRemove = "Could not remove '{0}'! Error: {1}"
+    
+    #############################################
+    ### Main configuration cmdlets [mainconf] ###
+    #############################################
+
+    mainconfStartMessage = @"
+This script will create a ADFSToolkit configuration file.
+The ADFSToolkit configuration file contains information about which federation the IdP is connected to and
+also keeps record of the institution config file(s) that handles the federation metadata and feed.
+"@
+    mainconfDoCreateConfigFile = "Do you want to create a new configuration file?`n(the current one will be backed up)"
+    mainconfOldConfigBackedUp = "Current configuration file backed up to: '{0}'"
+    mainconfChooseFederationMessage = @"
+Choose your federation in the list.
+If it's not present, click Cancel
+"@
+    mainconfChosenFederation = "Federation '{0}' chosen!"
+    mainconfSearchForExistingInstConfFile = "Searching for existing institution config files..."
+    mainconfSelectConfFilesToAddToMainConf = "Select the configuration file(s) you want to add to the ADFSToolkit configuration"
+    mainconfSelectInstConfFilesTohandle = "Select institution configuration file(s) to handle..."
+    mainconfNewConfFileCreated = "New configuration file created: '{0}'"
+    mainconfAbortDueToExistingConfFile = "Aborting due to already existing configuration file."
+    mainconfConfigFileExists = "A configuration file already exists!"
+    mainconfFileNotExists = "ADFS configuration file does not exist! Run New-ADFSTkConfiguration first!"
+    mainconfConfigFileAlreadyAdded = "The configuration item already added."
+    mainconfConfigFileStatus = "The status of the configuration item is: {0}"
+    mainconfConfigItemAdded = "Configuration item added!"
+    mainconfConfigItemDefaultDisabledMessage = "The configuration item is default disabled. To enable it, run Enable-ADFSTkInstitutionConfiguration."
+    mainconfADFSTkConfigFileNotFound = "The configuration file '{0}' cound not be found. Aborting!"
+    mainconfConfItemNotFound = "The configuration item '{0}' not found in ADFSToolkit configuration file. Aborting!"
+    mainconfChangedSuccessfully = "Configuration changed successfully!"
+    mainconfNoInstConfigsFound = @"
+We could not find any Institution config file!
+
+The Institution config file contains information about your institution and where ADFS Toolkit can 
+find attributes in you environment.
+
+To create a Institution config file use the cmdlet:
+
+New-ADFSTkInstitutionConfiguration
+"@
+
+    mainconfNoConfigFileFound = "No ADFSTk configuration file found!"
+    mainconfCouldNotParseConfigFile =  "Could not open or parse the ADFSTk configuration file!`r`n{0}"
+
+    ################################################
+    ### Institution configuration cmdlets [conf] ###
+    ################################################
+
+    confCreateNewConfigurationFile = "You are about to create a new institution configuration file for ADFSToolkit."
+    confNoPreviousFile = "No Previous Configuration detected"
+    confUsingPreviousFileForDefaulValues = @"
+Using previous configuration for defaults (file: {0})
+PLEASE NOTE: Previous hand edits to config must be manually applied again!
+"@
+    confPreviousFileNotExist = "Error:Migration file {0} does not exist, exiting"
+    confStartMessage = @"
+You will be prompted with questions about metadata, signature fingerprint
+and other question about your institution.
+
+Hit enter to accept the defaults in round brackets
+
+If you make a mistake or want to change a value after this cmdlet is run
+you can manually open the config file or re-run this command.
+"@
+    confConfigurationAlreadyExistsCaption = "ADFSToolkit:Configuration Exists."
+    confOverwriteConfiguration = "Overwrite $configFile with this new configuration?`n(Backup will be created)"
+    confCreatingNewConfigHere = "Creating new config in: {0}"
+    confOldConfigurationFile = "Old configuration: {0}"
+    confDontOverwriteFileExit = "Safe exit: User decided to not overwrite file, stopping"
+    confInstConfigCreated = "The Institution configuration file saved to: {0}"
+    confInstLocalSPFileExistsCaption = "Local Institution Relying Party Settings Exist"
+    confOverwriteInstLocalSPFileMessage = "Overwrite {0} with new blank configuration?`n(Backup will be created)"
+    confOverwriteInstLocalSPFileConfirmed = "Confirmed, saving new Relying Part/Service Provider customizations to: {0}"
+    confCreateNewInstLocalSPFile = "Creating new config in: {0}"
+    confOldInstLocalSPFile = "Old configuration: {0}"
+    confFileSignedWillRemoveSignature = "File signed, stripping signature and putting in place for you to customize"
+    confFileNotSignedWillCopy = "File was not signed, simple copy being made"
+    confDontOverwriteFileJustProceed = "User decided to not overwrite existing SP settings file, proceeding to next steps" 
+    confNoExistingFileSaveTo = "No existing file, saving new configuration to: {0}"
+    confAddFileToMainConfigMessage = @"
+To be able to (automatically) run Sync-ADFSTkAggregates the configuration file
+needs to be added to a ADFSTk configuration file.
+
+This will be done now.
+"@
+    confConfigurationFileSavedHere = "The configuration file has been saved here: {0}"
+    confHowToRunMetadataImport = @"
+To run the metadata import use the following command:
+Sync-ADFSTkAggregates
+
+Do you want to create a scheduled task that executes this command every hour?
+The scheduled task will be disabled when created and you can change triggers as you like.
+"@
+    confCreateScheduledTask = "Create ADFSToolkit scheduled task?"  
+    confImportMetadata = "Import Federated Metadata with ADFSToolkit"
+    confTHisSchedTaskWillDoTheImport = "This scheduled task imports the Federated Metadata with ADFSToolkit"
+    confFederationDefaultConfigNotFoundQuestion = "Default config file for {0} could not be found! Do you want to use the ADFSToolkit default one?"
+    confFederationDefaultConfigNotFound = "Default federation config file for {0} could not be found. Aborting!"
+    confCouldNotOpenFederationDefaultConfig = "Could not open default configuration file '{0}'. Error: {1}"
+    confDefaultConfigNotFound = "Default config file for {0} could not be found. Aborting!"
+    confDefaultConfigIncorrectVersion = "The default configuration file '{0}' is of version {1}. Expected version: {2}. Aborting!"
+    confCopyFederationDefaultFolderMessage = "If your federation operators provides a federation-specific default configuration file, make sure to copy the folder to '{0}' before proceeding."
+    confNeedMainConfigurationMessage = @"
+Before proceeding we need to create a configuration file that holds information about how ADFSToolkit runs.
+
+This will be done now.
+"@
+    confInstitutionConfigEnabledWarning = @"
+The current institution config file is enabled!
+To continue without disrupting the ADFSToolkit service it will be disabled.
+
+When the upgrade is done and you have tested everything, run Enable-ADFSTkInstitutionConfiguration to enable it.
+"@
+    confSelectDefaultFedConfigFile = "Select the default federation configuration file you want to use"
+    confCouldNotOpenInstConfigFile = "Could not open or parse the institution configuration file!`r`n{0}"
+    confCouldNotRetrieveVersion = "Could not retrieve version from selected configuration file..."
+    confOldConfBackedUpTo = "Old configuration file backed up to: '{0}'"
+    confUpdatingInstConfigFromTo = "Updating institution config from {0} to {1}"
+    confUpdatedInstConfigDone = "{0} updated successfully from v{1} to {2}!"
+    confUpdatedInstConfigAllDone = "All Institution config file(s) done..."
+    confProcessingInstConfig = "Processing Institution config file: '{0}'"
+    confInstConfAlreadyCorrectVersion = "Current Institution config file already at v{0}!"
+    confLocalManualSettingsMessage = @"
+ADFS Toolkit uses Entity Categories from the metadata to send correct attributes to the Service Providers.
+
+If you need to make local addition/changes for a specific Service Provider ADFS Toolkit provides a PowerShell 
+script for that.
+
+We will now look if that file already exists or create it.
+"@
+    confNoInstConfFiles = "Could not find any institution configuration files. Have you run New-ADFSTkInstitutionConfiguration?"
+    confSelectInstConfFileToHandle = "Select institution configuration file(s) to handle..."
+    confNoInstConfigFileSelectedborting = "No institution configuration file(s) selected. Aborting!"
+    confInstConfFileAlreadyUpgraded = @"
+The chosen institution config file ({0}) already exists at the new location ({1}).
+It has probably already been upgraded.
+Check which file(s) you should upgrade and try again.
+Aborting!
+"@
+    confManualSPFileAlreadyExists = @"
+The Manual SP Settings file '{0}' already exists in the new location '{1}', no copy will be done!
+
+After the upgrade, make sure that the correct file is in the new location!
+"@
+    confManualSPFileCopied = "The Manual SP Settings file '{0}' were successfully copied to the new location '{1}'."
+    confMoveNodeFromStoreConfigToConfig = "The XML node {0} were moved from the storeConfig node to the configuration node."
+    confCacheNeedsToBeRemoved = "CacheRemove is set to $true"
+    confDeleteCacheWarning = "The new features of ADFSToolkit needs to be deployed on all SP's. Therefore the cache files needs to be deleted. Doing this the next sync will take more time and all SP's will be updated."
+    confDeleteCacheQuestion = "Do you wnat to proceed and delete the cache?"
+
+    #######################################
+    ### Federation cmdlets [federation] ###
+    #######################################
+
+    federationGetFederationFromURL = "Getting a list of federations from {0}..."
+    federationCouldNotGetFederationsFromURL = "Could not get the federations list from URL. Error: {0}"
+    federationGettingListFromCachedFile = "Reading the federations list from a previously downloaded file..."
+    federationCouldNotGetFederationsFromCache = "Could not get the federations list from the previously downloaded file. Error: {0}"
+    federationCouldNotFindCachedFederationsFile = "Could not find the previously downloaded federations list file."
+    federationGettingListFromDefaultFile = "Reading the federations list from default file..."
+    federationCouldNotGetFederationsFromDefaultFile = "Could not find the default federations file!"
+    federationDownloadCanTakeTimeWarning = "Downloading and processing the federations list from eduGAIN. Please wait..."
+    
+    #############################
+    ### Default configuration ###
+    #############################
+    
+    "defaultConfiguration_configuration/metadataURL" = "The URL to the federated metadata"
+    "defaultConfiguration_configuration/signCertFingerprint" = "The fingerprint of the certificate that signs the metadata"
+    "defaultConfiguration_configuration/MetadataPrefix" = "A prefix that are added to the Service Provider's name in AD FS Console"
+    "defaultConfiguration_configuration/staticValues/o" = "The name of your institution"
+    "defaultConfiguration_configuration/staticValues/co" = "The name of your Country"
+    "defaultConfiguration_configuration/staticValues/c" = "Country Code"
+    "defaultConfiguration_configuration/staticValues/schacHomeOrganization" = "The DNS name of your institution"
+    "defaultConfiguration_configuration/staticValues/norEduOrgAcronym" = "The short name of your institution"
+    "defaultConfiguration_configuration/staticValues/ADFSExternalDNS" = "The DNS name of your ADFS"
+    "defaultConfiguration_configuration/eduPersonPrincipalNameRessignable" = "Does your institution reassign eduPersonPrincipalName to new accounts?"
+
+    ########################################
+    ### Issuance Transform Rules [rules] ###
+    ########################################
+
+    rulesFederationEntityCategoryFile = "Loading Federation-specific Entity Categories..."
+    rulesFederationEntityCategoriesFound = "{0} Federation-specific Entity Categories found."
+    rulesFederationEntityCategoryLoadFail = "The Federation Entity Category file '{0}' could not be loaded!"
+    rulesFederationEntityCategoryOverwrite = "The Federation-specific Entity Category '{0}' found and will overwrite the default in ADFS Toolkit."
+    rulesFederationEntityCategoryAdd = "The Federation-specific Entity Category '{0}' found and will be added."
+    rulesNoRequestedAttributesDetected = "No Requested attributes detected"
+    rulesTypeConfiguredMoreThanonce = "The type '{0}' is configured {1} times! Please fix this in your institution configuration file ({2})."
+
+    ###############################
+    ### Manual SP Settings [ms] ###
+    ###############################
+
+    msNoConfiguredFile = "No Manual SP Settings file configured. No attribute overrides will be processed. Update configuration file to add a Local Manual RelyingParty SP Settings file (Get-ADFSTkLocalManualSpSettings.ps1)"
+    msNoFileFound = "{0} not found! No attribute overrides will be processed. Update configuration file to add a correct local RelyingParty settings file or create it on disc."
+
+    #######################################
+    ### Add Relying Party Trust [addRP] ###
+    #######################################
+
+    addRPAddingRP = "Adding '{0}' as SP..."
+    addRPGettingEncryptionert = "Getting Token Encryption Certificate..."
+    addRPEncryptionCertNotFound = "Certificate with description 'encryption' not found. Using default certificate..."
+    addRPConvertingEncrytionCert = "Converting Token Encryption Certificate string to Certificate..."
+    addRPConvertionEncryptionCertDone = "Convertion of Token Encryption Certificate string to Certificate done!"
+    addRPMultipleEncryptionCertsFound = "Multiple encryption certificates found! Chosing certificate with thumbprint '{0}' as encryption certificate."
+    addRPCouldNotImportEncrytionCert = "Could not import Token Encryption Certificate!"
+    addRPGetSigningCert = "Getting Token Signing Certificate..."
+    addRPSigningCertNotFound = "Certificate with description 'signing' not found. Using Token Decryption certificate..."
+    addRPConvertingSigningCert = "Converting Token Signing Certificate string to Certificate..."
+    addRPConvertionSigningCertDone = "Convertion of Token Signing Certificate string to Certificate done!"
+    addRPCouldNotImportSigningCert = "Could not import Token Signing Certificate!"
+    addRPGetSamlEndpoints = "Getting SamlEndpoints..."
+    addRPHTTPPostFound = "HTTP-POST SamlEndpoint found!"
+    addRPHTTPArtifactFound = "HTTP-Artifact SamlEndpoint found!"
+    addRPNoSamlEndpointsFound = "No SamlEndpoints found!"
+    addRPGetLogoutEndpoints = "Getting LogoutEndpoints..."
+    addRPLogoutPostFound = "HTTP-POST LogoutEndpoint found!"
+    addRPLogoutRedirectFound = "HTTP-Redirect LogoutEndpoint found!"
+    addRPGetEntityCategories = "Getting Entity Categories..."
+    addRPFollowingECFound = "The following Entity Categories found: {0}"
+    addRPAddedForcedEC = "Added Forced Entity Categories: {0}"
+    addRPRPAlreadyExistsChangingNameTo = "A RelyingPartyTrust already exist with the same name. Changing name to '{0}'..."
+    addRPSuccefullyAddedRP = "Successfully added '{0}'!"
+    addRPCouldNotAddRP = "Could not add '{0}' as SP! Error: {1}"
+    addRPRPAlreadyExists = "'{0}' already exists as SP!"
+
+    ##############################################
+    ### Process Relying Party Trust [processRP] ###
+    ###############################################
+
+    processRPEntityNotInADFS = "'{0}' not in ADFS database."
+    processRPRPAddedManualAbortingForce = "'{0}' added manual in ADFS database, aborting force update!"
+    processRPRPInADFSForcingUpdate = "'{0}' in ADFS database, forcing update!"
+    processRPDeletingRP = "Deleting '{0}'..."
+    processRPDeletingRPDone = "Deleting '{0}' done!"
+    processRPCouldNotDeleteRP = "Could not delete '{0}'... Error: {1}"
+    processRPSkippingDueToAddRemoveOnlySwitch = "Skipping RP due to -AddRemoveOnly switch..."
+    processRPEntityAlreadyExistsDoUpdate = "'{0}' already exists. Do you want to update it?"
+    processRPEntityAddedManuallyStillUpdate = "'{0}' added manual in ADFS database, still forcing update?"
+    processRPEntityInADFSWillUpdate = "'{0}' in ADFS database, updating!"
+    processRPCouldNotGetChachedEntity = "Could not get cached entity or compute the hash for it..."
+    processRPCouldNotAddSHA256AsValidSignatureAlgorithm = "Problem adding SHA256 as valid digital signature algorithm to System.Security.Cryptography.CryptoConfig."
+
+    ################################
+    ### Import Metadata [import] ###
+    ################################
+
+    importCouldNotConvertSigningSert = "Could not convert signingCertString to X509 certificate"
+    importNoCertFingerprintInConfig = "Certificate Fingerprint from configuration was null"
+    importComparingCertHashes = "Comparing aggregate certificate hash of: {0} to {1}"
+    importStarted = "Import-ADFSTkMetadata {0} started!"
+    importCurrentPath = "Import-ADFSTkMetadata path: {0}"
+    importMissingSPHashFileInConfig = "Halting: Missing SPHashFile setting in {0}" 
+    importSettingSPHashFileTo = "Setting SPHashFile to: {0}"
+    importCouldNotImportSPHashFile = "Could not import SP Hash File!"
+    importSettingCachedMetadataFile = "Setting CachedMetadataFile to: {0}"
+    importSuccessfullyLoadedLocalMetadataFile = "Successfully loaded local Metadata file..."
+    importCouldNotLoadLocalMetadataFile = "Could not load loaded Metadata file!"
+    importCachedMetadataEmptyDownloading = "Cached Metadata file was empty. Downloading instead!"
+    importCachedMetadataCorruptDownloading = "Could not parse cached Metadata file. Downloading instead!"
+    importDownloadingMetadataFrom = "Downloading Metadata from {0}..."
+    importDownloadingFromTo = "Downloading From: {0} to file {1}"
+    importSuccesfullyDownloadedMetadataFrom = "Successfully downloaded Metadata from {0}"
+    importCouldNotDownloadMetadataFrom = "Could not download Metadata from {0}"
+    importParsingMetadataXML = "Parsing downloaded Metadata XML..."
+    importSuccessfullyParsedMetadataXMLFrom = "Successfully parsed downloaded Metadata from {0}"
+    importCouldNotParseMetadataFrom = "Could not parse downloaded Metadata from {0}"
+    importMetadataFileSize = "Metadata file size is {0}"
+    importCachedMetadataFileIsZeroBytes = "Note: {0} is 0 bytes!"
+    importVerifyingSigningCert = "Verifying metadata signing cert..."
+    importEnsuringSHA256 = "Ensuring SHA256 Signature validation is present..."
+    importSuccessfullyVerifiedMetadataCert = "Successfully verified metadata signing cert!"
+    importMetadataCertIncorrect = "Metadata signing cert is incorrect! Please check metadata URL or signature fingerprint in config."
+    importVerifyingMetadataSignature = "Verifying metadata signature..."
+    importSuccessfullyVerifiedMetadataSignature = "Successfully verified metadata signature!"
+    importMetadataSignatureFailed = "Metadata signature test did not pass. Aborting!"
+    importTotalNumberOfSPs = "Total number of SP's found: {0}"
+    importProcessingWholeMetadata = "Processing whole Metadata file..."
+    importNumberOfSPsAfterFilter = "Total number of SP's after filter selection: {0}"
+    importCalculatingChanges = "Calculating changes..."
+    importFoundXNewChangedSPs = "Found {0} new/changed SPs."
+    importBatchCount = "Batches count: {0}"
+    importWorkingWithBatch = "Working with batch {0}/{1} with {2}"
+    importCheckingForRemovedRPsUsingFilter = "Checking for Relying Parties removed from Metadata using Filter: {0}* ..."
+    importFoundRPsToRemove = "Found {0} RP's that should be removed."
+    importDoYouWantToRemoveRPsNotInMetadata = "Do you want to remove Relying Party trust(s) that are not in the metadata?"
+    importProcessingXRPs = "Processing {0} SP's..."
+    importSkippedNoChanges = "Skipped due to no changes in metadata..."
+    importMoreThanOneRPWithEntityID = "More than one entry with entityID = '{0}' found in aggregate!"
+    importNoSPsFound = "No SP's found!"
+    importNothingToDo = "Invoked without -ProcessWholeMetadata <no args> , -EntityID <with quoted URL>, nothing to do, exiting"
+    importScriptEnded = "Script ended!"
+    importEventLogMissingInSettings = "Missing eventlog settings in config."
+
+    #############################
+    ### Sync Aggregate [sync] ###
+    #############################
+
+    syncStart = "Sync-ADFSTkAggregates started!"
+    syncLookingDefaulLocationFor = "Looking in default location for '{0}'..."
+    syncNoADFSTkConfigFile = "No ADFS Toolkit configuration file found!`nRun New-ADFSTkConfiguration to create it."
+    syncConfigFound = "Config file found!"
+    syncCheckingXML =  "Checking file for correct XML syntax..."
+    syncMissingNode = "Missing {0} node in ADFS Toolkit configuration file!"
+    syncCheckDoneSuccessfully = "Check done successfully!"
+    syncFoundConfigFiles = "{0} configurationfile(s) found!"
+    syncInvokingImportADFSTKMetadata = "Invoking 'Import-ADFSTkMetadata -ProcessWholeMetadata -ForceUpdate -ConfigFile {0}'"
+    syncConfigNotEnabledSkipping = "Config file not enabled, skipping..."
+    syncFileNotFoundSkipping = "File could not be found on disk! Skipping..."
+    syncProcesseDone = "'{0}' done processing..."
+    syncFinished = "Sync-ADFSTkAggregates Finished!"
+
+    ###################################
+    ### Unpublish Aggregate [unpub] ###
+    ###################################
+
+    unpubSearchingRPsWithFilter = "Searching ADFS for SPs with Name starting with {0}"
+    unpubRPsFound = "SP's detected: $numSPs"
+    unpubRPDeleted = "{0} deleted!"
+    unpubJobCompleated = "Job completed!"
+
+    #######################
+    ### Write Log [log] ###
+    #######################
+
+    logPathNotFound = "The path '{0}' doesn't exist! Please create it and try again..."
+    logSettingXPathTo = "Setting {0} to '{1}'..."
+    logEventLogNameNotExist = "The EventLogName provided does not exist! Please try again with another namne..."
+    logFogFilePath = "LogFilePath: '{0}'"
+    logEventLogName = "EventLogName: '{0}'"
+    logEventLogSource = "EventLogSource: '{0}'"
+    logLogFilePathNotSet = "The LogFilePath is not set! Use -SetLogFilePath first!"
+    logEventLogNameNotSet = "The SetEventLogName is not set! Use -SetEventLogName first!"
+    logEventSourceNotSet  = "The EventLogSource is not set! Use -SetEventLogSource first!"
+    logEventLogUsed = "EventLog Being Used on this run"
+    logEventLogCreated = "ADFSToolkit EventLog Created"
+    logCouldNotCreateEventLog = "EventLog creation failure: config has no LogName or Source"
+
+    #############################
+    ### ADFSTkHealth [health] ###
+    #############################
+    
+    healthIncompatibleInstitutionConfigVersion = @"
+The provided Institution Configuration File is incompatible with this version of ADFS Toolkit!
+The Institution Configuration File version is {0} and the minimum version needs to be {1}.
+"@
+    healthCheckSignatureStartMessage = "Checking signature on module scipts..."
+    healthCheckSignatureValidSignaturesResult = "{0} scripts found with valid signature(s)..."
+    healthCheckSignatureInvalidSignaturesResult = "{0} scripts found with invalid signature(s)..."
+    healthCheckSignatureMissingSignaturesResult = "{0} scripts found with missing signature(s)..."
+    healthCheckSignatureInvalidSignaturesMessage = @"
+The script(s) below have invalid signatures. The code can have been changed so they don't work as expected! 
+If you don't know why this occurred, reinstallation of ADFS Toolkit is recommended.
+
+{0} 
+"@
+    healthCheckSignatureSkipNotSignedMessage = "Missing signatures check skipped due to ADFSTkSkipNotSignedHealthCheck set!"
+    healthCheckSignatureMissingSignaturesMessage = @"
+The script(s) below have one or more missing signature(s). An unreleased version of ADFS Toolkit might be used and the functionality cannot be guaranteed! 
+If you don't know why this occurred, reinstallation of ADFS Toolkit is recommended.
+
+{0} 
+"@
+    healthCheckSignaturePass = "Signaturecheck PASSED!"
+    healthCheckSignatureFail = "Signaturecheck FAILED!"
+    healthCheckConfigVersionStartMessage = "Checking for compatible institution configuration file version..."
+    healhCheckConfigVersionVerifyingPath = "Verifying path for '{0}'..."
+    healhCheckConfigVersionVerifyingPathSucceeded = "Path test succeeded!"
+    healhCheckConfigVersionVerifyingXMLParse = "Verifying open and xml parsing..."
+    healhCheckConfigVersionVerifyingXMLParseSucceeded = "Open and XML parse succeeded!"
+    healhCheckConfigVersionVerifyingXMLParseFailed = "Could not open or parse the institution configuration file '{0}'. Health check failed!"
+    healthCheckConfigVersionVerifyingVersionStart = "Verifying compatible version..."
+    healthCheckConfigVersionVerifyingVersionCompareVersions = "Config version: {0} - Compatible version: {1}"
+    healthCheckConfigVersionVerifyingVersionSucceeded = "Compatible version succeeded!"
+    healthCheckConfigVersionPass = "Versioncheck PASSED!"
+    healthCheckConfigVersionFail = "Versioncheck FAILED!"
+}

@@ -3,72 +3,84 @@ param (
     $sp
 )
 
-    if ((Get-ADFSRelyingPartyTrust -Identifier $sp.EntityID) -eq $null)
+    $Prefix = $Settings.configuration.MetadataPrefix 
+    $Sep = $Settings.configuration.MetadataPrefixSeparator      
+    $PrefixWithSeparator = "$Prefix$Sep"
+    
+    $adfsSP = Get-ADFSRelyingPartyTrust -Identifier $sp.EntityID
+
+    $SPGotPrefix = $false
+    if ($adfsSP -ne $null)
     {
-        Write-ADFSTkVerboseLog "'$($sp.EntityID)' not in ADFS database."
+        $SPGotPrefix = $adfsSP.Name.StartsWith($PrefixWithSeparator)
+    }
+    
+    if ($adfsSP -eq $null)
+    {
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText processRPEntityNotInADFS -f $sp.EntityID)
         Add-ADFSTkSPRelyingPartyTrust $sp
     }
     else
     {
-        $Name = (Split-Path $sp.entityID -NoQualifier).TrimStart('/') -split '/' | select -First 1
-
         if ($ForceUpdate)
         {
-            if ((Get-ADFSRelyingPartyTrust -Name $Name) -ne $null)
+            if ($SPGotPrefix) 
             {
-                Write-ADFSTkLog "'$($sp.EntityID)' added manual in ADFS database, aborting force update!" -EntryType Warning
-                Add-ADFSTkEntityHash -EntityID $sp.EntityID
-            }
-            else
-            {
-                Write-ADFSTkVerboseLog "'$($sp.EntityID)' in ADFS database, forcing update!"
+                #ADFSTk added this and can take actions with it
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText processRPRPInADFSForcingUpdate -f $sp.EntityID)
                 #Update-SPRelyingPartyTrust $_
-                Write-ADFSTkVerboseLog "Deleting '$($sp.EntityID)'..."
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText processRPDeletingRP -f $sp.EntityID)
                 try
                 {
                     Remove-ADFSRelyingPartyTrust -TargetIdentifier $sp.EntityID -Confirm:$false -ErrorAction Stop
-                    Write-ADFSTkVerboseLog "Deleting $($sp.EntityID) done!"
+                    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText processRPDeletingRPDone -f $sp.EntityID)
                     Add-ADFSTkSPRelyingPartyTrust $sp
                 }
                 catch
                 {
-                    Write-ADFSTkLog "Could not delete '$($sp.EntityID)'... Error: $_" -EntryType Error
+                    Write-ADFSTkLog (Get-ADFSTkLanguageText processRPCouldNotDeleteRP -f $sp.EntityID, $_) -EntryType Error -EventID 27
                 }
+            }
+            else
+            {
+                Write-ADFSTkLog (Get-ADFSTkLanguageText processRPRPAddedManualAbortingForce -f $sp.EntityID) -EntryType Warning -EventID 26
+                #Add-ADFSTkEntityHash -EntityID $sp.EntityID
             }
         }
         else
         {
             if ($AddRemoveOnly -eq $true)
             {
-                Write-ADFSTkVerboseLog "Skipping RP due to -AddRemoveOnly switch..."
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText processRPSkippingDueToAddRemoveOnlySwitch)
             }
-            elseif (Get-ADFSTkAnswer "'$($sp.EntityID)' already exists. Do you want to update it?")
+            elseif (Get-ADFSTkAnswer (Get-ADFSTkLanguageText processRPEntityAlreadyExistsDoUpdate -f $sp.EntityID))
             {
-                if ((Get-ADFSRelyingPartyTrust -Name $Name) -ne $null)
+                if ($SPGotPrefix)
                 {
-                    $Continue = Get-ADFSTkAnswer "'$($sp.EntityID)' added manual in ADFS database, still forcing update?"
+                    #ADFSTk added this and can take actions with it
+                    $Continue = $true
                 }
                 else
                 {
-                    $Continue = $true
+                    $Continue = Get-ADFSTkAnswer (Get-ADFSTkLanguageText processRPEntityAddedManuallyStillUpdate -f $sp.EntityID)
                 }
 
                 if ($Continue)
                 {
                         
-                    Write-ADFSTkVerboseLog "'$($sp.EntityID)' in ADFS database, updating!"
+                    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText processRPEntityInADFSWillUpdate -f $sp.EntityID)
                 
                     #Update-SPRelyingPartyTrust $_
-                    Write-ADFSTkVerboseLog "Deleting '$($sp.EntityID)'..."
+                    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText processRPDeletingRP -f $sp.EntityID)
                     try
                     {
                         Remove-ADFSRelyingPartyTrust -TargetIdentifier $sp.EntityID -Confirm:$false -ErrorAction Stop
-                        Write-ADFSTkVerboseLog "Deleting '$($sp.EntityID)' done!"
+                        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText processRPDeletingRPDone -f $sp.EntityID)
                         Add-ADFSTkSPRelyingPartyTrust $sp
                     }
                     catch
                     {
-                        Write-ADFSTkLog "Could not delete '$($sp.EntityID)'... Error: $_" -EntryType Error
+                        Write-ADFSTkLog (Get-ADFSTkLanguageText processRPCouldNotDeleteRP -f $sp.EntityID, $_) -EntryType Error -EventID 28
                     }
                 }
             }
