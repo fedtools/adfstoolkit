@@ -98,7 +98,13 @@
         Write-ADFSTkLog (Get-ADFSTkLanguageText confCouldNotOpenDefaultConfig -f $defaultConfigFile,$_) -MajorFault
     }
 
-    
+#region Copy Local Transform Rule File
+if (!(Test-path $Global:ADFSTkPaths.institutionLocalTransformRulesFile)) 
+{
+    Write-ADFSTkHost confLocalTransformRulesMessage -Style Info -AddLinesOverAndUnder -f $Global:ADFSTkPaths.institutionLocalTransformRulesFile
+    Copy-item -Path $Global:ADFSTkPaths.defaultInstitutionLocalTransformRulesFile -Destination $Global:ADFSTkPaths.institutionLocalTransformRulesFile
+}
+#endregion
 
 #region Select Institution config(s)
     
@@ -126,6 +132,30 @@
             {
                 Copy-Item $ConfigurationFilePath.FullName $newFileName
             }
+        }
+
+        #Copy the ManualSP file to new location
+        [xml]$selectedConfigSettings = Get-Content $ConfigurationFile
+        $selectedConfigManualSP = $selectedConfigSettings.configuration.LocalRelyingPartyFile
+        
+        $oldManualSPFile = Join-Path $ConfigurationFilePath.Directory.FullName $selectedConfigManualSP
+        $newManualSPFile = Join-Path $Global:ADFSTkPaths.institutionDir $selectedConfigManualSP
+
+        if (Test-Path $oldManualSPFile)
+        {
+            if (Test-Path $newManualSPFile)
+            {
+                Write-ADFSTkLog (Get-ADFSTkLanguageText confManualSPFileAlreadyExists -f $oldManualSPFile, $Global:ADFSTkPaths.institutionDir) -EntryType Warning
+            }
+            else
+            {
+                Copy-Item $oldManualSPFile $newManualSPFile
+                Write-ADFSTkLog (Get-ADFSTkLanguageText confManualSPFileCopied -f $oldManualSPFile, $Global:ADFSTkPaths.institutionDir) -EntryType Information
+            }
+        }
+        else {
+            Write-ADFSTkHost confLocalManualSettingsMessage -Style Info -AddLinesOverAndUnder
+            Copy-item -Path $Global:ADFSTkPaths.defaultInstitutionLocalSPFile -Destination $newManualSPFile
         }
 
         $selectedConfigs += Add-ADFSTkConfigurationItem -ConfigurationItem $newFileName -PassThru 
@@ -188,7 +218,6 @@
                         {
                             Copy-Item $oldManualSPFile $newManualSPFile
                             Write-ADFSTkLog (Get-ADFSTkLanguageText confManualSPFileCopied -f $oldManualSPFile, $Global:ADFSTkPaths.institutionDir) -EntryType Information
-
                         }
                     }
                 }

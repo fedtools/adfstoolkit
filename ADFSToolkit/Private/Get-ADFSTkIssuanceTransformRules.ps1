@@ -38,6 +38,47 @@ if ([string]::IsNullOrEmpty($Global:ADFSTkAllAttributes) -or $Global:ADFSTkAllAt
 if ([string]::IsNullOrEmpty($Global:ADFSTkAllTransformRules) -or $Global:ADFSTkAllTransformRules.Count -eq 0)
 {
     $Global:ADFSTkAllTransformRules = Import-ADFSTkAllTransformRules
+
+    if (Test-Path $Global:ADFSTkPaths.institutionLocalTransformRulesFile)
+    {
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationLocalTransformRulesFoundFile)
+        try {
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationLocalTransformRulesFile)
+            . $Global:ADFSTkPaths.institutionLocalTransformRulesFile
+    
+            if (Test-Path function:Get-ADFSTkLocalTransformRules)
+            {
+                $localTransformRules = Get-ADFSTkLocalTransformRules
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationLocalTransformRulesFound -f $localTransformRules.Count)
+    
+                foreach ($transformRule in $localTransformRules.Keys)
+                {
+                    #Add or replace the standard Entoty Category with the federation one
+                    if ($Global:ADFSTkAllTransformRules.ContainsKey($transformRule))
+                    {
+                        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationLocalTransformRulesOverwrite -f $transformRule)
+                    }
+                    else
+                    {
+                        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationLocalTransformRulesAdd -f $transformRule)
+                    }
+    
+                    $Global:ADFSTkAllTransformRules.$transformRule = $localTransformRules.$transformRule
+                }
+            }
+            else
+            {
+                Write-ADFSTkLog (Get-ADFSTkLanguageText rulesFederationLocalTransformRulesLoadFail) -EntryType Error
+            }
+        }
+        catch
+        {
+            Write-ADFSTkLog (Get-ADFSTkLanguageText rulesFederationLocalTransformRulesLoadFail) -EntryType Error
+        }
+    }
+    else {
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationLocalTransformRulesFileNotFound)
+    }
 }
 
 $AllTransformRules = $Global:ADFSTkAllTransformRules #So we don't need to change anything in the Get-ADFSTkManualSPSettings files
