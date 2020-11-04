@@ -34,6 +34,25 @@ param (
         $AllAttributes = Import-ADFSTkAllAttributes
         $AllTransformRules = Import-ADFSTkAllTransformRules
 
+        if (Test-Path $Global:ADFSTkPaths.institutionLocalTransformRulesFile)
+        {
+            try {
+                . $Global:ADFSTkPaths.institutionLocalTransformRulesFile
+        
+                if (Test-Path function:Get-ADFSTkLocalTransformRules)
+                {
+                    $localTransformRules = Get-ADFSTkLocalTransformRules
+        
+                    foreach ($transformRule in $localTransformRules.Keys)
+                    {
+                        $AllTransformRules.$transformRule = $localTransformRules.$transformRule
+                    }
+                }
+            }
+            catch
+            {
+            }
+        }
         $Attributes = $AllTransformRules.Keys | `
                       Select @{Label = "Attribute";Expression={$_}},
                               @{Label = "Example";Expression={
@@ -118,7 +137,7 @@ param (
                 }
             }
     
-        Get-ADFSTkIssuanceTransformRules $EntityCategories -EntityId $entityID `
+        return Get-ADFSTkIssuanceTransformRules $EntityCategories -EntityId $entityID `
                                                            -RequestedAttribute $sp.SPSSODescriptor.AttributeConsumingService.RequestedAttribute `
                                                            -RegistrationAuthority $sp.Extensions.RegistrationInfo.registrationAuthority `
                                                            -NameIdFormat $sp.SPSSODescriptor.NameIDFormat
