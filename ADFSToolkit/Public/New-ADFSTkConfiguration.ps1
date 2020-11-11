@@ -5,7 +5,7 @@ param(
     [switch]$Passthru
 )
 
-    #Get All paths and assert they exist    
+   #Get All paths  and assert they exist    
     $Global:ADFSTkPaths = Get-ADFSTKPaths
     
    

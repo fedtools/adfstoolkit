@@ -10,9 +10,10 @@ param (
     $languageFileName = "ADFSTk_{0}.pson"
     $selectedLanguage = $null
 
-    
-    $Global:ADFSTkPaths = Get-ADFSTKPaths
-    
+    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
+    {
+        $Global:ADFSTkPaths = Get-ADFSTKPaths
+    }
   
     if ($PSBoundParameters.ContainsKey('Language'))
     {

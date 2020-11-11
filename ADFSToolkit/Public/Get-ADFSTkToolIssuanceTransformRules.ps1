@@ -6,9 +6,10 @@ param (
     [switch]$SelectAttributes
 )
 
-   
+    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
+    {
         $Global:ADFSTkPaths = Get-ADFSTKPaths
-   
+    }
 
     $configFiles = Get-ADFSTkConfiguration -ConfigFilesOnly
 
