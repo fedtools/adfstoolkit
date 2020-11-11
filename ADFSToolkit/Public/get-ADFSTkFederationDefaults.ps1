@@ -128,7 +128,6 @@ if ( !($URL -eq $null)  )
 
         copy-item $unzippedFullNameDir  $Global:ADFSTkPaths.federationDir -Recurse
 
-        Expand-Archive $federationConfigCacheFile  -DestinationPath  $Global:ADFSTkPaths.federationDir
         $zip.Dispose()
 
         Write-Output ("ADFSToolkit: Done. Next time a new aggregate is configured, defaults will be used. Existing configurations should remain unchanged")
