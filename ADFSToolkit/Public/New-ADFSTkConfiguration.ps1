@@ -5,10 +5,8 @@ param(
     [switch]$Passthru
 )
 
-    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
-    {
-        $Global:ADFSTkPaths = Get-ADFSTKPaths
-    }
+   #Get All paths  and assert they exist    
+    $Global:ADFSTkPaths = Get-ADFSTKPaths
     
    
     
