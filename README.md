@@ -1,10 +1,8 @@
 # ADFSToolkit
 
-A PowerShell Module used to handle SAML2 multi-lateral federation aggregates
+A PowerShell Module used to handle SAML2 multi-lateral federation aggregates in Microsoft's AD FS.
 
-The ADFSToolkit was designed to rapidly configure your Active Directory Federation Services (AD FS v3 or higher) 
-to connect to Research and Education (R&E) Federated Identity Management service federations. 
-The ADFSToolkit reduces the installation and configuration time to a matter of minutes and offers 
+The ADFSToolkit was designed to rapidly configure your Active Directory Federation Services to connect to Research and Education (R&E) Federated Identity Management service federations. ADFSToolkit reduces the installation and configuration time to a matter of minutes and offers 
 techniques to manage trust in a scalable fashion stepping up AD FS's trust model to be sufficient to be an IdP in a SAML2 R&E federation.
 
 # Sites using ADFSToolkit
@@ -13,12 +11,13 @@ techniques to manage trust in a scalable fashion stepping up AD FS's trust model
 
 # Installation Procedure
 
-> [!CAUTION]
-> Installing from this GIT repository is not recommended - please use PowerShellGallery.com
+> :warning: 
+> ## **Installing from GIT is not recommended - please use PowerShellGallery.com**
+> https://www.powershellgallery.com/packages/ADFSToolkit/ 
 
-https://www.powershellgallery.com/packages/ADFSToolkit/ 
+ADFSToolkit uses Microsoftâ€™s PowerShellGallery.com service and distribution channel and  for lifecycle management for updates.
+Critical to this is being current on PowerShellGallery's latest PowerShellGet Module
 
-ADFSToolkit uses Microsoft’s PowerShellGallery.com service as the official primary distribution channel of ADFSToolkit as a PowerShell Module. This allows us to rely on Microsoft’s approach to managing distribution and updated PowerShell Modules for the lifecycle of ADFSToolkit.
 To install ADFSToolkit you will need to:
 - Visit https://PowerShellgallery.com and follow the instructions to install the latest PowerShellGet Module from PowerShellGallery 
 
@@ -27,19 +26,19 @@ ADFSToolkit must be installed on a Windows Server (your AD FS host) with:
 - Microsoft AD FS v3 or higher
 - Local administrator privileges to schedule privileged jobs
 - AD FS administrator-level permissions to run PowerShell commands
-- Acceptance of the security considerations running PowerShell retrieved from Microsoft’s PowerShellgallery.com 
+- Acceptance of the security considerations running PowerShell retrieved from Microsoftâ€™s PowerShellgallery.com 
 
 While not a firm requirement, we strongly suggest a test AD FS environment to perform the installation prior to installing in production. 
 You should be aware that after installation, you will see a few thousand trusts displayed within the administration toolset, AD FS-Microsoft Management Console (MMC).
 ###	Minimum Server OS 
 Windows Server 2012 R2 or newer is the minimal level of OS supported. You should also be current on latest OS and security patch/updates provided by Microsoft.
 ###	Minimum PowerShell Version 
-ADFSToolkit uses Microsoft’s PowerShell with Windows Management Framework (WMF) 5.1. To see if your host is WMF5.1 ready, check the Microsoft Compatibility Matrix.
+ADFSToolkit uses Microsoftâ€™s PowerShell with Windows Management Framework (WMF) 5.1. To see if your host is WMF5.1 ready, check the Microsoft Compatibility Matrix.
 To quickly see which version of PowerShell you have, open a PowerShell window or PowerShell ISE window and enter $PSVersionTable. If you do not see version 5.1, you will need to update your environment first.
 
 ## Attribute Release Practices of ADFSToolkit 
 ADFSToolkit is a component built for and by the research and educational community that embraces scalable attribute release management principles of  R&E federations. One of these techniques is the use of Entity Categories for attribute release. Entity Categories are tags in SAML2 metadata on an entity that indicate membership in a given category of service. The attribute release model using Entity Categories has a release policy set against the category, not the entity. 
- When ADFSToolkit parses entities to load into AD FS and encounters an Entity Category called ‘Research and Scholarship’, it automatically creates multiple AD FS transform rules that reflect the minimal set of attributes released, not much different than your public directory pages, for R&S these are:
+ When ADFSToolkit parses entities to load into AD FS and encounters an Entity Category called â€˜Research and Scholarshipâ€™, it automatically creates multiple AD FS transform rules that reflect the minimal set of attributes released, not much different than your public directory pages, for R&S these are:
 - eduPersonPrincipalName (left hand of the at sign of the UPN concatenated with your domain)
 - mail
 - displayName
@@ -50,7 +49,7 @@ ADFSToolkit is a component built for and by the research and educational communi
 This is the default behaviour of ADFSToolkit and by using this tool, you are enabling this model of attribute release by default. You are encouraged to contact federation operators and register your organizations as supporting Research and Scholarship and other entity categories for more benefits.
 
 # Install and configure ADFSToolkit for the first time
-ADFSToolkit’s Module uses the PowerShell Gallery tool command `Install-Module` to download and install the code.
+ADFSToolkitâ€™s Module uses the PowerShell Gallery tool command `Install-Module` to download and install the code.
 ## Install ADFSToolkit
 Run the following command to install ADFSToolkit
 - Install-Module ADFSToolkit
@@ -79,10 +78,10 @@ ADFSToolkit will now be run by the Scheduled Task and make a full import/refresh
 
 Logging will occur in the Event Log, default under `Applications and Services log\ADFSToolkit`. 
 
-# ADFSToolkit’s Lifecycle Management / Update Practice 
-ADFSToolkit’s Module uses the PowerShell Gallery tool command `Update-Module` to manage delivery of updates. Sites using ADFSToolkit are strongly encouraged to have a test system to review changes between versions. In cases where there is no test system, a snapshot/backup of their environment is strongly recommended.
+# ADFSToolkitâ€™s Lifecycle Management / Update Practice 
+ADFSToolkitâ€™s Module uses the PowerShell Gallery tool command `Update-Module` to manage delivery of updates. Sites using ADFSToolkit are strongly encouraged to have a test system to review changes between versions. In cases where there is no test system, a snapshot/backup of their environment is strongly recommended.
 
-Note that some updates may require removing the cache files and run again completely to apply new features. Updates that require this will be flagged as such in the upgrade process. It is up to the site operator to determine when to do this and to allow for sufficient time to recalculate the new improved settings. ADFSToolkit is designed to be idempotent in it’s operation – no matter how many times it is run, the resulting set will be the same which. 
+Note that some updates may require removing the cache files and run again completely to apply new features. Updates that require this will be flagged as such in the upgrade process. It is up to the site operator to determine when to do this and to allow for sufficient time to recalculate the new improved settings. ADFSToolkit is designed to be idempotent in itâ€™s operation â€“ no matter how many times it is run, the resulting set will be the same which. 
 
 ## Follow this  process to handle an update of ADFSToolkit
 > [!IMPORTANT]
@@ -91,7 +90,7 @@ Note that some updates may require removing the cache files and run again comple
 - Create a system snapshot/recovery point to return to
 - Issue `Update-Module ADFSToolkit`
   - When `Update-Module` is run, it will attempt to detect if there is a newer version available from PowerShellGallery.com and download it. 
-  - Note that each module is downloaded into it’s own directory containing the version number of the script. ADFSToolkit might not run properly with more than one version available so once the new version is confirmed on disk and available, we recommend moving the older version out of the PowerShell path so that only the latest version is available. Use the cmdlet `Uninstall-Module ADFSToolkit -RequiredVersion 1.0.0.0` to uninstall v1.0.0.0
+  - Note that each module is downloaded into itâ€™s own directory containing the version number of the script. ADFSToolkit might not run properly with more than one version available so once the new version is confirmed on disk and available, we recommend moving the older version out of the PowerShell path so that only the latest version is available. Use the cmdlet `Uninstall-Module ADFSToolkit -RequiredVersion 1.0.0.0` to uninstall v1.0.0.0
 - Upgrade existing configuration file(s) by running the `Update-ADFSTkInstitutionConfiguration` cmdlet
     - The command will search for existing institution configuration files and present them in a Grid View. Select one or more configuration file(s) to start the upgrade.
     - The upgrade process will upgrade the configuration in version steps, so it's possible to jump several versions at the same time.
