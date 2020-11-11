@@ -27,7 +27,7 @@ process
  
     $federationConfigCacheFile=         Join-Path $Global:ADFSTkPaths.cacheDir $fedCacheFile
     $federationConfigCacheFileBackup=   Join-Path $Global:ADFSTkPaths.cacheDir $fedCacheFileBackup
-    $federationConfigDirFullBackupPath= Join-Path $Global:ADFSTkPaths.mainConfigDir $federationDirNameBackup
+    $federationConfigDirFullBackupPath= Join-Path $Global:ADFSTkPaths.mainBackupDir $federationDirNameBackup
 
 # Begin processing the various states for default handling
 #
@@ -129,6 +129,17 @@ if ( !($URL -eq $null)  )
         copy-item $unzippedFullNameDir  $Global:ADFSTkPaths.federationDir -Recurse
 
         $zip.Dispose()
+
+        # persist url in ADFSTkFederationSettings
+        # verify URL exists, then persist
+        if ( !($URL -eq $null) -and !($Global:ADFSTkPaths.mainConfigFile -eq $null) )
+        {
+
+            [xml]$config = Get-Content $Global:ADFSTkPaths.mainConfigFile
+            $config.Configuration.FederationConfig.Federation.URL= $URL
+            $config.Save( $Global:ADFSTkPaths.mainConfigFile)
+        }
+
 
         Write-Output ("ADFSToolkit: Done. Next time a new aggregate is configured, defaults will be used. Existing configurations should remain unchanged")
     }
