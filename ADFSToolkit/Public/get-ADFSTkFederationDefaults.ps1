@@ -11,17 +11,13 @@
 
 process 
 {
+    #Prepare to be able to use zip files 
+    Add-Type -assembly "system.io.compression.filesystem"
 
-Add-Type -assembly "system.io.compression.filesystem"
-
-    #Get All paths  and ensure  they exist 
-    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
-    {
+    #Get All paths  and assert they exist 
+       
+    $Global:ADFSTkPaths = Get-ADFSTKPaths
         
-         $Global:ADFSTkPaths = Get-ADFSTKPaths
-         
-
-    }
 
     # setup our files
     $nowStamp=[DateTime]::Now.ToString("yyyyMMdd-HHmmss")
