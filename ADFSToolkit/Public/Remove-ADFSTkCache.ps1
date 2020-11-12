@@ -45,16 +45,14 @@ function Remove-ADFSTkCache {
         $Config = Get-ADFSTkInstitutionConfig
         
         $MetadataCacheFile = Join-Path $ADFSTkPaths.cacheDir $Config.configuration.MetadataCacheFile
-        #Replave with corrext text
-        Write-ADFSTkVerboseLog "Selected metadata file"
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cacheSelectedMetadataFile -f $MetadataCacheFile)
         if (![string]::IsNullOrEmpty($MetadataCacheFile) -and (Test-Path $MetadataCacheFile)) {
             try {
                 Remove-Item $MetadataCacheFile -Force -Confirm:$false -ErrorAction Stop
-                #Replave with corrext text
-                Write-ADFSTkLog "File removed" -EventID 36 -EntryType Information
+                Write-ADFSTkLog (Get-ADFSTkLanguageText cacheSelectedMetadataFileRemoved -f $MetadataCacheFile) -EventID 36 -EntryType Information
             }
             catch {
-                Write-ADFSTkLog "File could not be removed" -EventID 37 -MajorFault
+                Write-ADFSTkLog (Get-ADFSTkLanguageText cacheSelectedMetadataFileNotRemoved -f $MetadataCacheFile, $_) -EventID 37 -MajorFault
             }
         }
     }
@@ -62,16 +60,18 @@ function Remove-ADFSTkCache {
     if ($PSBoundParameters.ContainsKey('SPHashFile') -and $SPHashFile -ne $false) {
         $Config = Get-ADFSTkInstitutionConfig
         $SPHashFilePath = Join-Path $ADFSTkPaths.cacheDir $Config.configuration.SPHashFile
-        #Replave with corrext text
-        Write-ADFSTkVerboseLog "Selected SPHashFile file"
-        if (![string]::IsNullOrEmpty($SPHashFilePath) -and (Test-Path $SPHashFilePath) -and (Get-ADFSTkAnswer "Are you sure??")) {
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cacheSelectedSPHashFile -f $MetadataCacheFile)
+        Write-ADFSTkHost -TextID cacheSelectedSPHashFileMessage -f $SPHashFilePath -Style Attention
+        if (![string]::IsNullOrEmpty($SPHashFilePath) -and `
+            (Test-Path $SPHashFilePath) -and `
+                (Get-ADFSTkAnswer (Get-ADFSTkLanguageText cacheSelectedSPHashFileAreYouSure)) `
+        ) {
             try {
                 Remove-Item $SPHashFilePath -Force -Confirm:$false -ErrorAction Stop
-                #Replave with corrext text
-                Write-ADFSTkLog "File removed" -EventID 38 -EntryType Information
+                Write-ADFSTkLog (Get-ADFSTkLanguageText cacheSelectedSPHashFileRemoved -f $MetadataCacheFile) -EventID 38 -EntryType Information
             }
             catch {
-                Write-ADFSTkLog "File could not be removed" -EventID 39 -MajorFault
+                Write-ADFSTkLog (Get-ADFSTkLanguageText cacheSelectedSPHashFileNotRemoved -f $MetadataCacheFile, $_) -EventID 39 -MajorFault
             }
         }
     }

@@ -12,20 +12,17 @@ function Get-ADFSTkInstitutionConfig {
             $ConfigFiles = Get-ADFSTkConfiguration -ConfigFilesOnly | ? Enabled -eq $true | Select -ExpandProperty ConfigFile
 
             if ($ConfigFiles -is [Object[]]) {
-                #Replace with Write-ADFSTLog
-                $ConfigFile = $ConfigFiles | Out-GridView -Title "Choose which Config file" -OutputMode Single
+                $ConfigFile = $ConfigFiles | Out-GridView -Title (Get-ADFSTkLanguageText confChoosenConfigFile) -OutputMode Single
 
                 if ([string]::IsNullOrEmpty($ConfigFile)) {
-                    #Replace with Write-ADFSTLog
-                    throw "No Institution Config File chosen!"
+                    Write-ADFSTkLog -Message (Get-ADFSTkLanguageText confNoConfigFileChosen) -EventID 40 -MajorFault
                 }
             }
             elseif ($ConfigFiles -is [PSCustomObject]) {
                 $ConfigFile = $ConfigFiles
             }
             elseif ([string]::IsNullOrEmpty($ConfigFiles)) {
-                #Replace with Write-ADFSTLog
-                throw "No Institution Config File found!"
+                Write-ADFSTkLog -Message (Get-ADFSTkLanguageText confNoConfigFile) -EventID 43 -MajorFault
             }
         }
         else {
@@ -34,7 +31,7 @@ function Get-ADFSTkInstitutionConfig {
     }
 
     if (!(Test-Path $ConfigFile)) {
-        throw "Chosen config not found on disk!"
+        Write-ADFSTkLog -Message (Get-ADFSTkLanguageText confChoosenConfigFileNotFound) -EventID 44 -MajorFault
     }
 
     if ($PSBoundParameters.ContainsKey('PathOnly') -and $PathOnly -ne $false) {
