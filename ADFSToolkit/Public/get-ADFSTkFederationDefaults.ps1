@@ -97,7 +97,7 @@ if ( $PSBoundParameters.ContainsKey('URL') -and !($URL -eq $null)  )
     $start_time = Get-Date
 
     Write-Output ("ADFSToolkit: Fetching $URL to $federationConfigCacheFile")
-    (New-Object System.Net.WebClient).DownloadFile($URL, $federationConfigCacheFile)
+    [System.Net.WebClient]::New().DownloadFile($URL, $federationConfigCacheFile)
 
     Write-Output "ADFSToolkit: Time taken: $((Get-Date).Subtract($start_time).Seconds) second(s)"
 
@@ -110,7 +110,7 @@ if ( $PSBoundParameters.ContainsKey('URL') -and !($URL -eq $null)  )
 
     $zip = [io.compression.zipfile]::OpenRead($federationConfigCacheFile)
     
-    $zip.Entries|where-object {$_.FullName -match $ExtractionFilter }|Select-object FullName |Select -ExpandProperty "FullName"
+    $zip.Entries|where-object {$_.FullName -match $ExtractionFilter }|Select-object FullName -ExpandProperty "FullName"
     $zip.Dispose()
 
 }
