@@ -4,45 +4,20 @@ param (
 [Parameter(Mandatory=$false,
                    ValueFromPipelineByPropertyName=$true,
                    Position=0)]
-    $RequestedAttributes,
-    [Parameter(Mandatory=$false,
-                   ValueFromPipelineByPropertyName=$true,
-                   Position=1)]
-    $NameIDFormat
-
+    $RequestedAttributes
 )
     ### Create AttributeStore variables
     $IssuanceTransformRuleCategories = @{}
-
+    
     ### Released to SP:s without Entity Category
-
     $TransformRules = [Ordered]@{}
-
-    if ([string]::IsNullOrEmpty($NameIDFormat))
-    {
-        $TransformRules.'transient-id' = $Global:ADFSTkAllTransformRules.'transient-id'
-    }
-    elseif ($NameIDFormat.Contains('urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'))
-    {
-        $TransformRules.'persistent-id' = $Global:ADFSTkAllTransformRules.'persistent-id'
-    }
-    elseif ($NameIDFormat.Contains('urn:oasis:names:tc:SAML:2.0:nameid-format:transient'))
-    {
-        $TransformRules.'transient-id' = $Global:ADFSTkAllTransformRules.'transient-id'
-    }
-    else
-    {
-        $TransformRules.'transient-id' = $Global:ADFSTkAllTransformRules.'transient-id'
-    }
-
+    #We don't want to send anything to SP's without entity categories at this time
     $IssuanceTransformRuleCategories.Add("NoEntityCategory",$TransformRules)
     
     ### research-and-scholarship ###
 
     $TransformRules = [Ordered]@{}
 
-    #$TransformRules.'transient-id' = $Global:ADFSTkAllTransformRules.'transient-id'
-    
     $TransformRules.displayName = $Global:ADFSTkAllTransformRules.displayName
     $TransformRules.eduPersonAssurance = $Global:ADFSTkAllTransformRules.eduPersonAssurance
     $TransformRules.eduPersonPrincipalName = $Global:ADFSTkAllTransformRules.eduPersonPrincipalName
