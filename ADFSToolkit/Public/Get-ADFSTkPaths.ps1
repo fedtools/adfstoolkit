@@ -14,6 +14,8 @@
     $paths.institutionLocalTransformRulesFile = Join-Path $paths.institutionDir 'Get-ADFSTkLocalTransformRules.ps1'
 
     $paths.federationDir = Join-Path $paths.MainConfigDir 'federation'
+    $paths.federationBackupDir = Join-Path $paths.FederationDir 'backup'
+
     $paths.federationsFile = Join-Path $paths.federationDir 'federations.xml'
 
     $paths.modulePath = Get-Module -ListAvailable ADFSToolkit | Sort-Object Version -Descending | Select -First 1 | Select -ExpandProperty ModuleBase
