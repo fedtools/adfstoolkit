@@ -37,6 +37,7 @@
     ADFSTk-TestAndCreateDir -Path $paths.institutionDir        -PathName "Institution config directory" #C:\ADFSToolkit\config\institution
     ADFSTk-TestAndCreateDir -Path $paths.institutionBackupDir  -PathName "Institution backup directory" #C:\ADFSToolkit\config\institution\backup
     ADFSTk-TestAndCreateDir -Path $paths.federationDir         -PathName "Federation config directory" #C:\ADFSToolkit\config\federation
+    ADFSTk-TestAndCreateDir -Path $paths.federationBackupDir    -PathName "Federation backup directory" #C:\ADFSToolkit\config\federation\backup
 
     return $paths
 }
