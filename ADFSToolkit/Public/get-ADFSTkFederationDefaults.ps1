@@ -38,7 +38,8 @@ process
 
 if  ($ClearCache )
 {
-    If  ( ( $InstallDefaults) -or !( $URL -eq  $null)  )
+
+    If  ( ( $PSBoundParameters.ContainsKey('InstallDefaults') -and ( $InstallDefaults -ne $null)  ) -or !( $PSBoundParameters.ContainsKey('URL') -and ($URL -eq  $null) )  )
     {
         Write-Output ("ADFSToolkit: When used, ClearCache flag must be the only flag used. Nothing done, exiting ")
         return
@@ -53,7 +54,7 @@ if  ($ClearCache )
 }
 
 # Use case A: no url, no config cache available
-if ( ($URL -eq $null) -and !(Test-Path ( $federationConfigCacheFile )  ) )
+if ( ( $PSBoundParameters.ContainsKey('URL') -and ($URL -eq  $null) ) -and !(Test-Path ( $federationConfigCacheFile )  ) )
    
     {
         
@@ -68,7 +69,7 @@ if ( ($URL -eq $null) -and !(Test-Path ( $federationConfigCacheFile )  ) )
             return
         }
 # Use case B: no url, config cache detected, tell user about it
-elseif ( ($URL -eq $null) -and (Test-Path ( $federationConfigCacheFile )  ) )
+elseif ( (  $PSBoundParameters.ContainsKey('URL') -and ($URL -eq  $null) ) -and (Test-Path ( $federationConfigCacheFile )  ) )
      {
         Write-Output ("ADFSToolkit: Federation defaults in the cache are:")
 
@@ -80,7 +81,7 @@ elseif ( ($URL -eq $null) -and (Test-Path ( $federationConfigCacheFile )  ) )
 # Note that we  are  now using  if statements for presence as the defaults could be on disk if fetched  but not installed
 # 
 
-if ( !($URL -eq $null)  )
+if ( $PSBoundParameters.ContainsKey('URL') -and !($URL -eq $null)  )
 {
 
     Write-Output ("ADFSToolkit: Updating federation defaults on disk from: $URL")
@@ -115,7 +116,7 @@ if ( !($URL -eq $null)  )
 }
 
     # deploy configuration that's on disk
-    if ($InstallDefaults -and (Test-Path ( $federationConfigCacheFile ) )  )
+    if ( ( $PSBoundParameters.ContainsKey('InstallDefaults')  -and ($InstallDefaults -ne $null) )   -and (Test-Path ( $federationConfigCacheFile ) )  )
     {
 
         Write-Output ("ADFSToolkit: Installing federation defaults from: $federationConfigCacheFile ...")
@@ -136,7 +137,7 @@ if ( !($URL -eq $null)  )
 
         # persist url in ADFSTkFederationSettings
         # verify URL exists, then persist
-        if ( !($URL -eq $null) -and !($Global:ADFSTkPaths.mainConfigFile -eq $null) )
+        if ( ( $PSBoundParameters.ContainsKey('URL') -and !($URL -eq $null) ) -and !($Global:ADFSTkPaths.mainConfigFile -eq $null) )
         {
 
             [xml]$config = Get-Content $Global:ADFSTkPaths.mainConfigFile
