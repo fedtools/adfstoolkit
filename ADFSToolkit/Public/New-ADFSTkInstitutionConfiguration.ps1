@@ -7,9 +7,10 @@ function New-ADFSTkInstitutionConfiguration {
 
 
     #Get All paths  and assert they exist 
-       
-    $Global:ADFSTkPaths = Get-ADFSTKPaths
-   
+    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
+    {   
+        $Global:ADFSTkPaths = Get-ADFSTKPaths
+    }
     
     try {
         $mainConfiguration = Get-ADFSTkConfiguration

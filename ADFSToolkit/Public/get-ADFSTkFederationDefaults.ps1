@@ -16,8 +16,11 @@ process
 
     #Get All paths  and assert they exist 
        
-    $Global:ADFSTkPaths = Get-ADFSTKPaths
+       if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
+        {
+         $Global:ADFSTkPaths = Get-ADFSTKPaths
         
+        }   
 
     # setup our files
     $nowStamp=[DateTime]::Now.ToString("yyyyMMdd-HHmmss")
