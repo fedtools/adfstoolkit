@@ -122,7 +122,8 @@ if ( !($URL -eq $null)  )
         $unzippedFullNameDir=Join-Path (Join-path $Global:ADFSTkPaths.cacheDir $unzippedDirName) $ExtractionFilter
 
         #backup previous federation-settings
-        move-item  -Path $Global:ADFSTkPaths.federationBackupDir -Destination $federationConfigDirFullBackupPath
+        move-item  -Path $Global:ADFSTkPaths.federationDir -Destination $federationConfigDirFullBackupPath
+        #  Get-ChildItem $Global:ADFSTkPaths.federationDir -Exclude backup,federations.xml | Move-Item $_.fullName $Global:ADFSTkPaths.federationBackupDir
 
         Expand-Archive -Path $federationConfigCacheFile -DestinationPath $Global:ADFSTkPaths.cacheDir -Force
 
