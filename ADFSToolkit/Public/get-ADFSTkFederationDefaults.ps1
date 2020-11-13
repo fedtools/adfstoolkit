@@ -88,7 +88,7 @@ elseif ( (  $PSBoundParameters.ContainsKey('URL') -and ($URL -eq  $null) ) -and 
 # Note that we  are  now using  if statements for presence as the defaults could be on disk if fetched  but not installed
 # 
 
-if ( $PSBoundParameters.ContainsKey('URL') -and !($URL -eq $null)  )
+if ( $PSBoundParameters.ContainsKey('URL') -and ($URL -ne $null)  )
 {
 
     #Write-Output ("ADFSToolkit: Updating federation defaults on disk from: $URL")
@@ -149,7 +149,7 @@ if ( $PSBoundParameters.ContainsKey('URL') -and !($URL -eq $null)  )
 
         # persist url in ADFSTkFederationSettings
         # verify URL exists, then persist
-        if ( ( $PSBoundParameters.ContainsKey('URL') -and !($URL -eq $null) ) -and !($Global:ADFSTkPaths.mainConfigFile -eq $null) )
+        if ( ( $PSBoundParameters.ContainsKey('URL') -and ($URL -ne $null) ) -and ($Global:ADFSTkPaths.mainConfigFile -ne $null) )
         {
 
             [xml]$config = Get-Content $Global:ADFSTkPaths.mainConfigFile
