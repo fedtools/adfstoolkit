@@ -44,6 +44,7 @@ function get-ADFSTkLocalManualSPSettings
     #    AuthorizationRules = @{}
     #    HashAlgorithm = $SecureHashAlgorithm.SHA1
     #    EntityCategories = @("http://www.geant.net/uri/dataprotection-code-of-conduct/v1")
+    #    SamlResponseSignature = 'MessageAndAssertion' #Valid SamlResponseSignatures: AssertionOnly, MessageAndAssertion, MessageOnly
     #}
 
 #endregion
