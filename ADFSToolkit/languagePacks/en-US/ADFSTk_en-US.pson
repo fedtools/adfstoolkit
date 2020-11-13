@@ -435,6 +435,27 @@ If you don't know why this occurred, reinstallation of ADFS Toolkit is recommend
     healthCheckConfigVersionPass = "Versioncheck PASSED!"
     healthCheckConfigVersionFail = "Versioncheck FAILED!"
 
+
+    ##############################################
+    ### ADFSTkFederationDefaults [feddefaults] ###
+    ##############################################
+
+    feddefaultsErrorFlags ="ADFSToolkit: When used, ClearCache flag must be the only flag used. Nothing done, exiting "
+    feddefaultsErrorFlagsElse ="ADFSToolkit: Removing cache file {0}"
+    feddefaultsCaseNoURLNoCacheFile= "ADFSToolkit: Federation default behaviour expected with no extra federation settings."
+    feddefaultsCaseInstallDefNothing= "ADFSToolkit: InstallDefaults flag  found  but no defaults to apply, nothing changed, exiting."
+    feddefaultsCaseNoURLConfigCacheYesHeader= "ADFSToolkit: Federation defaults in the cache are:"
+    feddefaultsCaseNoURLConfigCacheYesHeaderURLOK= "ADFSToolkit: Updating federation defaults on disk from: {0}"
+    feddefaultsCaseNoURLConfigCacheYesHeaderBackingUp="ADFSToolkit: Backing up {0} to {1}"
+    feddefaultsFetchBegin   ="ADFSToolkit: Fetching {0} to {1}"
+    feddefaultsTimeTaken    = "ADFSToolkit: Time taken: {0} second(s)"
+    feddefaultsContents     = "ADFSToolkit: contents of Federation Cache file: {0}"
+    feddefaultsInstalling   ="ADFSToolkit: Installing federation defaults from: {0} ..."
+    feddefaultsUnchanged    ="ADFSToolkit: Done. Next time a new aggregate is configured, defaults will be used. Existing configurations should remain unchanged"
+    feddefaultsNotInstalled ="ADFSToolkit: Federation defaults not installed into ADFSToolkit. Specify -InstallDefaults to apply them."
+    feddefaultsAllDone= "ADFSToolkit: Federation Defaults done."
+
+
     ################################
     ### Remove Cache [cache] ###
     ################################
@@ -452,4 +473,5 @@ If deleted all SP's will be re-imported again and this will take some time.
     cacheSelectedSPHashFileAreYouSure = "Are you sure you want to delete the SP Hash file?"
     cacheSelectedSPHashFileRemoved = "The SP Hash File '{0}' were succesfully removed."
     cacheSelectedSPHashFileNotRemoved = "The SP Hash File '{0}' could not be removed! `r`nError: {1}"
+
 }
