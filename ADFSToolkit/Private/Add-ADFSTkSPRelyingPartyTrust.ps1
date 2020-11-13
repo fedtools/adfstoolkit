@@ -16,6 +16,9 @@ function Add-ADFSTkSPRelyingPartyTrust {
         SigningCertificateRevocationCheck = 'None'
         ClaimsProviderName = @("Active Directory")
         ErrorAction = 'Stop'
+        SignatureAlgorithm = Get-ADFSTkSecureHashAlgorithm -EntityId $entityID -CertificateSignatureAlgorithm $SigningCertificate.SignatureAlgorithm.Value
+        IssuanceAuthorizationRules = Get-ADFSTkIssuanceAuthorizationRules -EntityId $entityID
+        SamlResponseSignature = Get-ADFSTkSamlResponseSignature -EntityId $entityID
     }
 
     Write-ADFSTkLog (Get-ADFSTkLanguageText addRPAddingRP -f $entityId) -EntryType Information -EventID 41
@@ -190,10 +193,6 @@ $rpParams.SamlEndpoint += $sp.SPSSODescriptor.SingleLogoutService |  % {
                                                                                  -RegistrationAuthority $sp.Extensions.RegistrationInfo.registrationAuthority `
                                                                                  -NameIdFormat $sp.SPSSODescriptor.NameIDFormat
 #endregion
-
-    $rpParams.SignatureAlgorithm = Get-ADFSTkSecureHashAlgorithm -EntityId $entityID -CertificateSignatureAlgorithm $SigningCertificate.SignatureAlgorithm.Value
-    $rpParams.IssuanceAuthorizationRules = Get-ADFSTkIssuanceAuthorizationRules -EntityId $entityID
-
 
     if ((Get-ADFSRelyingPartyTrust -Identifier $entityID) -eq $null)
     {

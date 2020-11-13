@@ -68,7 +68,7 @@ param(
 
     foreach ($configFile in $config.Configuration.ConfigFiles.ConfigFile)
     {
-        $Global:ADFSTkCurrentInstitutionConfig = $configFile
+        $Global:ADFSTkCurrentInstitutionConfig = $configFile.'#text'
 
         # set appropriate logging via EventLog mechanisms
         [xml]$Settings = Get-Content $configFile.'#text'
@@ -103,6 +103,7 @@ param(
                         ProcessWholeMetadata = $true
                         ForceUpdate = $true
                         ConfigFile = $configFile.'#text'
+                        PreserveMemoryCache = $true
                     }
 
                     if ($PSBoundParameters.ContainsKey('Silent') -and $Silent -ne $false)
