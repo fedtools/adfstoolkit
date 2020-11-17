@@ -11,6 +11,7 @@
     
     $paths.institutionDir = Join-Path $paths.MainConfigDir 'institution'
     $paths.institutionBackupDir = Join-Path $paths.institutionDir 'backup'
+    $paths.institutionLocalTransformRulesFile = Join-Path $paths.institutionDir 'Get-ADFSTkLocalTransformRules.ps1'
 
     $paths.federationDir = Join-Path $paths.MainConfigDir 'federation'
     $paths.federationsFile = Join-Path $paths.federationDir 'federations.xml'
@@ -21,6 +22,7 @@
 
     $paths.defaultConfigFile = Join-Path $paths.moduleConfigDefaultDir 'config.ADFSTk.default.xml'
     $paths.defaultInstitutionLocalSPFile = Join-Path $paths.moduleConfigDefaultDir 'get-ADFSTkLocalManualSPSettings-dist.ps1'
+    $paths.defaultInstitutionLocalTransformRulesFile = Join-Path $paths.moduleConfigDefaultDir 'Get-ADFSTkLocalTransformRules-dist.ps1'
     #$paths.defaultConfigFile = Join-Path $paths.modulePath 'config\default\config.ADFSTk.default.xml' #Next version with language support
 
     return $paths

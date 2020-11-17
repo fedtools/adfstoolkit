@@ -97,14 +97,14 @@ you can manually open the config file or re-run this command.
     confOldConfigurationFile = "Old configuration: {0}"
     confDontOverwriteFileExit = "Safe exit: User decided to not overwrite file, stopping"
     confInstConfigCreated = "The Institution configuration file saved to: {0}"
-    confInstLocalSPFileExistsCaption = "Local Institution Relying Party Settings Exist"
+    confInstLocalSPFileExistsCaption = "Local Institution Relying Party Settings exist"
     confOverwriteInstLocalSPFileMessage = "Overwrite {0} with new blank configuration?`n(Backup will be created)"
     confOverwriteInstLocalSPFileConfirmed = "Confirmed, saving new Relying Part/Service Provider customizations to: {0}"
     confCreateNewInstLocalSPFile = "Creating new config in: {0}"
     confOldInstLocalSPFile = "Old configuration: {0}"
     confFileSignedWillRemoveSignature = "File signed, stripping signature and putting in place for you to customize"
     confFileNotSignedWillCopy = "File was not signed, simple copy being made"
-    confDontOverwriteFileJustProceed = "User decided to not overwrite existing SP settings file, proceeding to next steps" 
+    confDontOverwriteFileJustProceed = "User decided to not overwrite existing file, proceeding to next steps" 
     confNoExistingFileSaveTo = "No existing file, saving new configuration to: {0}"
     confAddFileToMainConfigMessage = @"
 To be able to (automatically) run Sync-ADFSTkAggregates the configuration file
@@ -172,10 +172,26 @@ The Manual SP Settings file '{0}' already exists in the new location '{1}', no c
 After the upgrade, make sure that the correct file is in the new location!
 "@
     confManualSPFileCopied = "The Manual SP Settings file '{0}' were successfully copied to the new location '{1}'."
+
+    confLocalTransformRulesMessage = @"
+ADFS Toolkit has a standardized way of how to build and release attributes.
+Most of the time this is perfectly fine, but if you need to make local changes to any specific 
+attribute, ADFS Toolkit provides this PowerShell script for that: 
+{0}
+
+Attributes in this script will only be released to SP:s that should have it.
+
+We will now look if that file already exists or create it.
+"@
+    confLocalTransformRulesFileExistsCaption = "Local Transform Rules File already exists"    
+    confOverwriteLocalTransformRulesFileConfirmed = "Confirmed, saving new Local Transform Rule file to: {0}"
+    confNoLocalTransformRulesFiles = "Could not find any institution configuration files. Have you run New-ADFSTkInstitutionConfiguration?"
+
+
     confMoveNodeFromStoreConfigToConfig = "The XML node {0} were moved from the storeConfig node to the configuration node."
     confCacheNeedsToBeRemoved = "CacheRemove is set to $true"
     confDeleteCacheWarning = "The new features of ADFSToolkit needs to be deployed on all SP's. Therefore the cache files needs to be deleted. Doing this the next sync will take more time and all SP's will be updated."
-    confDeleteCacheQuestion = "Do you wnat to proceed and delete the cache?"
+    confDeleteCacheQuestion = "Do you want to proceed and delete the cache?"
 
     #######################################
     ### Federation cmdlets [federation] ###
@@ -216,6 +232,14 @@ After the upgrade, make sure that the correct file is in the new location!
     rulesFederationEntityCategoryAdd = "The Federation-specific Entity Category '{0}' found and will be added."
     rulesNoRequestedAttributesDetected = "No Requested attributes detected"
     rulesTypeConfiguredMoreThanonce = "The type '{0}' is configured {1} times! Please fix this in your institution configuration file ({2})."
+
+    rulesFederationLocalTransformRulesFoundFile = "Import-ADFSTkLocalTransformRules.ps1 found! Importing the local transform rules"
+    rulesFederationLocalTransformRulesFile = "Loading Federation-specific Transform Rules..."
+    rulesFederationLocalTransformRulesFound = "{0} Federation-specific Transform Rules found."
+    rulesFederationLocalTransformRulesLoadFail = "The Federation Transform Rules file '{0}' could not be loaded!"
+    rulesFederationLocalTransformRulesOverwrite = "The Federation-specific Transform Rule '{0}' found and will overwrite the default in ADFS Toolkit."
+    rulesFederationLocalTransformRulesAdd = "The Federation-specific Transform Rule '{0}' found and will be added."
+    rulesFederationLocalTransformRulesFileNotFound = "Import-ADFSTkLocalTransformRules.ps1 file not found. Skipping import of local transform rules..."
 
     ###############################
     ### Manual SP Settings [ms] ###

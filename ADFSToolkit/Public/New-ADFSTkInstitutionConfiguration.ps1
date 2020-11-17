@@ -311,9 +311,11 @@ function New-ADFSTkInstitutionConfiguration {
         if (Get-ADFSTkAnswer -Caption (Get-ADFSTkLanguageText confInstLocalSPFileExistsCaption) `
                              -Message (Get-ADFSTkLanguageText confOverwriteInstLocalSPFileMessage -f $myADFSTkManualSpSettingsInstallTemplateFile))
         {
+            $myADFSTkManualSpSettingsInstallTemplateFileObject = Get-ChildItem $myADFSTkManualSpSettingsInstallTemplateFile
+           
             Write-ADFSTkHost confOverwriteInstLocalSPFileConfirmed -f $myADFSTkManualSpSettingsInstallTemplateFile -Style Value
 
-            $mySPFileBkpName = "$myADFSTkManualSpSettingsInstallTemplateFile.$myConfigFileBkpExt"
+            $mySPFileBkpName = Join-Path $Global:ADFSTkPaths.institutionBackupDir ("{0}.{1}{2}" -f $myADFSTkManualSpSettingsInstallTemplateFileObject.BaseName, (get-date -Format o).Replace(':','.'), $myADFSTkManualSpSettingsInstallTemplateFileObject.Extension)
 
             Write-ADFSTkHost confCreateNewInstLocalSPFile -f $Global:ADFSTkPaths.defaultInstitutionLocalSPFile -Style Value
             Write-ADFSTkHost confOldInstLocalSPFile -f $mySPFileBkpName -Style Value
@@ -322,26 +324,6 @@ function New-ADFSTkInstitutionConfiguration {
             Move-Item -Path $myADFSTkManualSpSettingsInstallTemplateFile -Destination $mySPFileBkpName
 
             Copy-item -Path $Global:ADFSTkPaths.defaultInstitutionLocalSPFile -Destination $myADFSTkManualSpSettingsInstallTemplateFile
-
-
-            # Detect and strip signature from file we ship
-            #$myFileContent = Get-Content $Global:ADFSTkPaths.defaultInstitutionLocalSPFile
-            #$mySigLine = ($myFileContent | Select-String "SIG # Begin signature block").LineNumber
-            #$sigOffset = 2
-            #$mySigLocation = $mySigLine-$sigOffset
-            #
-            ## detection is anything greater than zero with offset as the signature block will be big.
-            #if ($mySigLocation -gt 0 )
-            #{
-            #    $myFileContent = $myFileContent[0..$mySigLocation]
-            #    Write-ADFSTkHost confFileSignedWillRemoveSignature -Style Info
-            #}
-            #else
-            #{
-            #    Write-ADFSTkHost confFileNotSignedWillCopy -Style Info
-            #}
-            #
-            #$myFileContent | Set-Content $myADFSTkManualSpSettingsInstallTemplateFile
         } 
         else 
         {
@@ -353,6 +335,43 @@ function New-ADFSTkInstitutionConfiguration {
         Write-ADFSTkHost confNoExistingFileSaveTo -f $myADFSTkManualSpSettingsInstallTemplateFile -Style Value -AddSpaceAfter
         Copy-item -Path $Global:ADFSTkPaths.defaultInstitutionLocalSPFile -Destination $myADFSTkManualSpSettingsInstallTemplateFile
     }
+
+#endregion
+
+#region Get-ADFSTkLocalTransformRules.ps1
+
+Write-ADFSTkHost confLocalTransformRulesMessage -Style Info -AddLinesOverAndUnder -f $Global:ADFSTkPaths.institutionLocalTransformRulesFile
+
+# Prepare our template for ADFSTkLocalTransformRules to be copied into place, safely of course, after directories are confirmed to be there.
+
+if (Test-path $Global:ADFSTkPaths.institutionLocalTransformRulesFile ) 
+{
+    if (Get-ADFSTkAnswer -Caption (Get-ADFSTkLanguageText confLocalTransformRulesFileExistsCaption) `
+                         -Message (Get-ADFSTkLanguageText confOverwriteInstLocalSPFileMessage -f $Global:ADFSTkPaths.institutionLocalTransformRulesFile))
+    {
+        $myADFSTkLocalTransformRulesInstallTemplateFileObject = Get-ChildItem $Global:ADFSTkPaths.institutionLocalTransformRulesFile
+        Write-ADFSTkHost confOverwriteLocalTransformRulesFileConfirmed -f $Global:ADFSTkPaths.institutionLocalTransformRulesFile -Style Value
+
+        $myTRFileBkpName = Join-Path $Global:ADFSTkPaths.institutionBackupDir ("{0}.{1}{2}" -f $myADFSTkLocalTransformRulesInstallTemplateFileObject.BaseName, (get-date -Format o).Replace(':','.'), $myADFSTkLocalTransformRulesInstallTemplateFileObject.Extension)
+
+        Write-ADFSTkHost confCreateNewInstLocalTransformRuleFile -f $Global:ADFSTkPaths.defaultInstitutionLocalTransformRulesFile -Style Value
+        Write-ADFSTkHost confOldInstLocalSPFile -f $myTRFileBkpName -Style Value
+
+        # Make backup
+        Move-Item -Path $Global:ADFSTkPaths.institutionLocalTransformRulesFile -Destination $myTRFileBkpName
+        # Copy dist file
+        Copy-item -Path $Global:ADFSTkPaths.defaultInstitutionLocalTransformRulesFile -Destination $Global:ADFSTkPaths.institutionLocalTransformRulesFile
+    } 
+    else 
+    {
+        Write-ADFSTkHost confDontOverwriteFileJustProceed -Style Info -AddSpaceAfter
+    }
+}
+else
+{
+    Write-ADFSTkHost confNoExistingFileSaveTo -f $Global:ADFSTkPaths.institutionLocalTransformRulesFile -Style Value -AddSpaceAfter
+    Copy-item -Path $Global:ADFSTkPaths.defaultInstitutionLocalTransformRulesFile -Destination $Global:ADFSTkPaths.institutionLocalTransformRulesFile
+}
 
 #endregion
     
