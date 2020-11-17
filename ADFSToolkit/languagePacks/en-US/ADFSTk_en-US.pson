@@ -193,6 +193,11 @@ We will now look if that file already exists or create it.
     confDeleteCacheWarning = "The new features of ADFSToolkit needs to be deployed on all SP's. Therefore the cache files needs to be deleted. Doing this the next sync will take more time and all SP's will be updated."
     confDeleteCacheQuestion = "Do you want to proceed and delete the cache?"
 
+    confChoosenConfigFile = "Choose the Institution Config File you want to use..."
+    confNoConfigFileChosen = "No Institution Config File were chosen!"
+    confNoConfigFile = "No Institution Config File(s) were found!"
+    confChoosenConfigFileNotFound = "The chosen Institution Config File were found on disk!"
+
     #######################################
     ### Federation cmdlets [federation] ###
     #######################################
@@ -429,4 +434,44 @@ If you don't know why this occurred, reinstallation of ADFS Toolkit is recommend
     healthCheckConfigVersionVerifyingVersionSucceeded = "Compatible version succeeded!"
     healthCheckConfigVersionPass = "Versioncheck PASSED!"
     healthCheckConfigVersionFail = "Versioncheck FAILED!"
+
+
+    ##############################################
+    ### ADFSTkFederationDefaults [feddefaults] ###
+    ##############################################
+
+    feddefaultsErrorFlags ="ADFSToolkit: When used, ClearCache flag must be the only flag used. Nothing done, exiting "
+    feddefaultsErrorFlagsElse ="ADFSToolkit: Removing cache file {0}"
+    feddefaultsCaseNoURLNoCacheFile= "ADFSToolkit: Federation default behaviour expected with no extra federation settings."
+    feddefaultsCaseInstallDefNothing= "ADFSToolkit: InstallDefaults flag  found  but no defaults to apply, nothing changed, exiting."
+    feddefaultsCaseNoURLConfigCacheYesHeader= "ADFSToolkit: Federation defaults in the cache are:"
+    feddefaultsCaseNoURLConfigCacheYesHeaderURLOK= "ADFSToolkit: Updating federation defaults on disk from: {0}"
+    feddefaultsCaseNoURLConfigCacheYesHeaderBackingUp="ADFSToolkit: Backing up {0} to {1}"
+    feddefaultsFetchBegin   ="ADFSToolkit: Fetching {0} to {1}"
+    feddefaultsTimeTaken    = "ADFSToolkit: Time taken: {0} second(s)"
+    feddefaultsContents     = "ADFSToolkit: contents of Federation Cache file: {0}"
+    feddefaultsInstalling   ="ADFSToolkit: Installing federation defaults from: {0} ..."
+    feddefaultsUnchanged    ="ADFSToolkit: Done. Next time a new aggregate is configured, defaults will be used. Existing configurations should remain unchanged"
+    feddefaultsNotInstalled ="ADFSToolkit: Federation defaults not installed into ADFSToolkit. Specify -InstallDefaults to apply them."
+    feddefaultsAllDone= "ADFSToolkit: Federation Defaults done."
+
+
+    ################################
+    ### Remove Cache [cache] ###
+    ################################
+
+    cacheSelectedMetadataFile = "Metadata Cache File selected: {0}"
+    cacheSelectedMetadataFileRemoved = "The Metadata Cache File '{0}' were succesfully removed."
+    cacheSelectedMetadataFileNotRemoved = "The Metadata Cache File '{0}' could not be removed! `r`nError: {1}"
+    cacheSelectedSPHashFile = "SP Hash  File selected: {0}"
+    cacheSelectedSPHashFileMessage = @"
+You are about to delete the SP Hash file '{0}' which contains a hashed value of the entity in the metadata aggregate
+from the time when it was added into the ADFS.
+
+If deleted all SP's will be re-imported again and this will take some time.
+"@
+    cacheSelectedSPHashFileAreYouSure = "Are you sure you want to delete the SP Hash file?"
+    cacheSelectedSPHashFileRemoved = "The SP Hash File '{0}' were succesfully removed."
+    cacheSelectedSPHashFileNotRemoved = "The SP Hash File '{0}' could not be removed! `r`nError: {1}"
+
 }

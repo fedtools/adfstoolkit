@@ -6,20 +6,14 @@ function New-ADFSTkInstitutionConfiguration {
     )
 
 
-    #Get All paths
+    #Get All paths  and assert they exist 
     if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
-    {
+    {   
         $Global:ADFSTkPaths = Get-ADFSTKPaths
     }
-   
-    #Create main dirs
-    ADFSTk-TestAndCreateDir -Path $Global:ADFSTkPaths.mainDir               -PathName "ADFSTk install directory" #C:\ADFSToolkit
-    ADFSTk-TestAndCreateDir -Path $Global:ADFSTkPaths.mainConfigDir         -PathName "Main configuration" #C:\ADFSToolkit\config
-    ADFSTk-TestAndCreateDir -Path $Global:ADFSTkPaths.mainBackupDir         -PathName "Main backup" #C:\ADFSToolkit\config\backup
-    ADFSTk-TestAndCreateDir -Path $Global:ADFSTkPaths.cacheDir              -PathName "Cache directory" #C:\ADFSToolkit\cache
-    ADFSTk-TestAndCreateDir -Path $Global:ADFSTkPaths.institutionDir        -PathName "Institution config directory" #C:\ADFSToolkit\config\institution
-    ADFSTk-TestAndCreateDir -Path $Global:ADFSTkPaths.institutionBackupDir  -PathName "Institution backup directory" #C:\ADFSToolkit\config\institution\backup
-    ADFSTk-TestAndCreateDir -Path $Global:ADFSTkPaths.federationDir         -PathName "Federation config directory" #C:\ADFSToolkit\config\federation   
+
+$CompatibleConfigVersion = "1.3"
+
     
     try {
         $mainConfiguration = Get-ADFSTkConfiguration
@@ -33,27 +27,6 @@ function New-ADFSTkInstitutionConfiguration {
 
     Write-ADFSTkHost confCreateNewConfigurationFile -Style Info -AddLinesOverAndUnder
 
-    # Detect and prep previousConfig to source values for defaults from it
-    #[xml]$previousConfig = ""
-    #
-    #
-    #if ([string]::IsNullOrEmpty($MigrationConfig))
-    #{
-    #    Write-Verbose (Get-ADFSTkLanguageText confNoPreviousFile)
-    #}
-    #else
-    #{
-    #    if (Test-Path -Path $MigrationConfig)
-    #    {
-    #        $previousConfig = Get-Content $MigrationConfig
-    #        Write-ADFSTkHost confUsingPreviousFileForDefaulValues -f $MigrationConfig -ForegroundColor Red -AddSpaceAfter
-    #    }
-    #    else 
-    #    {
-    #        Throw (Get-ADFSTkLanguageText confPreviousFileNotExist -f $MigrationConfig)
-    #    }
-    #}
- 
     # Use a default template from to start with
     #$mainConfiguration.FederationConfig.Federation
 
@@ -70,12 +43,18 @@ function New-ADFSTkInstitutionConfiguration {
         #Check if the federation dir exists and if not, create it
         ADFSTk-TestAndCreateDir -Path $defaultFederationConfigDir -PathName "$federationName config directory"
 
-        Write-ADFSTkHost confCopyFederationDefaultFolderMessage -Style Info -AddSpaceAfter -f $Global:ADFSTkPaths.federationDir
-        Read-Host (Get-ADFSTkLanguageText cPressEnterKey) | Out-Null
-        
+        #Check if we already have any Federation defaults file(s)
         $defaultFederationConfigFiles = Get-ChildItem -Path $defaultFederationConfigDir -Filter "*_defaultConfigFile.xml"
         
-        if ($defaultFederationConfigFiles -eq $null)
+        if ([string]::IsNullOrEmpty($defaultFederationConfigFiles))
+        {
+            Write-ADFSTkHost confCopyFederationDefaultFolderMessage -Style Info -AddSpaceAfter -f $Global:ADFSTkPaths.federationDir
+            Read-Host (Get-ADFSTkLanguageText cPressEnterKey) | Out-Null
+        
+            $defaultFederationConfigFiles = Get-ChildItem -Path $defaultFederationConfigDir -Filter "*_defaultConfigFile.xml"
+        }
+        
+        if ([string]::IsNullOrEmpty($defaultFederationConfigFiles))
         {
             $defaultConfigFile = $null
         }
@@ -111,9 +90,9 @@ function New-ADFSTkInstitutionConfiguration {
     try {
         [xml]$defaultConfig = Get-Content $defaultConfigFile
 
-        if ($defaultConfig.configuration.ConfigVersion -ne '1.2')
+        if ($defaultConfig.configuration.ConfigVersion -ne $CompatibleConfigVersion)
         {
-            Write-ADFSTkLog (Get-ADFSTkLanguageText confDefaultConfigIncorrectVersion -f $defaultConfigFile,$config.configuration.ConfigVersion,'1.2') -MajorFault
+            Write-ADFSTkLog (Get-ADFSTkLanguageText confDefaultConfigIncorrectVersion -f $defaultConfigFile,$defaultConfig.configuration.ConfigVersion,$CompatibleConfigVersion) -MajorFault
         }
     }
     catch {
@@ -126,61 +105,6 @@ function New-ADFSTkInstitutionConfiguration {
     Write-ADFSTkHost confStartMessage -Style Info -AddSpaceAfter
     Write-ADFSTkHost -WriteLine
     
-    
-       
-    #Just set the value...
-    #(Select-Xml -Xml $config -XPath "configuration/Federation").Node.'#text' = $chosenFed
-    
-    #Set-ADFSTkConfigItem -XPath "configuration/metadataURL" `
-    #                     -ExampleValue 'https://metadata.federationOperator.org/path/to/metadata.xml' `
-    #                     -Config $config `
-    #                     -DefaultConfig $previousConfig
-    #                   
-    #Set-ADFSTkConfigItem -XPath "configuration/signCertFingerprint" `
-    #                     -ExampleValue '0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF' `
-    #                     -Config $config `
-    #                     -DefaultConfig $previousConfig
-    #
-    #Set-ADFSTkConfigItem -XPath "configuration/MetadataPrefix" `
-    #                     -ExampleValue 'ADFSTk/SWAMID/CANARIE/INCOMMON' `
-    #                     -Config $config `
-    #                     -DefaultConfig $previousConfig
-    #              
-    #Set-ADFSTkConfigItem -XPath "configuration/staticValues/o" `
-    #                     -ExampleValue 'ABC University' `
-    #                     -Config $config `
-    #                     -DefaultConfig $previousConfig
-    #
-    #Set-ADFSTkConfigItem -XPath "configuration/staticValues/co" `
-    #                     -ExampleValue 'Canada, Sweden' `
-    #                     -Config $config `
-    #                     -DefaultConfig $previousConfig
-    #
-    #Set-ADFSTkConfigItem -XPath "configuration/staticValues/c" `
-    #                     -ExampleValue 'CA, SE' `
-    #                     -Config $config `
-    #                     -DefaultConfig $previousConfig
-    #
-    #Set-ADFSTkConfigItem -XPath "configuration/staticValues/schacHomeOrganization" `
-    #                     -ExampleValue 'institution.edu' `
-    #                     -Config $config `
-    #                     -DefaultConfig $previousConfig
-    #
-    #Set-ADFSTkConfigItem -XPath "configuration/staticValues/norEduOrgAcronym" `
-    #                     -ExampleValue 'CA' `
-    #                     -Config $config `
-    #                     -DefaultConfig $previousConfig
-    #
-    #Set-ADFSTkConfigItem -XPath "configuration/staticValues/ADFSExternalDNS" `
-    #                     -ExampleValue 'adfs.institution.edu' `
-    #                     -Config $config `
-    #                     -DefaultConfig $previousConfig
-    #
-    #Set-ADFSTkConfigItem -XPath "configuration/eduPersonPrincipalNameRessignable" `
-    #                     -ExampleValue 'false' `
-    #                     -Config $config `
-    #                     -DefaultConfig $previousConfig
-
     Set-ADFSTkConfigItem -XPath "configuration/metadataURL" `
                          -ExampleValue 'https://metadata.federationOperator.org/path/to/metadata.xml' `
                          -DefaultConfig $defaultConfig `
@@ -380,7 +304,7 @@ else
     if (Get-ADFSTkAnswer (Get-ADFSTkLanguageText confCreateScheduledTask))
     {
         $stAction = New-ScheduledTaskAction -Execute 'Powershell.exe' `
-                                            -Argument "-NoProfile -WindowStyle Hidden -Command 'Sync-ADFSTkAggregates'"
+                                            -Argument "-NoProfile -WindowStyle Hidden -Command &{Sync-ADFSTkAggregates}"
 
         $stTrigger =  New-ScheduledTaskTrigger -Daily -DaysInterval 1 -At (Get-Date)
         $stSettings = New-ScheduledTaskSettingsSet -Disable -MultipleInstances IgnoreNew -ExecutionTimeLimit ([timespan]::FromHours(12))
