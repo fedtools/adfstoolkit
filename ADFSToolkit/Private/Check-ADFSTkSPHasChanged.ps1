@@ -9,7 +9,7 @@ param (
     {
         if ($SPHashList.ContainsKey($SP.EntityID))
         {
-            $currentSPHash = [System.BitConverter]::ToString($md5.ComputeHash($utf8.GetBytes($SP)))
+            $currentSPHash = Get-ADFSTkEntityHash $SP
             return $currentSPHash -ne $SPHashList.($SP.EntityID)
         }
         else
@@ -19,31 +19,7 @@ param (
     }
     catch
     {
-        Write-ADFSTkVerboseLog "Could not get cached entity or compute the hash for it..."
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText processRPCouldNotGetChachedEntity)
+
     }
-    
-    #if (![string]::IsNullOrEmpty($SP))
-    #{
-    #    $currentSPHash = [System.BitConverter]::ToString($md5.ComputeHash($utf8.GetBytes($SP)))
-    #}
-    #
-    #if ($SPHashList.ContainsKey($SP.EntityID))
-    #{
-    #    if ($currentSPHash -eq $SPHashList.($SP.EntityID))
-    #    {
-    #        return $false
-    #    }
-    #    else
-    #    {
-    #        Add-ADFSTkEntityHash $SP -spHash $currentSPHash
-    #        return $true
-    #    }
-    #
-    #    #return ($currentSPHash -ne $SPHash.($SP.EntityID))
-    #}
-    #else
-    #{
-    #    Add-ADFSTkEntityHash $SP -spHash $currentSPHash
-    #    return $true #EntityID didn't exist ie it has changed
-    #}
 }

@@ -1,10 +1,5 @@
-
-
 function get-ADFSTkManualSPSettings
 {
-
-
-$IssuanceTransformRuleManualSP = @{}
 
 # HOW TO USE THIS FILE
 #
@@ -12,41 +7,41 @@ $IssuanceTransformRuleManualSP = @{}
 # Please see the help section.
 #
 
-# We attempt to detect existance of the functionwhich should contain the collection
+# We attempt to detect existance of the function which should contain the collection
 # of service provider
-#
-#      
 
+    $ManualSPSettings = @{}
 
-    
+    #Get All paths
+    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
+    {
+        $Global:ADFSTkPaths = Get-ADFSTKPaths
+    }
+
     try {
-
-        
-         #Attempt to Get local override
-            if ([string]::IsNullOrEmpty($Settings.configuration.LocalRelyingPartyFile))
-            {
-             Write-ADFSTkLog -message "No local configuration directive detected. No attribute overrides will be processed. Update configuration file to add LocalRelyingPartyFile element"
-              }
-            else
-            {
-               # build the file path, source the file, invoke the function/method that the file is named
-               $localRelyingPartyFileFullPath=Join-Path $Settings.configuration.WorkingPath -ChildPath $Settings.configuration.ConfigDir |Join-Path -ChildPath $Settings.configuration.LocalRelyingPartyFile
+        #Attempt to Get local override
+        if ([string]::IsNullOrEmpty($Settings.configuration.LocalRelyingPartyFile))
+        {
+            Write-ADFSTkLog (Get-ADFSTkLanguageText msNoConfiguredFile) -EntryType Information
+        }
+        else
+        {
+            # build the file path, source the file, invoke the function/method that the file is named
+            $localRelyingPartyFileFullPath = Join-Path $Global:ADFSTkPaths.institutionDir $Settings.configuration.LocalRelyingPartyFile
               
-                $myRelyingPartyMethodToInvoke=[IO.Path]::GetFileNameWithoutExtension($localRelyingPartyFileFullPath)
+            $myRelyingPartyMethodToInvoke = [IO.Path]::GetFileNameWithoutExtension($localRelyingPartyFileFullPath)
 
-              if (Test-Path -Path $localRelyingPartyFileFullPath )
-              {
-                   . $localRelyingPartyFileFullPath
-                   $IssuanceTransformRuleManualSP = & $myRelyingPartyMethodToInvoke
-
-              }else
-              {
-                Write-ADFSTkLog -message "LocalRelyingPartyFile setting detected, file does not exist! No attribute overrides will be processed."
-
-              }
-
+            if (Test-Path -Path $localRelyingPartyFileFullPath )
+            {
+                . $localRelyingPartyFileFullPath
+                $ManualSPSettings = & $myRelyingPartyMethodToInvoke
 
             }
+            else
+            {
+                Write-ADFSTkLog (Get-ADFSTkLanguageText msNoFileFound -f $Settings.configuration.LocalRelyingPartyFile) -EntryType Information 
+            }
+        }
 
 
     # ADFSToolkit ships with empty RP/SP settings now
@@ -56,13 +51,13 @@ $IssuanceTransformRuleManualSP = @{}
     
     # This returns the hashtable of hashtables to whomever invoked this function
     
-    $IssuanceTransformRuleManualSP
+    $ManualSPSettings
 
 }
     Catch
-        {
-            Throw $_
-        }
+    {
+        Throw $_
+    }
 
 
 

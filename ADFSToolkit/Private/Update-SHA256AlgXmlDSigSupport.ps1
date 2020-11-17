@@ -29,9 +29,8 @@ Add-Type @'
     [System.Security.Cryptography.CryptoConfig]::AddAlgorithm($RSAPKCS1SHA256SignatureDescription.GetType(), "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256")
 
 }
-catch{
-
-    Write-ADFSTkVerboseLog "Problem adding SHA256 as valid digital signature algorithm to System.Security.Cryptography.CryptoConfig." -MajorFault
+catch {
+    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText processRPCouldNotAddSHA256AsValidSignatureAlgorithm) -MajorFault
 }
 
 }
