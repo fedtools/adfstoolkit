@@ -350,8 +350,24 @@ $removeRules | % {
     {
         if ($Global:ADFSTkAllTransformRules.$key.Attribute -eq $_.type) 
         {
+
+            $currentStoreAttributes = $AttributesFromStore.Values | ? store -eq $store.name
+            if ($currentStoreAttributes.Count -ne $null)
+            {
+                $FirstRule += @"
+
+                @RuleName = "Retrieve Attributes from AD"
+                c:[Type == "$($store.type)", Issuer == "$($store.issuer)"]
+                => add(store = "$($store.name)", 
+                types = ("$($currentStoreAttributes.type -join '","')"), 
+                query = ";$($currentStoreAttributes.name -join ',');{0}", param = c.Value);
+
+"@
+            }
+
             $IssuanceTransformRules.Remove($key)
             break
+
         }
     }
 }
