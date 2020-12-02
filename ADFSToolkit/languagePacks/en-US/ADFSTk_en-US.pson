@@ -474,4 +474,14 @@ If deleted all SP's will be re-imported again and this will take some time.
     cacheSelectedSPHashFileRemoved = "The SP Hash File '{0}' were succesfully removed."
     cacheSelectedSPHashFileNotRemoved = "The SP Hash File '{0}' could not be removed! `r`nError: {1}"
 
+    ############################
+    ### Tools cmdlets [tool] ###
+    ############################
+
+    toolSelectSource = "Select SOURCE Relying Party Trust..."
+    toolNoSourceSelected = "No source EntityID selected. Aborting!"
+    toolSelectTarget = "Select TARGET Relying Party Trust..."
+    toolNoTargetSelected = "No target EntityID selected. Aborting!"
+    toolRulesCopiedFromTo = "Rules copied to '{0}' from '{1}'`r`nOld rules:`r`n{2}`r`nNew rules:`r`n{3}"
+    
 }
