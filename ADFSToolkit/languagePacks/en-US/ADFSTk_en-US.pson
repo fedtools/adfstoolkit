@@ -473,5 +473,5 @@ If deleted all SP's will be re-imported again and this will take some time.
     cacheSelectedSPHashFileAreYouSure = "Are you sure you want to delete the SP Hash file?"
     cacheSelectedSPHashFileRemoved = "The SP Hash File '{0}' were succesfully removed."
     cacheSelectedSPHashFileNotRemoved = "The SP Hash File '{0}' could not be removed! `r`nError: {1}"
-
+    cacheCleared = "{0} cleared!"
 }
