@@ -197,6 +197,11 @@ We will now look if that file already exists or create it.
     confNoConfigFileChosen = "No Institution Config File were chosen!"
     confNoConfigFile = "No Institution Config File(s) were found!"
     confChoosenConfigFileNotFound = "The chosen Institution Config File were found on disk!"
+    confAddedAttributeToInstitutionConfig = @"
+The following attributes (types) were added as new attribute(s) to your Institution Config file.
+Please open the file and configure how ADFSToolkit can get them (Active Directory/SQL/etc).
+{0}
+"@
 
     #######################################
     ### Federation cmdlets [federation] ###
