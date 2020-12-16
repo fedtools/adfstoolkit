@@ -81,8 +81,10 @@ if ([string]::IsNullOrEmpty($Global:ADFSTkAllTransformRules) -or $Global:ADFSTkA
     }
 }
 
-$AllTransformRules = $Global:ADFSTkAllTransformRules #So we don't need to change anything in the Get-ADFSTkManualSPSettings files
-
+if ([string]::IsNullOrEmpty($AllTransformRules))
+{
+    $AllTransformRules = $Global:ADFSTkAllTransformRules #So we don't need to change anything in the Get-ADFSTkManualSPSettings files
+}
 
 $RequestedAttributes = @{}
 

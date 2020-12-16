@@ -20,15 +20,14 @@ function Remove-ADFSTkCache {
     #We don't want to use the memory cache in here in case of deletion ;)
     $ADFSTkPaths = Get-ADFSTKPaths
 
-    if ($PSBoundParameters.ContainsKey('AttributeMemoryCache') -and $AttributeMemoryCache -ne $false) {
-        $Global:ADFSTkManualSPSettings = $null
-        $Global:ADFSTkAllAttributes = $null
-        $Global:ADFSTkAllTransformRules = $null
-    }
+    $anyCacheCleared = $false
+   
 
     if ($PSBoundParameters.ContainsKey('LanguageTables') -and $LanguageTables -ne $false) {
         $Global:ADFSTkLanguageTables = $null
         $Global:ADFSTkSelectedLanguage = $null
+        $anyCacheCleared = $true
+        Write-ADFSTkHost cacheCleared -f "Language Tables" -Style Info -ForegroundColor Green
     }
 
     if ($PSBoundParameters.ContainsKey('FullMemoryCache') -and $FullMemoryCache -ne $false) {
@@ -39,6 +38,9 @@ function Remove-ADFSTkCache {
         $Global:ADFSTkLanguageTables = $null
         $Global:ADFSTkSelectedLanguage = $null
         $Global:ADFSTkCurrentInstitutionConfig = $null
+        $anyCacheCleared = $true
+        
+        Write-ADFSTkHost cacheCleared -f "Full Memory Cache" -Style Info -ForegroundColor Green
     }
 
     if ($PSBoundParameters.ContainsKey('MetadataCache') -and $MetadataCache -ne $false) {
@@ -55,6 +57,7 @@ function Remove-ADFSTkCache {
                 Write-ADFSTkLog (Get-ADFSTkLanguageText cacheSelectedMetadataFileNotRemoved -f $MetadataCacheFile, $_) -EventID 37 -MajorFault
             }
         }
+        $anyCacheCleared = $true
     }
 
     if ($PSBoundParameters.ContainsKey('SPHashFile') -and $SPHashFile -ne $false) {
@@ -68,11 +71,20 @@ function Remove-ADFSTkCache {
         ) {
             try {
                 Remove-Item $SPHashFilePath -Force -Confirm:$false -ErrorAction Stop
-                Write-ADFSTkLog (Get-ADFSTkLanguageText cacheSelectedSPHashFileRemoved -f $MetadataCacheFile) -EventID 38 -EntryType Information
+                Write-ADFSTkLog (Get-ADFSTkLanguageText cacheSelectedSPHashFileRemoved -f $SPHashFilePath) -EventID 38 -EntryType Information
             }
             catch {
-                Write-ADFSTkLog (Get-ADFSTkLanguageText cacheSelectedSPHashFileNotRemoved -f $MetadataCacheFile, $_) -EventID 39 -MajorFault
+                Write-ADFSTkLog (Get-ADFSTkLanguageText cacheSelectedSPHashFileNotRemoved -f $SPHashFilePath, $_) -EventID 39 -MajorFault
             }
         }
+        $anyCacheCleared = $true
+    }
+
+    if (!$anyCacheCleared -or ($PSBoundParameters.ContainsKey('AttributeMemoryCache') -and $AttributeMemoryCache -ne $false)) {
+        $Global:ADFSTkManualSPSettings = $null
+        $Global:ADFSTkAllAttributes = $null
+        $Global:ADFSTkAllTransformRules = $null
+
+        Write-ADFSTkHost cacheCleared -f "Attribute Memory Cache" -Style Info -ForegroundColor Green
     }
 }
