@@ -43,12 +43,18 @@
         #Check if the federation dir exists and if not, create it
         ADFSTk-TestAndCreateDir -Path $defaultFederationConfigDir -PathName "$federationName config directory"
 
-        Write-ADFSTkHost -WriteLine -AddSpaceAfter
-        Write-ADFSTkHost confCopyFederationDefaultFolderMessage -Style Info -AddSpaceAfter -f $defaultFederationConfigDir
+        #Check if we already have any Federation defaults file(s)
+        $allDefaultFederationConfigFiles = Get-ChildItem -Path $defaultFederationConfigDir -Filter "*_defaultConfigFile.xml"
         
-        Read-Host (Get-ADFSTkLanguageText cPressEnterKey) | Out-Null
+        if ([string]::IsNullOrEmpty($allDefaultFederationConfigFiles))
+        {
+            Write-ADFSTkHost -WriteLine -AddSpaceAfter
+            Write-ADFSTkHost confCopyFederationDefaultFolderMessage -Style Info -AddSpaceAfter -f $defaultFederationConfigDir
+        
+            Read-Host (Get-ADFSTkLanguageText cPressEnterKey) | Out-Null
 
-        $allDefaultFederationConfigFiles = Get-ChildItem -Path $defaultFederationConfigDir -Filter "*_defaultConfigFile.xml" -Recurse
+            $allDefaultFederationConfigFiles = Get-ChildItem -Path $defaultFederationConfigDir -Filter "*_defaultConfigFile.xml" -Recurse
+        }
         
         if ($allDefaultFederationConfigFiles -eq $null)
         {
