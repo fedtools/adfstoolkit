@@ -174,7 +174,6 @@
                     }
                     else {
                         Copy-Item (Join-Path $selectedConfig.Directory $selectedConfig.name) $newFileName
-                        $selectedConfig.Directory = $Global:ADFSTkPaths.institutionDir
                     }
 
                     #Copy the ManualSP file to new location
@@ -193,6 +192,7 @@
                             Write-ADFSTkLog (Get-ADFSTkLanguageText confManualSPFileCopied -f $oldManualSPFile, $Global:ADFSTkPaths.institutionDir) -EntryType Information
                         }
                     }
+                    $selectedConfig.Directory = $Global:ADFSTkPaths.institutionDir
                 }
 
                 $selectedConfigs += Add-ADFSTkConfigurationItem -ConfigurationItem (Join-Path $selectedConfig.Directory $selectedConfig.Name) -PassThru
