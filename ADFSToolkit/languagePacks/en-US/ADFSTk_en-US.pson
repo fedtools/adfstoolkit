@@ -202,6 +202,9 @@ The following attributes (types) were added as new attribute(s) to your Institut
 Please open the file and configure how ADFSToolkit can get them (Active Directory/SQL/etc).
 {0}
 "@
+    confChangeCommonNameToDisplayName = "You have CommonName read from the AD attribute Cn. We recommend that displayName is used instead."
+    confDoYouWantToChangeCommonName = "Do you want to change CommonName to read from displayName instead?"
+    confCommonNameChangedFromCnToDisplayName = "The attribute CommonName has been changed. It is now read from displayName instead of Cn."
 
     #######################################
     ### Federation cmdlets [federation] ###

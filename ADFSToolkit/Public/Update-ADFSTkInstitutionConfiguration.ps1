@@ -225,6 +225,7 @@
         if ($continue) {
             #Load the eventlog
             if ([string]::IsNullOrEmpty((Write-ADFSTkLog -GetEventLogName))) {
+                $Settings = $config
                 if (Verify-ADFSTkEventLogUsage) {
                     #If we evaluated as true, the eventlog is now set up and we link the WriteADFSTklog to it
                     Write-ADFSTkLog -SetEventLogName $config.configuration.logging.LogName -SetEventLogSource $config.configuration.logging.Source
@@ -346,6 +347,17 @@
                     if (![string]::IsNullOrEmpty($config.configuration.storeConfig.attributes)) {
                         Write-ADFSTkLog (Get-ADFSTkLanguageText confMoveNodeFromStoreConfigToConfig -f 'attributes')
                         $config.configuration.AppendChild($config.configuration.storeConfig.attributes) | Out-Null
+                    }
+
+                    $commonName = $config.configuration.attributes.attribute | ? type -eq "http://schemas.xmlsoap.org/claims/CommonName"
+                    if ($commonName.store -eq "Active Directory" -and $commonName.name -eq "cn")
+                    {
+                        Write-ADFSTkHost confChangeCommonNameToDisplayName
+                        if (Get-ADFSTkAnswer (Get-ADFSTkLanguageText confDoYouWantToChangeCommonName) -DefaultYes)
+                        {
+                            $commonName.name = "displayname"
+                            Write-ADFSTkLog (Get-ADFSTkLanguageText confCommonNameChangedFromCnToDisplayName)
+                        }
                     }
 
                     $config.configuration.ConfigVersion = $newVersion
