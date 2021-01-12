@@ -40,14 +40,14 @@
         #Check if the federation dir exists and if not, create it
         ADFSTk-TestAndCreateDir -Path $defaultFederationConfigDir -PathName "$federationName config directory"
 
-        $allDefaultFederationConfigFiles = Get-ChildItem -Path $defaultFederationConfigDir -Filter "*_defaultConfigFile.xml" -Recurse
+        $allDefaultFederationConfigFiles = Get-ChildItem -Path $defaultFederationConfigDir -Filter "*_defaultConfigFile.xml"
         if ([string]::IsNullOrEmpty($allDefaultFederationConfigFiles)) {
             Write-ADFSTkHost -WriteLine -AddSpaceAfter
             Write-ADFSTkHost confCopyFederationDefaultFolderMessage -Style Info -AddSpaceAfter -f $defaultFederationConfigDir
         
             Read-Host (Get-ADFSTkLanguageText cPressEnterKey) | Out-Null
 
-            $allDefaultFederationConfigFiles = Get-ChildItem -Path $defaultFederationConfigDir -Filter "*_defaultConfigFile.xml" -Recurse
+            $allDefaultFederationConfigFiles = Get-ChildItem -Path $defaultFederationConfigDir -Filter "*_defaultConfigFile.xml"
         }
         
         if ($allDefaultFederationConfigFiles -eq $null) {
