@@ -197,6 +197,14 @@ We will now look if that file already exists or create it.
     confNoConfigFileChosen = "No Institution Config File were chosen!"
     confNoConfigFile = "No Institution Config File(s) were found!"
     confChoosenConfigFileNotFound = "The chosen Institution Config File were found on disk!"
+    confAddedAttributeToInstitutionConfig = @"
+The following attributes (types) were added as new attribute(s) to your Institution Config file.
+Please open the file and configure how ADFSToolkit can get them (Active Directory/SQL/etc).
+{0}
+"@
+    confChangeCommonNameToDisplayName = "You have CommonName read from the AD attribute Cn. We recommend that displayName is used instead."
+    confDoYouWantToChangeCommonName = "Do you want to change CommonName to read from displayName instead?"
+    confCommonNameChangedFromCnToDisplayName = "The attribute CommonName has been changed. It is now read from displayName instead of Cn."
 
     #######################################
     ### Federation cmdlets [federation] ###
@@ -474,4 +482,14 @@ If deleted all SP's will be re-imported again and this will take some time.
     cacheSelectedSPHashFileRemoved = "The SP Hash File '{0}' were succesfully removed."
     cacheSelectedSPHashFileNotRemoved = "The SP Hash File '{0}' could not be removed! `r`nError: {1}"
     cacheCleared = "{0} cleared!"
+
+    ############################
+    ### Tools cmdlets [tool] ###
+    ############################
+
+    toolSelectSource = "Select SOURCE Relying Party Trust..."
+    toolNoSourceSelected = "No source EntityID selected. Aborting!"
+    toolSelectTarget = "Select TARGET Relying Party Trust..."
+    toolNoTargetSelected = "No target EntityID selected. Aborting!"
+    toolRulesCopiedFromTo = "Rules copied to '{0}' from '{1}'`r`nOld rules:`r`n{2}`r`nNew rules:`r`n{3}"
 }
