@@ -22,5 +22,5 @@ Write-Verbose -Message "ADFSToolkit Private: $Private"
     }
 
 
-Export-ModuleMember -Function  Import-ADFSTkMetadata,New-ADFSTkConfiguration,Unpublish-ADFSTkAggregate,Get-ADFSTkTransformRuleObjects,Update-ADFSTkInstitutionConfiguration,Sync-ADFSTkAggregates,New-ADFSTkInstitutionConfiguration,Enable-ADFSTkInstitutionConfiguration,Get-ADFSTkToolsIssuanceTransformRules,Get-ADFSTkHealth,Get-ADFSTkPaths,Get-ADFSTkFederationDefaults,Remove-ADFSTkCache
+Export-ModuleMember -Function  Import-ADFSTkMetadata,New-ADFSTkConfiguration,Unpublish-ADFSTkAggregate,Get-ADFSTkTransformRuleObjects,Update-ADFSTkInstitutionConfiguration,Sync-ADFSTkAggregates,New-ADFSTkInstitutionConfiguration,Enable-ADFSTkInstitutionConfiguration,Disable-ADFSTkInstitutionConfiguration,Get-ADFSTkToolsIssuanceTransformRules,Get-ADFSTkHealth,Get-ADFSTkPaths,Get-ADFSTkFederationDefaults,Remove-ADFSTkCache
 
