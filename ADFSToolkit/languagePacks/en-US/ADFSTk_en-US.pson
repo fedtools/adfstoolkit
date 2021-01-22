@@ -56,7 +56,7 @@ If it's not present, click Cancel
     mainconfConfigItemDefaultDisabledMessage = "The configuration item is default disabled. To enable it, run Enable-ADFSTkInstitutionConfiguration."
     mainconfADFSTkConfigFileNotFound = "The configuration file '{0}' cound not be found. Aborting!"
     mainconfConfItemNotFound = "The configuration item '{0}' not found in ADFSToolkit configuration file. Aborting!"
-    mainconfChangedSuccessfully = "Configuration changed successfully!"
+    mainconfChangedSuccessfully = "The status of '{0}' is set to '{1}'."
     mainconfNoInstConfigsFound = @"
 We could not find any Institution config file!
 
@@ -205,6 +205,9 @@ Please open the file and configure how ADFSToolkit can get them (Active Director
     confChangeCommonNameToDisplayName = "You have CommonName read from the AD attribute Cn. We recommend that displayName is used instead."
     confDoYouWantToChangeCommonName = "Do you want to change CommonName to read from displayName instead?"
     confCommonNameChangedFromCnToDisplayName = "The attribute CommonName has been changed. It is now read from displayName instead of Cn."
+    confSelectInstitutionConfigToEnable = "Select the configuration file(s) you want to enable."
+    confSelectInstitutionConfigToDisable = "Select the configuration file(s) you want to disable."
+    confNoInstitutionConfigFileSelected = "No configurationfile(s) were selected. Nothing changed!"
 
     #######################################
     ### Federation cmdlets [federation] ###
