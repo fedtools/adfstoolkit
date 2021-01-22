@@ -49,7 +49,7 @@ param (
             Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText importDownloadingFromTo -f $metadataURL, $CachedMetadataFile) -EntryType Information
                
             $webClient = New-Object System.Net.WebClient 
-            $webClient.Headers.Add("user-agent", "ADFSToolkit")
+            $webClient.Headers.Add("user-agent", "ADFSToolkit-v2")
             $webClient.DownloadFile($metadataURL, $CachedMetadataFile)
                 
             Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText importSuccesfullyDownloadedMetadataFrom -f $metadataURL) -EntryType Information

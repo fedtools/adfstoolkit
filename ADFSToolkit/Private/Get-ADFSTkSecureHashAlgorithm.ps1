@@ -12,6 +12,11 @@ param (
 
 if ([string]::IsNullOrEmpty($Global:ADFSTkManualSPSettings))
 {
+    if ([string]::IsNullOrEmpty($Global:ADFSTkAllTransformRules) -or $Global:ADFSTkAllTransformRules.Count -eq 0)
+    {
+        $Global:ADFSTkAllTransformRules = Import-ADFSTkAllTransformRules
+        $AllTransformRules = $Global:ADFSTkAllTransformRules #So we don't need to change anything in the Get-ADFSTkManualSPSettings files
+    }
     $Global:ADFSTkManualSPSettings = Get-ADFSTkManualSPSettings
 }
 

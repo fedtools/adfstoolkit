@@ -56,7 +56,7 @@ If it's not present, click Cancel
     mainconfConfigItemDefaultDisabledMessage = "The configuration item is default disabled. To enable it, run Enable-ADFSTkInstitutionConfiguration."
     mainconfADFSTkConfigFileNotFound = "The configuration file '{0}' cound not be found. Aborting!"
     mainconfConfItemNotFound = "The configuration item '{0}' not found in ADFSToolkit configuration file. Aborting!"
-    mainconfChangedSuccessfully = "Configuration changed successfully!"
+    mainconfChangedSuccessfully = "The status of '{0}' is set to '{1}'."
     mainconfNoInstConfigsFound = @"
 We could not find any Institution config file!
 
@@ -197,6 +197,17 @@ We will now look if that file already exists or create it.
     confNoConfigFileChosen = "No Institution Config File were chosen!"
     confNoConfigFile = "No Institution Config File(s) were found!"
     confChoosenConfigFileNotFound = "The chosen Institution Config File were found on disk!"
+    confAddedAttributeToInstitutionConfig = @"
+The following attributes (types) were added as new attribute(s) to your Institution Config file.
+Please open the file and configure how ADFSToolkit can get them (Active Directory/SQL/etc).
+{0}
+"@
+    confChangeCommonNameToDisplayName = "You have CommonName read from the AD attribute Cn. We recommend that displayName is used instead."
+    confDoYouWantToChangeCommonName = "Do you want to change CommonName to read from displayName instead?"
+    confCommonNameChangedFromCnToDisplayName = "The attribute CommonName has been changed. It is now read from displayName instead of Cn."
+    confSelectInstitutionConfigToEnable = "Select the configuration file(s) you want to enable."
+    confSelectInstitutionConfigToDisable = "Select the configuration file(s) you want to disable."
+    confNoInstitutionConfigFileSelected = "No configurationfile(s) were selected. Nothing changed!"
 
     #######################################
     ### Federation cmdlets [federation] ###
@@ -473,5 +484,15 @@ If deleted all SP's will be re-imported again and this will take some time.
     cacheSelectedSPHashFileAreYouSure = "Are you sure you want to delete the SP Hash file?"
     cacheSelectedSPHashFileRemoved = "The SP Hash File '{0}' were succesfully removed."
     cacheSelectedSPHashFileNotRemoved = "The SP Hash File '{0}' could not be removed! `r`nError: {1}"
+    cacheCleared = "{0} cleared!"
 
+    ############################
+    ### Tools cmdlets [tool] ###
+    ############################
+
+    toolSelectSource = "Select SOURCE Relying Party Trust..."
+    toolNoSourceSelected = "No source EntityID selected. Aborting!"
+    toolSelectTarget = "Select TARGET Relying Party Trust..."
+    toolNoTargetSelected = "No target EntityID selected. Aborting!"
+    toolRulesCopiedFromTo = "Rules copied to '{0}' from '{1}'`r`nOld rules:`r`n{2}`r`nNew rules:`r`n{3}"
 }
