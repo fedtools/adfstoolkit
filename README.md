@@ -11,9 +11,9 @@ ADFSToolkit reduces installation and configuration time to minutes for proper ha
 # Installation
 
 > :warning: 
-> ## **Install by PowerShellGallery.com from: https://www.powershellgallery.com/packages/ADFSToolkit/ 
+> ## Installation of ADFSToolkit is via PowerShellGallery.com only 
 
-For more details on how to use PowerShellGallery and PowerShellGet Modules see:
+For more details on how to prepare for using PowerShellGallery and PowerShellGet Modules see:
 - https://docs.microsoft.com/en-us/powershell/scripting/gallery/installing-psget and
 - https://docs.microsoft.com/en-us/powershell/scripting/gallery/getting-started
 
@@ -53,13 +53,17 @@ The attribute release model using Entity Categories has a release policy set aga
 This is the default behaviour of ADFSToolkit and by using this tool, you are enabling this model of attribute release by default. You are encouraged to contact federation operators and register your organizations as supporting Research and Scholarship and other entity categories for more benefits.
 
 # Install and configure ADFSToolkit for the first time
-ADFSToolkit’s Module uses the PowerShell Gallery tool command `Install-Module` to download and install the code.
+
 ## Install ADFSToolkit
-Run the following command to install ADFSToolkit
+To download and install ADFSToolkit run the following command:
 - Install-Module ADFSToolkit
-> [!IMPORTANT] when running Install-Module a warning will be shown regarding trust for PSGallery. You need to accept the warning to be able to install ADFSToolkit this way.
+> :exclamation: Install-Module will issue a warning about trust for PSGallery. You need to accept the warning to be able to install ADFSToolkit.
+
+The ADFSToolkit page can be found [here](https://www.powershellgallery.com/packages/ADFSToolkit/) 
+
+
 ## Configure ADFSToolkit
-ADFSToolkit needs to be configured for your federation and institution. First configure it to the federation by running the following command:
+The latest ADFSToolkit needs to be configured for your federation and institution. First configure it to the federation by running the following command:
  `New-ADFSTkConfiguration`
 - Choose your federation in the presented Grid View and click OK
  Second configure ADFSToolkit for your Institution by running the following command:
