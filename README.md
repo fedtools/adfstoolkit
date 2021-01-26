@@ -1,27 +1,28 @@
 # ADFSToolkit
 
-A PowerShell Module for best handling of SAML2 multi-lateral federation aggregates for Microsoft's AD FS.
+A PowerShell Module for optimal handling of SAML2 multi-lateral federation aggregates for Microsoft's AD FS.
 
-ADFSToolkit reduces the installation and configuration time to minutes to connect properly to Research and Education (R&E) Federated Identity Management service federations. It embodies techniques to manage trust in a scalable fashion by enhancing AD FS's trust model to be a sufficient IdP in a SAML2 R&E federation.
+ADFSToolkit reduces installation and configuration time to minutes for proper handling metadata aggregates from Research and Education (R&E) Federated Identity Management service federations. This allows AD FS to behave as a viable IdP in a SAML2 R&E federation.
 
 # Sites using ADFSToolkit
 - CANARIE's Canadian Access Federation: https://www.canarie.ca/identity/support/fim-tools/
 - Sweden's Sunet - SWAMID: https://wiki.sunet.se/display/SWAMID/How+to+consume+SWAMID+metadata+with+ADFS+Toolkit
 
-# Installation Procedure
+# Installation
 
 > :warning: 
-> ## **Installation is via PowerShellGallery.com **
-> https://www.powershellgallery.com/packages/ADFSToolkit/ 
+> ## **Install by PowerShellGallery.com from: https://www.powershellgallery.com/packages/ADFSToolkit/ 
+
+For more details on how to use PowerShellGallery and PowerShellGet Modules see:
+- https://docs.microsoft.com/en-us/powershell/scripting/gallery/installing-psget and
+- https://docs.microsoft.com/en-us/powershell/scripting/gallery/getting-started
 
 ADFSToolkit uses Microsoft’s PowerShellGallery.com service and distribution channel for code lifecycle management.
 Critical to this is being current on PowerShellGallery's latest PowerShellGet Module.
 
-To install ADFSToolkit you will need to:
-- Visit https://PowerShellgallery.com and follow the instructions to install the latest PowerShellGet Module from PowerShellGallery 
 
 ## System Requirements
-ADFSToolkit must be installed on a Windows Server (your AD FS host) with:
+ADFSToolkit must be installed on Windows Server that is one of your AD FS hosts with:
 - Microsoft AD FS v3 or higher
 - Local administrator privileges to schedule privileged jobs
 - AD FS administrator-level permissions to run PowerShell commands
@@ -29,15 +30,19 @@ ADFSToolkit must be installed on a Windows Server (your AD FS host) with:
 
 While not a firm requirement, we strongly suggest a test AD FS environment to perform the installation prior to installing in production. 
 You should be aware that after installation, you will see a few thousand trusts displayed within the administration toolset, AD FS-Microsoft Management Console (MMC).
+
 ###	Minimum Server OS 
-Windows Server 2012 R2 or newer is the minimal level of OS supported. You should also be current on latest OS and security patch/updates provided by Microsoft.
+Windows Server 2016 or newer is the minimal level of OS supported. You should also be current on latest OS and security patch/updates provided by Microsoft.
 ###	Minimum PowerShell Version 
 ADFSToolkit uses Microsoft’s PowerShell with Windows Management Framework (WMF) 5.1. To see if your host is WMF5.1 ready, check the Microsoft Compatibility Matrix.
 To quickly see which version of PowerShell you have, open a PowerShell window or PowerShell ISE window and enter $PSVersionTable. If you do not see version 5.1, you will need to update your environment first.
 
 ## Attribute Release Practices of ADFSToolkit 
-ADFSToolkit is a component built for and by the research and educational community that embraces scalable attribute release management principles of  R&E federations. One of these techniques is the use of Entity Categories for attribute release. Entity Categories are tags in SAML2 metadata on an entity that indicate membership in a given category of service. The attribute release model using Entity Categories has a release policy set against the category, not the entity. 
- When ADFSToolkit parses entities to load into AD FS and encounters an Entity Category called ‘Research and Scholarship’, it automatically creates multiple AD FS transform rules that reflect the minimal set of attributes released, not much different than your public directory pages, for R&S these are:
+ADFSToolkit is a component built for and by the research and educational community and embraces scalable attribute release management principles of  R&E federations. 
+One of these techniques is the use of Entity Categories for attribute release. 
+Entity Categories are tags in SAML2 metadata on an entity that indicate membership in a given category of service. 
+The attribute release model using Entity Categories has a release policy set against the category, not the entity. 
+ When ADFSToolkit parses entities to load into AD FS and encounters an Entity Category called ‘Research and Scholarship’, it automatically creates multiple AD FS transform rules that reflect the minimal set of attributes released, not much different than your public directory pages. For R&S these are:
 - eduPersonPrincipalName (left hand of the at sign of the UPN concatenated with your domain)
 - mail
 - displayName
