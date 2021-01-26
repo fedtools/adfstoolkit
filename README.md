@@ -1,9 +1,8 @@
 # ADFSToolkit
 
-A PowerShell Module used to handle SAML2 multi-lateral federation aggregates in Microsoft's AD FS.
+A PowerShell Module for best handling of SAML2 multi-lateral federation aggregates for Microsoft's AD FS.
 
-The ADFSToolkit was designed to rapidly configure your Active Directory Federation Services to connect to Research and Education (R&E) Federated Identity Management service federations. ADFSToolkit reduces the installation and configuration time to a matter of minutes and offers 
-techniques to manage trust in a scalable fashion stepping up AD FS's trust model to be sufficient to be an IdP in a SAML2 R&E federation.
+ADFSToolkit reduces the installation and configuration time to minutes to connect properly to Research and Education (R&E) Federated Identity Management service federations. It embodies techniques to manage trust in a scalable fashion by enhancing AD FS's trust model to be a sufficient IdP in a SAML2 R&E federation.
 
 # Sites using ADFSToolkit
 - CANARIE's Canadian Access Federation: https://www.canarie.ca/identity/support/fim-tools/
@@ -12,11 +11,11 @@ techniques to manage trust in a scalable fashion stepping up AD FS's trust model
 # Installation Procedure
 
 > :warning: 
-> ## **Installing from GIT is not recommended - please use PowerShellGallery.com**
+> ## **Installation is via PowerShellGallery.com **
 > https://www.powershellgallery.com/packages/ADFSToolkit/ 
 
-ADFSToolkit uses Microsoft’s PowerShellGallery.com service and distribution channel and  for lifecycle management for updates.
-Critical to this is being current on PowerShellGallery's latest PowerShellGet Module
+ADFSToolkit uses Microsoft’s PowerShellGallery.com service and distribution channel for code lifecycle management.
+Critical to this is being current on PowerShellGallery's latest PowerShellGet Module.
 
 To install ADFSToolkit you will need to:
 - Visit https://PowerShellgallery.com and follow the instructions to install the latest PowerShellGet Module from PowerShellGallery 
