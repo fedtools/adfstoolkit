@@ -23,7 +23,6 @@ Critical to this is being current on PowerShellGallery's latest PowerShellGet Mo
 ADFSToolkit's PowershellGallery page is [here](https://www.powershellgallery.com/packages/ADFSToolkit/) 
 
 
-
 ## System Requirements
 ADFSToolkit V2 must be installed on Windows Server that is one of your AD FS hosts with:
 - Microsoft Windows Server 2016 (AD FS v4) or higher and kept current on patches
@@ -39,7 +38,7 @@ Optional but strongly suggested: A test AD FS environment to perform the install
 
 
 ## Attribute Release Practices of ADFSToolkit 
-ADFSToolkit is a component built for and by the research and educational community and embraces scalable attribute release management principles of  R&E federations. 
+Built for and by the Research and Educational(R&E) community ADFSToolkit embraces scalable attribute release management principles of R&E federations. 
 One of these techniques is the use of Entity Categories for attribute release. 
 Entity Categories are tags in SAML2 metadata on an entity that indicate membership in a given category of service. 
 The attribute release model using Entity Categories has a release policy set against the category, not the entity. 
@@ -53,24 +52,47 @@ The attribute release model using Entity Categories has a release policy set aga
 
 This is the default behaviour of ADFSToolkit and by using this tool, you are enabling this model of attribute release by default. You are encouraged to contact federation operators and register your organizations as supporting Research and Scholarship and other entity categories for more benefits.
 
-# Install and configure ADFSToolkit for the first time
+# First Time Installation and Configuration of ADFSToolkit V2
 
-## Install ADFSToolkit
-To download and install ADFSToolkit run the following command:
-- Install-Module ADFSToolkit
-> :exclamation: Install-Module will issue a warning about trust for PSGallery. You need to accept the warning to be able to install ADFSToolkit.
+## Installing
+- Open a PowerShell prompt or PowerShell ISE window as administrator
+- Run the following to download and install the latest stable ADFSToolkit:
+```PowerShell
+Install-Module ADFSToolkit
+```
 
+|:heavy_check_mark: If asked, accept the requested trust for PSGallery to be able to install ADFSToolkit.|
+|-----------------------------------------------------------------------------|
 
-## Configure ADFSToolkit
-The latest ADFSToolkit needs to be configured for your federation and institution. First configure it to the federation by running the following command:
- `New-ADFSTkConfiguration`
-- Choose your federation in the presented Grid View and click OK
- Second configure ADFSToolkit for your Institution by running the following command:
-`New-ADFSTkInstitutionConfiguration`
-- The federation operators can provide you with default configuration files which will standardize some answers for the installation (i.e. the URL for the metadata etc). You will be prompted:
-  - 'If your federation operators provides a federation-specific default configuration file, make sure to copy the folder to `C:\ADFSToolkit\config\federation` before proceeding.'
-  - If you have been provided theese files, copy them to your federation's name folder provided above.
-  - If you don't have the files or don't know if your federation provides them, you can proceed but need to type in the answers by yourself.
+## Configuring
+
+ADFSToolkit V2 now two main steps to configure: one stepfor your federation and one step for your institution. 
+
+### Federation Configuration
+
+- First, configure your federation with:
+ ```Powershell
+ New-ADFSTkConfiguration
+ ```
+  - Choose your federation in the presented Grid View and click OK
+- Setting Federation defaults if they are available is next:
+  - ADFSToolkit V2 allows Federations to have defaults set during install (i.e. the URL for the metadata, the fingerprint of the cert, etc)
+  - If you have been offered a URL for Federation Defaults this command will fetch and install them:
+  ```Powershell
+  get-ADFSTkFederationDefaults https://url.from.your.federation/operator.zip -InstallDefaults
+  ```
+    - Removing the -InstallDefaults setting will fetch the file and exit without installingto allow for review prior to use.
+    - Federation Operators interested in constructing their own Federation defaults should contact the authors for guidance.
+- Next, configure your Institution with:
+ ```Powershell
+ New-ADFSTkInstitutionConfiguration
+ ```
+  - You may be prompted for federation defaults with:
+    ```text
+    If your federation operators provides a federation-specific default configuration file, make sure to copy the folder to `C:\ADFSToolkit\config\federation` before proceeding.
+    ```
+    - If you have been provided these files, copy them to your federation's name folder provided above.
+    - If you don't have the files or don't know if your federation provides them, you can proceed but need to type in the answers by yourself.
 - If more than one default configuration file were provided by the federation operators, a Grid View will be presented with the different files. Choose the appropriate default configuration file and click OK.
 - Answer the questions to complete the first stage of the institution configuration.
 > [!IMPORTANT] You will be prompted to create a Scheduled Task in the end of the configuration. Only do this once! The Scheduled Task needs to be configured to run with an account with ADFS privileges. We also recommend to change the trigger to run every hour. 
