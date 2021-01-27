@@ -6,37 +6,41 @@ This may only take a few moments however propagating the changes completely may 
 |:exclamation: When updating from versions prior to v2.0.0.0 be sure to disable/suspend the scheduled job and resume it after updates |
    |-----------------------------------------------------------------------------|
 
-- **Step 1: Create a Known Recovery Point**
+**Step 1: Create a Known Recovery Point**
   - Back up the  C:\ADFSToolkit directory
   - Create a system snapshot/recovery point to return to
-- **Step 2: Fetch the Latest Module**
+**Step 2: Fetch the Latest Module**
   - Issue PowerShell command to attempt to detect if there is a newer version available from PowerShellGallery.com and download it:
     ```PowerShell
      Update-Module ADFSToolkit
     ```
-- **Step 3: Move Older Version Out Of The Way**
+**Step 3: Move Older Version Out Of The Way**
   - ADFSToolkit might not run properly with more than one version available on disk
   - The Remedy is to move the older version out of the PowerShell path so that only the latest version is available. 
   - Use the following cmdlet to uninstall v1.0.0.0
     ```PowerShell
       Uninstall-Module ADFSToolkit -RequiredVersion 1.0.0.0
     ```
-- **Step 4: Upgrade Existing Configuration File(s)
+**Step 4: Upgrade Existing Configuration File(s)**
   - Run the upgrade cmdlet:
     ```PowerShell
-     Update-ADFSTkInstitutionConfiguration
+    Update-ADFSTkInstitutionConfiguration
     ```
     - This will search for existing institution configuration files and present them in a Grid View. 
       - Select one or more configuration file(s) to start the upgrade.
     - The upgrade process will upgrade the configuration in version steps, so it's possible to jump several versions at the same time.
     - If the new version needs to re-process all SP's a message will show to inform that the cache files needs to be deleted.
       - :exclamation: **If you choose not to do this we cannot guarantee that the correct attributes are released from the Toolkit!**
- - **Step 5: Remove Older Folders to Avoid Confusion**
+      
+**Step 5: Remove Older Folders to Avoid Confusion**
    - If the upgrade is from v1.0.0.0 or earlier we recommended older folders and files in the ADFSToolkit folder `C:\ADFSToolkit` be removed
-     - Only `C:\ADFSToolkit\config` and `C:\ADFSToolkit\cache` folders should remain, and no file(s) directly in the `C:\ADFSToolkit` folder. 
+     - Only `C:\ADFSToolkit\config` and `C:\ADFSToolkit\cache` folders should remain
+     - No file(s) are directly in the `C:\ADFSToolkit` folder. 
      > :exclamation: Take a backup of the files and folders before they are deleted!
 
-Once the upgrade is done you should review the settings in the configuration file(s) too see that they are still looking correct.
+**Step 6: Review Settings and ManualSPSettings for Customizations**
+  - Review your configuration file(s)  post upgrade to ensure they meet expectations
+  - :critical:
 
   > [!IMPORTANT] If the upgrade is from v1.0.0.0 or earlier we recommended that the file `C:\ADFSToolkit\#.#.#.#\get-ADFSTkLocalManualSpSettings.ps1` (which contains all your local SP settings) are copied to `C:\ADFSToolkit\config\institution`. Please also review the release notes to see which new settings are offered.
 If you do not copy this file into the new folder, all your manual settings for the existing entities will be removed.
