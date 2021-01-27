@@ -91,7 +91,7 @@ Enable-ADFSTkInstitutionConfiguration
   ```Powershell
   Disable-ADFSTkInstitutionConfiguration
   ```
-  |:exclamation: Disabling a configuration means disabling the loadinging/maintenance of that aggregate, it does not remove or deactivate the Relying Party. |
+  |:exclamation: Disabling a configuration means disabling the loading/maintenance of that aggregate, it does not remove or deactivate the Relying Party. |
    |-----------------------------------------------------------------------------|
 ### You're Done!
 
