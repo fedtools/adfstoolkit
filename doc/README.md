@@ -1,5 +1,24 @@
 # First Time Installation and Configuration of ADFSToolkit V2
 
+## System Requirements
+ADFSToolkit V2 must be installed on Windows Server that is one of your AD FS hosts with:
+- Microsoft Windows Server 2016 (AD FS v4) or higher and kept current on patches
+- Powershell 5.1 which ships with Server 2016
+- Local administrator privileges to schedule privileged jobs
+- AD FS administrator-level permissions to run PowerShell commands
+- Acceptance of the security considerations running PowerShell retrieved from Microsoft’s PowerShellgallery.com 
+
+Optional but strongly suggested: A test AD FS environment to perform the installation prior to installing in production.
+
+| :heavy_check_mark: Expect a few thousand Relying Party trusts in the AD FS Console after your first run|
+|-----------------------------------------------------------------------------|
+
+## System Preparation
+
+ADFSToolkit relies on [PowerShellGallery.com](https://www.powershellgallery.com/packages/ADFSToolkit/). Many systems may be able to use PowerShellGalllery out of the box however be sure your system is operating properly reviewing both: 
+- https://docs.microsoft.com/en-us/powershell/scripting/gallery/installing-psget and 
+- https://docs.microsoft.com/en-us/powershell/scripting/gallery/getting-started 
+
 ## Installing
 - Open a PowerShell prompt or PowerShell ISE window as administrator
 - Run the following to download and install the latest stable ADFSToolkit:
