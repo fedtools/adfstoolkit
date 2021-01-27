@@ -46,7 +46,7 @@ ADFSToolkit V2 now two main steps to configure: one stepfor your federation and 
   ```Powershell
   get-ADFSTkFederationDefaults https://url.from.your.federation/operator.zip -InstallDefaults
   ```
-    - Removing the -InstallDefaults setting will fetch the file and exit without installingto allow for review prior to use.
+    - Removing the -InstallDefaults setting will fetch the file and exit without installing to allow for review prior to use.
     - Federation Operators interested in constructing their own Federation defaults should contact the authors for guidance.
 ### Step2: Configuring ADFSToolkit for your institution 
  - To start issue this PowerShell command:
