@@ -2,25 +2,39 @@
 ADFSToolkit can be updated using the PowerShell command `Update-Module` which will fetch and install the latest updates. 
 This may only take a few moments however propagating the changes completely may require the cache to be deleted and recalculated as if it were an initial install so plan accordingly and allocate sufficient time during an update. Updates that require this will be flagged as such in the upgrade process. 
 
-## Recommended Update Practice for 
+## Steps
 |:exclamation: When updating from versions prior to v2.0.0.0 be sure to disable/suspend the scheduled job and resume it after updates |
    |-----------------------------------------------------------------------------|
 
-- Back up the  C:\ADFSToolkit directory
-- Create a system snapshot/recovery point to return to
-- Issue PowerShell command:
-  ```PowerShell
-   Update-Module ADFSToolkit
-  ```
-- When `Update-Module` is run, it will attempt to detect if there is a newer version available from PowerShellGallery.com and download it. 
-  - Note that each module is downloaded into it’s own directory containing the version number of the script. ADFSToolkit might not run properly with more than one version available so once the new version is confirmed on disk and available, we recommend moving the older version out of the PowerShell path so that only the latest version is available. Use the cmdlet `Uninstall-Module ADFSToolkit -RequiredVersion 1.0.0.0` to uninstall v1.0.0.0
-- Upgrade existing configuration file(s) by running the `Update-ADFSTkInstitutionConfiguration` cmdlet
-    - The command will search for existing institution configuration files and present them in a Grid View. Select one or more configuration file(s) to start the upgrade.
+- **Step 1: Create a Known Recovery Point**
+  - Back up the  C:\ADFSToolkit directory
+  - Create a system snapshot/recovery point to return to
+- **Step 2: Fetch the Latest Module**
+  - Issue PowerShell command to attempt to detect if there is a newer version available from PowerShellGallery.com and download it:
+    ```PowerShell
+     Update-Module ADFSToolkit
+    ```
+- **Step 3: Move Older Version Out Of The Way**
+  - ADFSToolkit might not run properly with more than one version available on disk
+  - The Remedy is to move the older version out of the PowerShell path so that only the latest version is available. 
+  - Use the following cmdlet to uninstall v1.0.0.0
+    ```PowerShell
+      Uninstall-Module ADFSToolkit -RequiredVersion 1.0.0.0
+    ```
+- **Step 4: Upgrade Existing Configuration File(s)
+  - Run the upgrade cmdlet:
+    ```PowerShell
+     Update-ADFSTkInstitutionConfiguration
+    ```
+    - This will search for existing institution configuration files and present them in a Grid View. 
+      - Select one or more configuration file(s) to start the upgrade.
     - The upgrade process will upgrade the configuration in version steps, so it's possible to jump several versions at the same time.
-    - If the new version needs to re-process all SP's a message will show to inform that the cache files needs to be deleted. If you choose not to do this we cannot guarantee that the correct attributes are released from the Toolkit!
-  > [!IMPORTANT] If the upgrade is from v1.0.0.0 or earlier we recommended that the ADFSToolkit folder `C:\ADFSToolkit` is cleaned from old folders and files. Only `C:\ADFSToolkit\config` and `C:\ADFSToolkit\cache` folders should remain, and no file(s) directly in the `C:\ADFSToolkit` folder. 
-
-    > [!CAUTION] Take a backup of the files and folders before they are deleted!
+    - If the new version needs to re-process all SP's a message will show to inform that the cache files needs to be deleted.
+      - :exclamation: **If you choose not to do this we cannot guarantee that the correct attributes are released from the Toolkit!**
+ - **Step 5: Remove Older Folders to Avoid Confusion**
+   - If the upgrade is from v1.0.0.0 or earlier we recommended older folders and files in the ADFSToolkit folder `C:\ADFSToolkit` be removed
+     - Only `C:\ADFSToolkit\config` and `C:\ADFSToolkit\cache` folders should remain, and no file(s) directly in the `C:\ADFSToolkit` folder. 
+     > :exclamation: Take a backup of the files and folders before they are deleted!
 
 Once the upgrade is done you should review the settings in the configuration file(s) too see that they are still looking correct.
 
