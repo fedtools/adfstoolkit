@@ -136,14 +136,14 @@ ADFSToolkit will now be run by the Scheduled Task and make a full import/refresh
 
 Logging will occur in the Event Log, default under `Applications and Services log\ADFSToolkit`. 
 
-# ADFSToolkit’s Lifecycle Management / Update Practice 
-ADFSToolkit’s Module uses the PowerShell Gallery tool command `Update-Module` to manage delivery of updates. Sites using ADFSToolkit are strongly encouraged to have a test system to review changes between versions. In cases where there is no test system, a snapshot/backup of their environment is strongly recommended.
+# Upgrading
+ADFSToolkit can be updated using the PowerShell command `Update-Module` which will fetch and install the latest updates. 
+This may only take a few moments however propagating the changes completely may require the cache to be deleted and recalculated as if it were an initial install so plan accordingly and allocate sufficient time during an update. Updates that require this will be flagged as such in the upgrade process. 
 
-Note that some updates may require removing the cache files and run again completely to apply new features. Updates that require this will be flagged as such in the upgrade process. It is up to the site operator to determine when to do this and to allow for sufficient time to recalculate the new improved settings. ADFSToolkit is designed to be idempotent in it’s operation – no matter how many times it is run, the resulting set will be the same which. 
+## Recommended Update Practice for 
+|:exclamation: When updating from versions prior to v2.0.0.0 be sure to disable/suspend the scheduled job and resume it after updates |
+   |-----------------------------------------------------------------------------|
 
-## Follow this  process to handle an update of ADFSToolkit
-> [!IMPORTANT]
-> If upgrading from an earlier version than v2.0.0, the ADFSToolkit scheduled job needs to be disabled/suspended before upgrading, and after the upgrade is done it needs to be updated manually.
 - Back up the  C:\ADFSToolkit directory
 - Create a system snapshot/recovery point to return to
 - Issue `Update-Module ADFSToolkit`
