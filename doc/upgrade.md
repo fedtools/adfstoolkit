@@ -43,6 +43,23 @@ This may only take a few moments however propagating the changes completely may 
   - :exclamation: If the upgrade is from v1.0.0.0 or earlier:
     - Ensure that the file `C:\ADFSToolkit\#.#.#.#\get-ADFSTkLocalManualSpSettings.ps1` (which contains all your local SP settings) has been copied to `C:\ADFSToolkit\config\institution`. 
      - :exclamation: **If this  file is not in the new folder all your manual settings for the existing entities will be removed**
-- Resuming synchronization of Metadata
-    - To enable the upgraded version, run `Enable-ADFSTkInstitutionConfiguration` and select the proper configuration file(s) and click OK.
-> [!IMPORTANT] If the upgrade is from v1.0.0.0 or earlier the Scheduled job needs to be updated. Change the arguments under the action tab to: `-NoProfile -WindowStyle Hidden -Command 'Sync-ADFSTkAggregates'`
+
+**Step 7: Test Configuration**
+   - Test your configuration by importing one or more Relying Parties (RPs) manually to review the attribute release. 
+   - Do this by running the following command to surgically load a relying party from the metadata:
+   ```Powershell
+   Import-ADFSTkMetadata -ConfigFile C:\ADFSToolkit\config\institution\config.[federationprefix].xml -EntityId [entityID]
+   ```
+   - While inspecting AD FS Relying Party attribute release do not be surprised by new and different AD FS transformation rules. 
+     - They should result in the same attribute release.
+
+**Step 8:Review and Prepare Schedule Jobs**
+  - If the upgrade is from v1.0.0.0 or earlier the Scheduled job needs to be updated. 
+    - Change the arguments under the action tab in the scheduled job to: `-NoProfile -WindowStyle Hidden -Command 'Sync-ADFSTkAggregates'`
+**Step 9:Resuming synchronization of Metadata**
+   - To enable the upgraded version, run `Enable-ADFSTkInstitutionConfiguration` and select the proper configuration file(s) and click OK.
+**Step 10: Your Update Is Complete!**
+  - Your update is complete and should now be running with the new scheduled job.
+  - Spot check your customized Relying Parties and review for consistent attribute release.
+  
+
