@@ -2,7 +2,7 @@
 
 A PowerShell Module for optimal handling of SAML2 multi-lateral federation aggregates for Microsoft's AD FS.
 
-ADFSToolkit reduces installation and configuration time to minutes for proper handling of metadata aggregates from Research and Education (R&E) Federated Identity Management service federations. This allows AD FS to behave as a viable IdP in a SAML2 R&E federation.
+ADFSToolkit reduces installation and configuration time to minutes for proper handling of metadata aggregates from Research and Education (R&E) federations and enables AD FS to behave as a viable IdP in a SAML2 R&E federation.
 
 
 # Table Of Contents
