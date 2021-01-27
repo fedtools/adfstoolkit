@@ -8,7 +8,8 @@ ADFSToolkit reduces installation and configuration time to minutes for proper ha
 - CANARIE's Canadian Access Federation: https://www.canarie.ca/identity/support/fim-tools/
 - Sweden's Sunet - SWAMID: https://wiki.sunet.se/display/SWAMID/How+to+consume+SWAMID+metadata+with+ADFS+Toolkit
 
-# Installation
+# Table Of Contents
+* [Installation](./doc/README.md)
 
 | :warning:      Installation of ADFSToolkit is via PowerShellGallery.com only |
 |-----------------------------------------------------------------------------|
@@ -52,89 +53,7 @@ The attribute release model using Entity Categories has a release policy set aga
 
 This is the default behaviour of ADFSToolkit and by using this tool, you are enabling this model of attribute release by default. You are encouraged to contact federation operators and register your organizations as supporting Research and Scholarship and other entity categories for more benefits.
 
-# First Time Installation and Configuration of ADFSToolkit V2
 
-## Installing
-- Open a PowerShell prompt or PowerShell ISE window as administrator
-- Run the following to download and install the latest stable ADFSToolkit:
-```PowerShell
-Install-Module ADFSToolkit
-```
-
-|:heavy_check_mark: If asked, accept the requested trust for PSGallery to be able to install ADFSToolkit.|
-|-----------------------------------------------------------------------------|
-
-## Configuring
-
-ADFSToolkit V2 now two main steps to configure: one stepfor your federation and one step for your institution. 
-
-### Step1: Federation Configuration
-
-- **First, configure your federation with PowerShell command:**
- ```Powershell
- New-ADFSTkConfiguration
- ```
-  - Choose your federation in the presented Grid View and click OK
-- **Next, set Federation defaults if they are available:**
-  - ADFSToolkit V2 allows Federations to have defaults set during install (i.e. the URL for the metadata, the fingerprint of the cert, etc)
-  - If you have been offered a URL for Federation Defaults this command will fetch and install them:
-  ```Powershell
-  get-ADFSTkFederationDefaults https://url.from.your.federation/operator.zip -InstallDefaults
-  ```
-    - Removing the -InstallDefaults setting will fetch the file and exit without installingto allow for review prior to use.
-    - Federation Operators interested in constructing their own Federation defaults should contact the authors for guidance.
-### Step2: Configuring ADFSToolkit for your institution 
- - To start issue this PowerShell command:
- ```Powershell
- New-ADFSTkInstitutionConfiguration
- ```
-  - You may be prompted for federation defaults with:
-    ```text
-    If your federation operators provides a federation-specific default configuration file, make sure to copy the folder to `C:\ADFSToolkit\config\federation` before proceeding.
-    ```
-    - These may have already been installed in the prior step. If so, proceed.
-    - If you have been provided these files, copy them to your federation's name folder provided above.
-    - Do not worry if you do not have the files or do not know, you can still proceed but now have to enter the answers yourself.
-    - **About the defaults**
-     - One or more defaults will then be shown for you to choose to configure, choose one and click OK.  
-   - Next, answer the questions to complete the first stage of the institution configuration.
-   
-   |:exclamation: You will be prompted to create a Scheduled Task in the end of the configuration. Only do this once! |
-   |-----------------------------------------------------------------------------|
-   - The Scheduled Task will be created and needs to be configured to run with an account with ADFS privileges. 
-   - A time is not set on the task and should be set to trigger to run hourly via the Windows Scheduler
-- **Base ADFSToolkit configuration is complete.**
-###  Step 3: Apply Site Specific Settings and Mappings
-
-- `New-ADFSTkInstitutionConfiguration` has created an institution configuration file under `C:\ADFSToolkit\config\institution` with the name `config.[federationprefix].xml`. 
- - **Edit this file** to configure the site specific attribute release of ADFSToolkit use inline help in the file for guidance.
-
-### Step 4: Test Configuration
-- Test your configuration by importing one or more Relying Parties (RPs) manually to review the attribute release. 
-- Do this by running the following command to surgically load a relying party from the metadata:
-```Powershell
-Import-ADFSTkMetadata -ConfigFile C:\ADFSToolkit\config\institution\config.[federationprefix].xml -EntityId [entityID]
-```
-### Step 5: Enable or Disable Configurations
-
-- After reviewing the Relying Party in the AD FS Console enable the full import by enabling the configurationfile(s) with this command:
-```Powershell
-Enable-ADFSTkInstitutionConfiguration
-```
-  - Select the proper configuration file(s) and click OK.
-- Disable a specific configuration file uses this command:
-  ```Powershell
-  Disable-ADFSTkInstitutionConfiguration
-  ```
-  |:exclamation: Disabling a configuration means disabling the loadinging/maintenance of that aggregate, it does not remove or deactivate the Relying Party. |
-   |-----------------------------------------------------------------------------|
-### You're Done!
-
-ADFSToolkit will now be run by the Scheduled Task and make a full import/refresh each time. This first import will take some time due to all the new SP's. After that only the new/changed and removed SP's needs to be handled and that will be much faster.
-
-## Logging
-
-Logging will occur in the Event Log, default under `Applications and Services log\ADFSToolkit`. 
 
 # Upgrading
 ADFSToolkit can be updated using the PowerShell command `Update-Module` which will fetch and install the latest updates. 
