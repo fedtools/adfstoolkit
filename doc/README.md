@@ -1,4 +1,4 @@
-# First Time Installation and Configuration of ADFSToolkit V2
+# Installation and Configuration of ADFSToolkit V2
 
 ## System Requirements
 ADFSToolkit V2 must be installed on Windows Server that is one of your AD FS hosts with:
