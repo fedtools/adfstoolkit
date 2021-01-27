@@ -8,8 +8,11 @@ This may only take a few moments however propagating the changes completely may 
 
 - Back up the  C:\ADFSToolkit directory
 - Create a system snapshot/recovery point to return to
-- Issue `Update-Module ADFSToolkit`
-  - When `Update-Module` is run, it will attempt to detect if there is a newer version available from PowerShellGallery.com and download it. 
+- Issue PowerShell command:
+  ```PowerShell
+   Update-Module ADFSToolkit
+  ```
+- When `Update-Module` is run, it will attempt to detect if there is a newer version available from PowerShellGallery.com and download it. 
   - Note that each module is downloaded into it’s own directory containing the version number of the script. ADFSToolkit might not run properly with more than one version available so once the new version is confirmed on disk and available, we recommend moving the older version out of the PowerShell path so that only the latest version is available. Use the cmdlet `Uninstall-Module ADFSToolkit -RequiredVersion 1.0.0.0` to uninstall v1.0.0.0
 - Upgrade existing configuration file(s) by running the `Update-ADFSTkInstitutionConfiguration` cmdlet
     - The command will search for existing institution configuration files and present them in a Grid View. Select one or more configuration file(s) to start the upgrade.
