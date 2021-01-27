@@ -4,9 +4,6 @@ A PowerShell Module for optimal handling of SAML2 multi-lateral federation aggre
 
 ADFSToolkit reduces installation and configuration time to minutes for proper handling of metadata aggregates from Research and Education (R&E) Federated Identity Management service federations. This allows AD FS to behave as a viable IdP in a SAML2 R&E federation.
 
-# ADFSToolkit's Contributors and Users
-- CANARIE's Canadian Access Federation: https://www.canarie.ca/identity/support/fim-tools/
-- Sweden's Sunet - SWAMID: https://wiki.sunet.se/display/SWAMID/How+to+consume+SWAMID+metadata+with+ADFS+Toolkit
 
 # Table Of Contents
 * [Installation](./doc/README.md)
@@ -28,3 +25,7 @@ The attribute release model using Entity Categories has a release policy set aga
 - eduPersonScopedAffiliation (controlled vocabulary mapped from groups in AD)
 
 This is the default behaviour of ADFSToolkit. Contact your Federation Operator to also tag your IdP entity as supporting R&S Entity Category and improve the user experience for all your users.
+
+# ADFSToolkit's Contributors and Users
+- CANARIE's Canadian Access Federation: https://www.canarie.ca/identity/support/fim-tools/
+- Sweden's Sunet - SWAMID: https://wiki.sunet.se/display/SWAMID/How+to+consume+SWAMID+metadata+with+ADFS+Toolkit
