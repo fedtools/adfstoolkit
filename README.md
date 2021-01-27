@@ -12,31 +12,6 @@ ADFSToolkit reduces installation and configuration time to minutes for proper ha
 * [Installation](./doc/README.md)
 * [Upgrading](./doc/upgrade.md)
 
-| :warning:      Install ADFSToolkit via [PowerShellGallery.com](https://www.powershellgallery.com/packages/ADFSToolkit/)  |
-|-----------------------------------------------------------------------------|
-
-For more details on how to prepare for using PowerShellGallery and PowerShellGet Modules see 
-- https://docs.microsoft.com/en-us/powershell/scripting/gallery/installing-psget and 
-- https://docs.microsoft.com/en-us/powershell/scripting/gallery/getting-started 
-
-ADFSToolkit uses Microsoft’s PowerShellGallery.com service and distribution channel for code lifecycle management.
-Critical to this is being current on PowerShellGallery's latest PowerShellGet Module.
-
-ADFSToolkit's PowershellGallery page is [here](https://www.powershellgallery.com/packages/ADFSToolkit/) 
-
-
-## System Requirements
-ADFSToolkit V2 must be installed on Windows Server that is one of your AD FS hosts with:
-- Microsoft Windows Server 2016 (AD FS v4) or higher and kept current on patches
-- Powershell 5.1 which ships with Server 2016
-- Local administrator privileges to schedule privileged jobs
-- AD FS administrator-level permissions to run PowerShell commands
-- Acceptance of the security considerations running PowerShell retrieved from Microsoft’s PowerShellgallery.com 
-
-Optional but strongly suggested: A test AD FS environment to perform the installation prior to installing in production.
-
-| :heavy_check_mark: Expect a few thousand Relying Party trusts in the AD FS Console after your first run|
-|-----------------------------------------------------------------------------|
 
 
 ## Attribute Release Practices of ADFSToolkit 
