@@ -1,6 +1,6 @@
 # Upgrading
 ADFSToolkit can be updated using the PowerShell command `Update-Module` which will fetch and install the latest updates. 
-This may only take a few moments however propagating the changes completely may require the cache to be deleted and recalculated as if it were an initial install so plan accordingly and allocate sufficient time during an update. Updates that require this will be flagged as such in the upgrade process. 
+This may only take a few moments however propagating the changes completely may require the cache to be deleted and recalculated as if it were an initial install. Plan accordingly allocating sufficient time during an update. Updates that require this will be flagged as such in the upgrade process. 
 
 ## Steps
 |:exclamation: When updating from versions prior to v2.0.0.0 be sure to disable/suspend the scheduled job and resume it after updates |
@@ -40,10 +40,9 @@ This may only take a few moments however propagating the changes completely may 
 
 **Step 6: Review Settings and ManualSPSettings for Customizations**
   - Review your configuration file(s)  post upgrade to ensure they meet expectations
-  - :critical:
-
-  > [!IMPORTANT] If the upgrade is from v1.0.0.0 or earlier we recommended that the file `C:\ADFSToolkit\#.#.#.#\get-ADFSTkLocalManualSpSettings.ps1` (which contains all your local SP settings) are copied to `C:\ADFSToolkit\config\institution`. Please also review the release notes to see which new settings are offered.
-If you do not copy this file into the new folder, all your manual settings for the existing entities will be removed.
+  - :exclamation: If the upgrade is from v1.0.0.0 or earlier:
+    - Ensure that the file `C:\ADFSToolkit\#.#.#.#\get-ADFSTkLocalManualSpSettings.ps1` (which contains all your local SP settings) has been copied to `C:\ADFSToolkit\config\institution`. 
+     - :exclamation: **If this  file is not in the new folder all your manual settings for the existing entities will be removed**
 - Resuming synchronization of Metadata
     - To enable the upgraded version, run `Enable-ADFSTkInstitutionConfiguration` and select the proper configuration file(s) and click OK.
 > [!IMPORTANT] If the upgrade is from v1.0.0.0 or earlier the Scheduled job needs to be updated. Change the arguments under the action tab to: `-NoProfile -WindowStyle Hidden -Command 'Sync-ADFSTkAggregates'`
