@@ -3,7 +3,7 @@ ADFSToolkit can be updated using the PowerShell command `Update-Module` which wi
 This may only take a few moments however propagating the changes completely may require the cache to be deleted and recalculated as if it were an initial install. Plan accordingly allocating sufficient time during an update. Updates that require this will be flagged as such in the upgrade process. 
 
 ## Steps
-|:exclamation: When updating from versions prior to v2.0.0.0 be sure to disable/suspend the scheduled job and resume it after updates |
+|:exclamation: When updating from versions prior to v2.0.0.0 be sure to disable/suspend the scheduled job |
    |-----------------------------------------------------------------------------|
 
 **Step 1: Create a Known Recovery Point**
@@ -21,6 +21,7 @@ This may only take a few moments however propagating the changes completely may 
     ```PowerShell
       Uninstall-Module ADFSToolkit -RequiredVersion 1.0.0.0
     ```
+   - :exclaimation: **Close your existing PowerShell window and re-open (with Administrator level privileges) to ensure old settings are removed from memory**
 **Step 4: Upgrade Existing Configuration File(s)**
   - Run the upgrade cmdlet:
     ```PowerShell
@@ -33,7 +34,7 @@ This may only take a few moments however propagating the changes completely may 
       - :exclamation: **If you choose not to do this we cannot guarantee that the correct attributes are released from the Toolkit!**
       
 **Step 5: Remove Older Folders to Avoid Confusion**
-   - If the upgrade is from v1.0.0.0 or earlier we recommended older folders and files in the ADFSToolkit folder `C:\ADFSToolkit` be removed
+   - :exclamation: If the upgrade is from v1.0.0.0 or earlier we recommended older folders and files in the ADFSToolkit folder `C:\ADFSToolkit` be removed
      - Only `C:\ADFSToolkit\config` and `C:\ADFSToolkit\cache` folders should remain
      - No file(s) are directly in the `C:\ADFSToolkit` folder. 
      > :exclamation: Take a backup of the files and folders before they are deleted!
@@ -55,7 +56,8 @@ This may only take a few moments however propagating the changes completely may 
 
 **Step 8:Review and Prepare Schedule Jobs**
   - If the upgrade is from v1.0.0.0 or earlier the Scheduled job needs to be updated. 
-    - Change the arguments under the action tab in the scheduled job to: `-NoProfile -WindowStyle Hidden -Command 'Sync-ADFSTkAggregates'`
+    - Change the arguments under the action tab in the scheduled job to: `-NoProfile -WindowStyle Hidden -Command &{Sync-ADFSTkAggregates}`
+  - Note that `Sync-ADFSTkAggregates` can be run in your privileged PowerShell window to see it run as opposed to waiting for the job to trigger 
     
 **Step 9:Resuming synchronization of Metadata**
    - To enable the upgraded version, run `Enable-ADFSTkInstitutionConfiguration` and select the proper configuration file(s) and click OK.
