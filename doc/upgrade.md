@@ -56,8 +56,10 @@ This may only take a few moments however propagating the changes completely may 
 **Step 8:Review and Prepare Schedule Jobs**
   - If the upgrade is from v1.0.0.0 or earlier the Scheduled job needs to be updated. 
     - Change the arguments under the action tab in the scheduled job to: `-NoProfile -WindowStyle Hidden -Command 'Sync-ADFSTkAggregates'`
+    
 **Step 9:Resuming synchronization of Metadata**
    - To enable the upgraded version, run `Enable-ADFSTkInstitutionConfiguration` and select the proper configuration file(s) and click OK.
+   
 **Step 10: Your Update Is Complete!**
   - Your update is complete and should now be running with the new scheduled job.
   - Spot check your customized Relying Parties and review for consistent attribute release.
