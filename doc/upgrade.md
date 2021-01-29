@@ -64,7 +64,7 @@ This may only take a few moments however propagating the changes completely may 
    - Perform your sign-on to assess consistent behaviour to pre-upgrade state
      - Optionally compare the 'before' claim rules extracted in Step 2 by re-extracting them after loading the  new record
       - Seek functional equivalence of the resulting attributes sent during sign-on
-      - :exclamation: Claimset rules post-upgrade may be noticably different but produce the same attribute release for the Relying Party
+      - :exclamation: **Note: Claimset rules post-upgrade may be noticably different but produce the same attribute release for the Relying Party**
       - Additional Optional test step: 
        - Leverage  [Microsoft Claims X-Ray test relying party](https://adfshelpppe.microsoft.com/ClaimsXray/TokenRequest) to  inspect the attributes themselves
        - **Note: Exercise care by using test accounts where possible: this technique while convenient  and powerful will transmit data to Microsoft**
