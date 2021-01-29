@@ -10,7 +10,7 @@ This may only take a few moments however propagating the changes completely may 
   - Back up the  C:\ADFSToolkit directory
   - Create a system snapshot/recovery point to return to
   
-**Step 2: Identity Relying Parties for Post-upgrade testing and review**
+**Step 2: Identify Relying Parties for Post-upgrade testing and review**
   - Optionally identify key Relying Parties for Post-upgrade testing
   - Preserve their 'before' attribute release claim rules for later review by running this cmdlet for each record:
   ```Powershell
