@@ -44,6 +44,7 @@ function get-ADFSTkLocalManualSPSettings
     #    AuthorizationRules = @{}
     #    HashAlgorithm = $SecureHashAlgorithm.SHA1
     #    EntityCategories = @("http://www.geant.net/uri/dataprotection-code-of-conduct/v1")
+    #    SamlResponseSignature = 'MessageAndAssertion' #Valid SamlResponseSignatures: AssertionOnly, MessageAndAssertion, MessageOnly
     #}
 
 #endregion
@@ -188,8 +189,8 @@ $IssuanceTransformRuleManualSP["https://advanced.rule.two.org"] = $TransformRule
 # $IssuanceTransformRuleManualSP = @{} uncomment when testing example. Needed only once per file to contain set of changes
 
 $TransformRules = [Ordered]@{}
-$TransformRules["eduPersonScopedAffiliation"] = $AllTransformRules["eduPersonScopedAffiliation"]
-$TransformRules["eduPersonTargetedID"] = $AllTransformRules["eduPersonTargetedID"]
+$TransformRules.eduPersonScopedAffiliation = $AllTransformRules.eduPersonScopedAffiliation
+$TransformRules.eduPersonTargetedID = $AllTransformRules.eduPersonTargetedID
 $IssuanceTransformRuleManualSP["https://verify-i.myunidays.com/shibboleth"] = $TransformRules
 
 .EXAMPLE

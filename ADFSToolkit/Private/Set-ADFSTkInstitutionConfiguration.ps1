@@ -51,7 +51,7 @@ param(
         try 
         {
             $config.Save($Global:ADFSTkPaths.mainConfigFile)
-            Write-ADFSTkLog (Get-ADFSTkLanguageText mainconfChangedSuccessfully -f $Global:ADFSTkPaths.mainConfigFile)
+            Write-ADFSTkLog (Get-ADFSTkLanguageText mainconfChangedSuccessfully -f $ConfigurationItem, $Status)
         }
         catch
         {

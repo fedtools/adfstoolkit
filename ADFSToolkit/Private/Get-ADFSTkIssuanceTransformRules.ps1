@@ -81,8 +81,10 @@ if ([string]::IsNullOrEmpty($Global:ADFSTkAllTransformRules) -or $Global:ADFSTkA
     }
 }
 
-$AllTransformRules = $Global:ADFSTkAllTransformRules #So we don't need to change anything in the Get-ADFSTkManualSPSettings files
-
+if ([string]::IsNullOrEmpty($AllTransformRules))
+{
+    $AllTransformRules = $Global:ADFSTkAllTransformRules #So we don't need to change anything in the Get-ADFSTkManualSPSettings files
+}
 
 $RequestedAttributes = @{}
 
@@ -97,7 +99,7 @@ else
     Write-ADFSTkLog (Get-ADFSTkLanguageText rulesNoRequestedAttributesDetected)
 }
 
-$IssuanceTransformRuleCategories = Import-ADFSTkIssuanceTransformRuleCategories -RequestedAttributes $RequestedAttributes -NameIDFormat $NameIDFormat
+$IssuanceTransformRuleCategories = Import-ADFSTkIssuanceTransformRuleCategories -RequestedAttributes $RequestedAttributes
 
 $adfstkConfig = Get-ADFSTkConfiguration
 
@@ -220,6 +222,34 @@ else
 ###
 
 }
+
+#region Add NameID to TransformRules
+    if ([string]::IsNullOrEmpty($NameIDFormat))
+    {
+        $IssuanceTransformRules.'transient-id' = $Global:ADFSTkAllTransformRules.'transient-id'.Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
+        foreach ($Attribute in $Global:ADFSTkAllTransformRules.'transient-id'.Attribute) { 
+            $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
+        }
+    }
+    elseif ($NameIDFormat.Contains('urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'))
+    {
+        $IssuanceTransformRules.'persistent-id' = $Global:ADFSTkAllTransformRules.'persistent-id'.Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
+        foreach ($Attribute in $Global:ADFSTkAllTransformRules.'persistent-id'.Attribute) { 
+            $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
+        }
+    }
+    # elseif ($NameIDFormat.Contains('urn:oasis:names:tc:SAML:2.0:nameid-format:transient'))
+    # {
+    #     
+    # }
+    else
+    {
+        $IssuanceTransformRules.'transient-id' = $Global:ADFSTkAllTransformRules.'transient-id'.Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
+        foreach ($Attribute in $Global:ADFSTkAllTransformRules.'transient-id'.Attribute) { 
+            $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
+        }
+    }
+#endregion
 
 #region Add TransformRules from categories
 $TransformedEntityCategories | % { 

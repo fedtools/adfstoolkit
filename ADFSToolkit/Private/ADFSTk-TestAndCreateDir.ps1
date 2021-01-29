@@ -13,12 +13,12 @@ param (
 
     if (Test-Path $Path)
     {
-        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cPathExistsAtPath -f $PathName, $Path)
+        #Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cPathExistsAtPath -f $PathName, $Path)
     }
     else
     {
         New-Item -ItemType Directory -Force -Path $Path | Out-Null
-        Write-ADFSTkVerboseLog  (Get-ADFSTkLanguageText cPathNotExistCreatingHere -f $PathName, $Path)
+        #Write-ADFSTkVerboseLog  (Get-ADFSTkLanguageText cPathNotExistCreatingHere -f $PathName, $Path)
     }
 }
 

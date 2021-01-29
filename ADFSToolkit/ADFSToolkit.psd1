@@ -5,7 +5,7 @@
 #
 # Generated on: 11/24/2017
 # v1.0.0.0  on: 04/17/2018
-#
+# v2.0.0    on: 12/17/2020
 #
 
 @{
@@ -29,7 +29,7 @@ Author = 'Chris Phillips, Johan Peterson and Tommy Larsson'
 CompanyName = 'CANARIE and SWAMID'
 
 # Copyright statement for this module
-Copyright = '(c) 2017 Chris Phillips CANARIE, Johan Peterson and Tommy Larsson SWAMID http://www.apache.org/licenses/LICENSE-2.0'
+Copyright = '(c) 2017-2020 Chris Phillips CANARIE, Johan Peterson and Tommy Larsson SWAMID http://www.apache.org/licenses/LICENSE-2.0'
 
 # Description of the functionality provided by this module
 Description = 'Module to handle SAML2 federation aggregates.'
@@ -71,7 +71,7 @@ PowerShellVersion = '5.0'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Import-ADFSTkMetadata', 'New-ADFSTkConfiguration', 'Unpublish-ADFSTkAggregate', 'Get-ADFSTkTransformRuleObjects', 'Update-ADFSTkInstitutionConfiguration', 'Sync-ADFSTkAggregates', 'New-ADFSTkInstitutionConfiguration', 'Enable-ADFSTkInstitutionConfiguration', 'Get-ADFSTkToolsIssuanceTransformRules', 'Get-ADFSTkHealth'
+FunctionsToExport = 'Import-ADFSTkMetadata', 'New-ADFSTkConfiguration', 'Unpublish-ADFSTkAggregate', 'Get-ADFSTkTransformRuleObjects', 'Update-ADFSTkInstitutionConfiguration', 'Sync-ADFSTkAggregates', 'New-ADFSTkInstitutionConfiguration', 'Enable-ADFSTkInstitutionConfiguration', 'Disable-ADFSTkInstitutionConfiguration', 'Get-ADFSTkToolsIssuanceTransformRules', 'Get-ADFSTkHealth', 'Get-ADFSTkPaths', 'get-ADFSTkFederationDefaults', 'Remove-ADFSTkCache'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 #CmdletsToExport = @(Import-Metadata)
@@ -112,7 +112,7 @@ PrivateData = @{
         # ReleaseNotes = ''
 
         # Prerelease string of this module
-        Prerelease = 'RC5'
+        Prerelease = 'RC9'
 
     } # End of PSData hashtable
 
