@@ -55,11 +55,11 @@ This may only take a few moments however propagating the changes completely may 
     - Ensure that the file `C:\ADFSToolkit\#.#.#.#\get-ADFSTkLocalManualSpSettings.ps1` (which contains all your local SP settings) has been copied to `C:\ADFSToolkit\config\institution`. 
      - :exclamation: **If this  file is not in the new folder all your manual settings for the existing entities will be removed**
 
-**Step 8: Test Configuration**
+**Step 8: Test the  Upgraded Configuration**
    - Import and test select entities from Step 2 by manually loading and then testing sign-on with each entity
      - To load an entity individually, use this PowerShell command:
        ```Powershell
-       Import-ADFSTkMetadata -ConfigFile C:\ADFSToolkit\config\institution\config.[federationprefix].xml -EntityId [entityID]
+       Import-ADFSTkMetadata -ConfigFile C:\ADFSToolkit\config\institution\config.YouFedPrefixHere.xml -EntityId TheEntityIDToLoad
        ```
    - Perform your sign-on to assess consistent behaviour to pre-upgrade state
      - Optionally compare the 'before' claim rules extracted in Step 2 by re-extracting them after loading the  new record
