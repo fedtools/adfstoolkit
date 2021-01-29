@@ -14,7 +14,7 @@ This may only take a few moments however propagating the changes completely may 
   - Optionally identify key Relying Parties for Post-upgrade testing
   - Preserve their 'before' attribute release claim rules for later review by running this cmdlet for each record:
   ```Powershell
-  (Get-AdfsRelyingPartyTrust  -Identifier  https://some.entity/id/here).issuanceTransformRules | Out-File entity1-before.txt
+  (Get-AdfsRelyingPartyTrust  -Identifier  https://some.entity/id/here).issuanceTransformRules | Out-File entity1-rules-before.txt
   ```
   - Document for yourself expected sign-on and attribute release behaviour to compare post-upgrade.
   
@@ -63,16 +63,14 @@ This may only take a few moments however propagating the changes completely may 
        ```
    - Perform your sign-on to assess consistent behaviour to pre-upgrade state
      - Optionally compare the 'before' claim rules extracted in Step 2 by re-extracting them after loading the  new record
-      - Seek functional equivalence of the resulting attributes sent during sign-on
-      - :exclamation: **Note: Claimset rules post-upgrade may be noticably different but produce the same attribute release for the Relying Party**
-      - Additional optional test step: 
-       - Leverage  [Microsoft Claims X-Ray test relying party](https://adfshelpppe.microsoft.com/ClaimsXray/TokenRequest) to  inspect the attributes themselves
+      - :exclamation: **Note: Post-upgrade claimset rules will be different but produce the same attribute release**
+      - To see attributes set up your  own Relying Party as a test service or use [Microsoft Claims X-Ray test relying party](https://adfshelpppe.microsoft.com/ClaimsXray/TokenRequest) to inspect the attributes
          - :exclamation: **Note: Exercise care and use test accounts where possible: this technique will transmit data to Microsoft**
-         - If Claims X-Ray is added to your AD FS you can take the extracted claims rules and load them by:
+         - If Claims X-Ray is used you can take the extracted claims rules being tested and load them by:
          ```Powershell
-          Set-AdfsRelyingPartyTrust -TargetName "ClaimsXray"  -IssuanceTransformRulesFile "C:\path.txt"
+          Set-AdfsRelyingPartyTrust -TargetName "ClaimsXray"  -IssuanceTransformRulesFile "C:\entity1-rules-after.txt"
          ```
-         - Sign into Claims Xray to see the results of the attribute claims release and determine if things are in order
+         - Sign in  to your test Relying Party or Claims Xray to see the results of the attribute claims release and determine if things are in order
    - Move on to the next step when satisfied with the testing results
 
 **Step 9:Review and Prepare Schedule Jobs**
