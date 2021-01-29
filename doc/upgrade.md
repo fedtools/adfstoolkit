@@ -58,21 +58,22 @@ This may only take a few moments however propagating the changes completely may 
    - Import and test select entities from Step 2 by manually loading and then testing sign-on with each entity
      - To load an entity individually, use this PowerShell command:
        ```Powershell
-    Import-ADFSTkMetadata -ConfigFile C:\ADFSToolkit\config\institution\config.[federationprefix].xml -EntityId [entityID]
+       Import-ADFSTkMetadata -ConfigFile C:\ADFSToolkit\config\institution\config.[federationprefix].xml -EntityId [entityID]
        ```
    - Perform your sign-on to assess consistent behaviour to pre-upgrade state
      - Optionally compare the 'before' claim rules extracted in Step 2 by re-extracting them after loading the  new record
       - Seek functional equivalence of the resulting attributes sent during sign-on
       - :exclamation: Claimset rules post-upgrade may be noticably different but produce the same attribute release for the Relying Party
-        - Additional Optional test step: 
-         - Leverage  [Microsoft Claims X-Ray test relying party](https://adfshelpppe.microsoft.com/ClaimsXray/TokenRequest) to  inspect the attributes themselves
-         - **Note: Be mindful, exercise care by using test accounts  where possible: this technique while convenient  and powerful will transmit data to Microsoft**
-           - If Claims X-Ray is added to your AD FS you can take the extracted claims rules and load them by:
-             ```PowerShell
-          Set-AdfsRelyingPartyTrust -TargetName "ClaimsXray"  -IssuanceTransformRulesFile "C:\path.txt"
-            ```
-            - then  sign into Claims Xray to see the results and determine if things are in order
-  - Move on to the next step when satisfied with the testing results
+      - Additional Optional test step: 
+       - Leverage  [Microsoft Claims X-Ray test relying party](https://adfshelpppe.microsoft.com/ClaimsXray/TokenRequest) to  inspect the attributes themselves
+       - **Note: Exercise care by using test accounts where possible: this technique while convenient  and powerful will transmit data to Microsoft**
+        - If Claims X-Ray is added to your AD FS you can take the extracted claims rules and load them by:
+       ```Powershell
+    Set-AdfsRelyingPartyTrust -TargetName "ClaimsXray"  -IssuanceTransformRulesFile "C:\path.txt"
+    
+    ```
+   -Sign into Claims Xray to see the results of the attribute claims release and determine if things are in order
+   - Move on to the next step when satisfied with the testing results
 
 **Step 9:Review and Prepare Schedule Jobs**
   - If the upgrade is from v1.0.0.0 or earlier the Scheduled job needs to be updated. 
