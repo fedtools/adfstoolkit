@@ -30,7 +30,7 @@ This may only take a few moments however propagating the changes completely may 
     ```PowerShell
       Uninstall-Module ADFSToolkit -RequiredVersion 1.0.0.0
     ```
-   - :exclaimation: **Close your existing PowerShell window and re-open (with Administrator level privileges) to ensure old settings are removed from memory**
+   - :exclamation: **Close your existing PowerShell window and re-open (with Administrator level privileges) to ensure old settings are removed from memory**
 **Step 5: Upgrade Existing Configuration File(s)**
   - Run the upgrade cmdlet:
     ```PowerShell
