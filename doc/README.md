@@ -72,7 +72,7 @@ ADFSToolkit V2 now two main steps to configure: one stepfor your federation and 
 ###  Step 3: Apply Site Specific Settings and Mappings
 
 - `New-ADFSTkInstitutionConfiguration` has created an institution configuration file under `C:\ADFSToolkit\config\institution` with the name `config.[federationprefix].xml`. 
- - **Edit this file** to configure the site specific attribute release of ADFSToolkit use inline help in the file for guidance.
+ - :exclamation: **Edit this file** to configure the site specific attribute release of ADFSToolkit use inline help in the file for guidance.
 
 ### Step 4: Test Configuration
 - Test your configuration by importing one or more Relying Parties (RPs) manually to review the attribute release. 
@@ -91,7 +91,7 @@ Enable-ADFSTkInstitutionConfiguration
   ```Powershell
   Disable-ADFSTkInstitutionConfiguration
   ```
-  |:exclamation: Disabling a configuration means disabling the loadinging/maintenance of that aggregate, it does not remove or deactivate the Relying Party. |
+  |:exclamation: Disabling a configuration means disabling the loading/maintenance of that aggregate, it does not remove or deactivate the Relying Party. |
    |-----------------------------------------------------------------------------|
 ### You're Done!
 
