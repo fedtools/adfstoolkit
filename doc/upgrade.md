@@ -10,7 +10,7 @@ This may only take a few moments however propagating the changes completely may 
   - Back up the  C:\ADFSToolkit directory
   - Create a system snapshot/recovery point to return to
   
-**Step 2: Identify Relying Parties for Post-upgrade testing and review**
+**Step 2: Identify Relying Parties for Post-upgrade Testing and Review**
   - Optionally identify key Relying Parties for Post-upgrade testing
   - Preserve their 'before' attribute release claim rules for later review by running this cmdlet for each record:
   ```Powershell
@@ -23,7 +23,7 @@ This may only take a few moments however propagating the changes completely may 
     ```PowerShell
      Update-Module ADFSToolkit
     ```
-**Step 4: Move Older Version Out Of The Way**
+**Step 4: Move Older Versions Out Of The Way**
   - ADFSToolkit might not run properly with more than one version available on disk
   - The Remedy is to move the older version out of the PowerShell path so that only the latest version is available. 
   - Use the following cmdlet to uninstall v1.0.0.0
@@ -73,16 +73,18 @@ This may only take a few moments however propagating the changes completely may 
          - Sign in  to your test Relying Party or Claims Xray to see the results of the attribute claims release and determine if things are in order
    - Move on to the next step when satisfied with the testing results
 
-**Step 9:Review and Prepare Schedule Jobs**
+**Step 9:Review and Prepare Scheduled Jobs**
   - If the upgrade is from v1.0.0.0 or earlier the Scheduled job needs to be updated. 
     - Change the arguments under the action tab in the scheduled job to: `-NoProfile -WindowStyle Hidden -Command &{Sync-ADFSTkAggregates}`
   - Note that `Sync-ADFSTkAggregates` can be run in your privileged PowerShell window to see it run as opposed to waiting for the job to trigger 
     
-**Step 10:Resuming synchronization of Metadata**
+**Step 10:Resume Synchronization of Metadata**
    - To enable the upgraded version, run `Enable-ADFSTkInstitutionConfiguration` and select the proper configuration file(s) and click OK.
    
-**Step 11: Your Update Is Complete!**
+**Step 11: Observe System Post-upgrade**
   - Your update is complete and should now be running with the new scheduled job.
   - Spot check your customized Relying Parties and review for consistent attribute release.
+  - Review the Event-Log for any anomalies
+  - That's it! You are done the upgrade!
   
 
