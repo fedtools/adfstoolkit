@@ -82,7 +82,7 @@ This may only take a few moments however propagating the changes completely may 
 **Step 10:Resuming synchronization of Metadata**
    - To enable the upgraded version, run `Enable-ADFSTkInstitutionConfiguration` and select the proper configuration file(s) and click OK.
    
-**Step 10: Your Update Is Complete!**
+**Step 11: Your Update Is Complete!**
   - Your update is complete and should now be running with the new scheduled job.
   - Spot check your customized Relying Parties and review for consistent attribute release.
   
