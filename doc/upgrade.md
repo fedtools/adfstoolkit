@@ -68,11 +68,10 @@ This may only take a few moments however propagating the changes completely may 
        - Leverage  [Microsoft Claims X-Ray test relying party](https://adfshelpppe.microsoft.com/ClaimsXray/TokenRequest) to  inspect the attributes themselves
        - **Note: Exercise care by using test accounts where possible: this technique while convenient  and powerful will transmit data to Microsoft**
         - If Claims X-Ray is added to your AD FS you can take the extracted claims rules and load them by:
-       ```Powershell
-    Set-AdfsRelyingPartyTrust -TargetName "ClaimsXray"  -IssuanceTransformRulesFile "C:\path.txt"
-    
-    ```
-   -Sign into Claims Xray to see the results of the attribute claims release and determine if things are in order
+        ```Powershell
+         Set-AdfsRelyingPartyTrust -TargetName "ClaimsXray"  -IssuanceTransformRulesFile "C:\path.txt"
+        ```
+        - Sign into Claims Xray to see the results of the attribute claims release and determine if things are in order
    - Move on to the next step when satisfied with the testing results
 
 **Step 9:Review and Prepare Schedule Jobs**
