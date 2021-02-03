@@ -141,6 +141,13 @@ function Add-ADFSTkSPRelyingPartyTrust {
             Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPHTTPArtifactFound)
             New-ADFSSamlEndpoint -Binding Artifact -Protocol SAMLAssertionConsumer -Uri $_.Location -Index $_.index 
         }
+        elseif ($_.Binding -eq "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect") {
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPHTTPRedirectFound)
+            New-ADFSSamlEndpoint -Binding Redirect -Protocol SAMLAssertionConsumer -Uri $_.Location -Index $_.index
+        }
+        else {
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPUnhandledEndpointFound -f $_.Binding, $entityID)
+        }
     } 
 
     if ($rpParams.SamlEndpoint.Count -eq 0) 

@@ -283,6 +283,8 @@ Please open the file and configure how ADFSToolkit can get them (Active Director
     addRPGetSamlEndpoints = "Getting SamlEndpoints..."
     addRPHTTPPostFound = "HTTP-POST SamlEndpoint found!"
     addRPHTTPArtifactFound = "HTTP-Artifact SamlEndpoint found!"
+    addRPHTTPRedirectFound = "HTTP-Redirect SamlEndpoint found!"
+    addRPUnhandledEndpointFound = "A unhandled SAML endpoint ('{0}') found on Relying Party '{1}'."
     addRPNoSamlEndpointsFound = "No SamlEndpoints found!"
     addRPGetLogoutEndpoints = "Getting LogoutEndpoints..."
     addRPLogoutPostFound = "HTTP-POST LogoutEndpoint found!"
