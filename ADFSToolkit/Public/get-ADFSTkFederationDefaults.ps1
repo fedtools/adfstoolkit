@@ -82,6 +82,11 @@
                 $config.Configuration.FederationConfig.Federation.URL = $URL
                 $config.Save($Global:ADFSTkPaths.mainConfigFile)
             }
+
+            if (!($PSBoundParameters.ContainsKey('InstallDefaults') -and $InstallDefaults -ne $false)) {
+                #Write-Output "ADFSToolkit: Federation defaults not installed into ADFSToolkit. Specify -InstallDefaults to apply them."
+                Write-ADFSTkHost feddefaultsNotInstalled -Style Info
+            }
         }
         #endregion
 
@@ -113,8 +118,7 @@
             foreach ($file in (Get-ChildItem $unzippedFullNameDir -Filter "$federationName*" -Recurse -File)) {
                 $targetFile = Join-Path $federationTargetDir $file.Name
                 if (Test-Path $targetFile) {
-                    if (!(Test-Path $backupDir))
-                    {
+                    if (!(Test-Path $backupDir)) {
                         New-Item -ItemType Directory -Force -Path $backupDir | Out-Null
                     }
                     $backupFile = Join-Path $backupDir $file.Name
@@ -127,11 +131,7 @@
             #Write-Output ("ADFSToolkit: Done. Next time a new aggregate is configured, defaults will be used. Existing configurations should remain unchanged")
             Write-ADFSTkHost feddefaultsUnchanged -Style Info
         }
-        else {
-            Write-Output " "
-            #Write-Output "ADFSToolkit: Federation defaults not installed into ADFSToolkit. Specify -InstallDefaults to apply them."
-            Write-ADFSTkHost feddefaultsNotInstalled -Style Info
-        }
+
         Write-ADFSTkHost feddefaultsAllDone -Style Info
     }
     #endregion
