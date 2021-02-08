@@ -71,7 +71,7 @@ PowerShellVersion = '5.0'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Import-ADFSTkMetadata', 'New-ADFSTkConfiguration', 'Unpublish-ADFSTkAggregate', 'Get-ADFSTkTransformRuleObjects', 'Update-ADFSTkInstitutionConfiguration', 'Sync-ADFSTkAggregates', 'New-ADFSTkInstitutionConfiguration', 'Enable-ADFSTkInstitutionConfiguration', 'Disable-ADFSTkInstitutionConfiguration', 'Get-ADFSTkToolsIssuanceTransformRules', 'Get-ADFSTkHealth', 'Get-ADFSTkPaths', 'get-ADFSTkFederationDefaults', 'Remove-ADFSTkCache'
+FunctionsToExport = 'Import-ADFSTkMetadata', 'New-ADFSTkConfiguration', 'Unpublish-ADFSTkAggregate', 'Get-ADFSTkTransformRuleObjects', 'Update-ADFSTkInstitutionConfiguration', 'Sync-ADFSTkAggregates', 'New-ADFSTkInstitutionConfiguration', 'Enable-ADFSTkInstitutionConfiguration', 'Disable-ADFSTkInstitutionConfiguration', 'Get-ADFSTkToolsIssuanceTransformRules', 'Get-ADFSTkHealth', 'Get-ADFSTkPaths', 'Get-ADFSTkFederationDefaults', 'Remove-ADFSTkCache'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 #CmdletsToExport = @(Import-Metadata)
