@@ -1,15 +1,30 @@
 # FAQ
 ## How can I search for a specific SP?
-We have a cmdlet for that in ADFS Toolkit.
-|:heavy_check_mark: The cmdlet connects directly to the ADFS database and reads from it. To be able to use this cmdlet you need access to that database. |
-|-----------------------------------------------------------------------------|
-If run without parameters a GridView will show up and you can use it to scroll through all SP's or search for a specific SP. You can also search for all SP's ending with a specific domain.
+
+ADFSToolkit bundles a cmdlet for this:
 ```Powershell
 Get-ADFSTkToolEntityId
 ```
+### Synopsis: ###
+
+A cmdlet that connects directly to the ADFS database and reads from it. To be able to use this cmdlet you need access and sufficient privileges; local Administrator on the target AD FS server will be required. 
+
+If run without parameters a GridView will show up and you can use it to scroll through all SP's or search for a specific SP. You can also search for all SP's ending with a specific domain.
 The cmdlet will return the entityID of the selected SP.
 
-You can also use the parameter ``-All`` to get all entityID's of the ADFS or ``-Search`` to retrieve all SP's whos name contains the search word.
+**Examples:**
+- get all entityID's from AD FS:
+
+```Powershell
+Get-ADFSTkToolEntityId -All
+```
+
+- keyword search entityID's from AD FS:
+
+```Powershell
+Get-ADFSTkToolEntityId -Search key_word
+```
+
 ## How can I copy rules from one SP to another?
 Sometimes it's convenient to copy all rules from one SP to another. ADFS Toolkit has a cmdlet for it.
 ```Powershell
