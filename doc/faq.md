@@ -97,7 +97,7 @@ Add a section in the file that lookes like below. Replace the values in [] to re
     }
 
     $ManualSPSettings.AuthorizationRules = @"
-@RuleName = "Allow users in [Replace_with_Friendly_Group_Name]"
+@RuleName = "Allow users in [Replace_with_Friendly_Group_Name_no_square_brackets]"
 c:[Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/groupsid", Value == "[Specific_GroupSID_no_square_brackets]", Issuer == "AD AUTHORITY"]
   => issue(Type = "http://schemas.microsoft.com/authorization/claims/permit", Value = "true");
 "@
