@@ -58,10 +58,12 @@ There are many ways you can test the rules on a SP:
 |-----------------------------------------------------------------------------|
 ### I can't read the attributes even if I use SAML-tracer, now what?
 
-If the claims are encrypted you can *temporary delete* the encryption certificate on the SP so see the claims. 
+If the claims are encrypted when using SAML-Tracer or Developer Tools you can *temporary delete* the encryption certificate on that specific SP and re-run the transaction again to see the claims in flight unencrypted but protected by the SSL connection.
 
-
-
+To return the encryption certificate to normal on that SP, just load the record again using:
+```Powershell
+Import-ADFSTkMetadata -ConfigFile C:\ADFSToolkit\config\institution\config.YouFedPrefixHere.xml -EntityId TheEntityIDToWorkWith
+ ```
 
 ## Can ADFSToolkit be used to set rules on SP's that are not part of the federation?
 Yes, ADFSToolkit can be used to create manual rules for any SP.
