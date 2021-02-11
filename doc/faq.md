@@ -32,8 +32,18 @@ Copy-ADFSTkToolRules -sourceEntityID "source.etity.id" -targetEntityID "target.e
 ```
 The result will be logged on screen and in the Event Log.
 
-|:heavy_check_mark: If sourceEntityID or targetEntityID is omitted, the cmdlet Get-ADFSTkToolEntityId will be used to show you all SP's in the database. You will then need to have access to the ADFS database.|
+If sourceEntityID or targetEntityID is omitted, the cmdlet Get-ADFSTkToolEntityId will be used to show you all SP's in the database as long as you are in a Administrator level Powershell session
+
+## How do I copy rules from and SP to Claims X-Ray?
+Claims X-Ray is a common test target and ADFSToolkit has a special switch once you have configured Claims X-Ray in your ADFS. 
+
+You can easily copy rules from a SP to Claims X-Ray with the following command:
+```Powershell
+Copy-ADFSTkToolRules -sourceEntityID "source.etity.id" -ClaimsXRay
+```
+|:exclamation: Be mindful using Claims X-Ray and use test accounts where possible as this will send data outside your organization |
 |-----------------------------------------------------------------------------|
+
 
 ## How can I test that the rules on a SP works as expected?
 There are many ways you can test the rules on a SP:
@@ -50,12 +60,8 @@ There are many ways you can test the rules on a SP:
 
 If the claims are encrypted you can *temporary delete* the encryption certificate on the SP so see the claims. 
 
-## How do I copy rules to Claims X-Ray?
 
-You can easily copy rules from a SP to Claims X-Ray with the following command:
-```Powershell
-Copy-ADFSTkToolRules -sourceEntityID "source.etity.id" -ClaimsXRay
-```
+
 
 ## Can ADFSToolkit be used to set rules on SP's that are not part of the federation?
 Yes, ADFSToolkit can be used to create manual rules for any SP.
