@@ -8,6 +8,7 @@ ADFSToolkit reduces installation and configuration time to minutes for proper ha
 # Table Of Contents
 * [Installation](./doc/README.md)
 * [Upgrading](./doc/upgrade.md)
+* [FAQ](./doc/faq.md)
 
 
 

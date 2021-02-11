@@ -496,5 +496,6 @@ If deleted all SP's will be re-imported again and this will take some time.
     toolNoSourceSelected = "No source EntityID selected. Aborting!"
     toolSelectTarget = "Select TARGET Relying Party Trust..."
     toolNoTargetSelected = "No target EntityID selected. Aborting!"
+    toolAreYouSure = "Are you sure you want to copy the rules from '{0}' to '{1}'?"
     toolRulesCopiedFromTo = "Rules copied to '{0}' from '{1}'`r`nOld rules:`r`n{2}`r`nNew rules:`r`n{3}"
 }
