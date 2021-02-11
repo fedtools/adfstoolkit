@@ -30,12 +30,12 @@ function Copy-ADFSTkToolRules {
             if ([string]::IsNullOrEmpty($allSPs)) {
                 $allSPs = Get-ADFSTkToolEntityId -All
             }
-            $targetEntityID = $allSPs | Out-GridView -Title (Get-ADFSTkLanguageText toolSelectSource) -PassThru
+            $targetEntityID = $allSPs | Out-GridView -Title (Get-ADFSTkLanguageText toolSelectTarget) -PassThru
             if ([string]::IsNullOrEmpty($targetEntityID)) {
                 Write-ADFSTkLog -Message (Get-ADFSTkLanguageText toolNoSourceSelected) -MajorFault
             }
             else {
-                $targetEntityID = $targetRPT.Identifier
+                $targetEntityID = $targetEntityID.Identifier
             }
         }
     }
@@ -43,9 +43,12 @@ function Copy-ADFSTkToolRules {
     $oldIssuanceTransformRules = Get-AdfsRelyingPartyTrust -Identifier $targetEntityID | select -ExpandProperty IssuanceTransformRules
     $newIssuanceTransformRules = Get-AdfsRelyingPartyTrust -Identifier $sourceEntityID | select -ExpandProperty IssuanceTransformRules
 
-    Write-ADFSTkLog -Message (Get-ADFSTkLanguageText toolRulesCopiedFromTo -f $targetEntityID, $sourceEntityID, $oldIssuanceTransformRules, $newIssuanceTransformRules) -EventID 45 -EntryType Information
+    if (Get-ADFSTkAnswer (Get-ADFSTkLanguageText toolAreYouSure -f $sourceEntityID,$targetEntityID))
+    {
+        Get-AdfsRelyingPartyTrust -Identifier $targetEntityID | Set-AdfsRelyingPartyTrust -IssuanceTransformRules $newIssuanceTransformRules
+        Write-ADFSTkLog -Message (Get-ADFSTkLanguageText toolRulesCopiedFromTo -f $targetEntityID, $sourceEntityID, $oldIssuanceTransformRules, $newIssuanceTransformRules) -EventID 45 -EntryType Information
+        Write-ADFSTkHost cAllDone -ForegroundColor Green
+    }
 
-    Get-AdfsRelyingPartyTrust -Identifier $targetEntityID | Set-AdfsRelyingPartyTrust -IssuanceTransformRules $newIssuanceTransformRules
-
-    Write-ADFSTkHost cAllDone -ForegroundColor Green
+    
 }
