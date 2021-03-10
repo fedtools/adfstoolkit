@@ -247,7 +247,7 @@ $CompatibleConfigVersion = "1.3"
             # Make backup
             Move-Item -Path $myADFSTkManualSpSettingsInstallTemplateFile -Destination $mySPFileBkpName
 
-            Copy-item -Path $Global:ADFSTkPaths.defaultInstitutionLocalSPFile -Destination $myADFSTkManualSpSettingsInstallTemplateFile
+            Copy-ADFSTkFile -Path $Global:ADFSTkPaths.defaultInstitutionLocalSPFile -Destination $myADFSTkManualSpSettingsInstallTemplateFile
         } 
         else 
         {
@@ -257,7 +257,7 @@ $CompatibleConfigVersion = "1.3"
     else
     {
         Write-ADFSTkHost confNoExistingFileSaveTo -f $myADFSTkManualSpSettingsInstallTemplateFile -Style Value -AddSpaceAfter
-        Copy-item -Path $Global:ADFSTkPaths.defaultInstitutionLocalSPFile -Destination $myADFSTkManualSpSettingsInstallTemplateFile
+        Copy-ADFSTkFile -Path $Global:ADFSTkPaths.defaultInstitutionLocalSPFile -Destination $myADFSTkManualSpSettingsInstallTemplateFile
     }
 
 #endregion
@@ -284,7 +284,7 @@ if (Test-path $Global:ADFSTkPaths.institutionLocalTransformRulesFile )
         # Make backup
         Move-Item -Path $Global:ADFSTkPaths.institutionLocalTransformRulesFile -Destination $myTRFileBkpName
         # Copy dist file
-        Copy-item -Path $Global:ADFSTkPaths.defaultInstitutionLocalTransformRulesFile -Destination $Global:ADFSTkPaths.institutionLocalTransformRulesFile
+        Copy-ADFSTkFile -Path $Global:ADFSTkPaths.defaultInstitutionLocalTransformRulesFile -Destination $Global:ADFSTkPaths.institutionLocalTransformRulesFile
     } 
     else 
     {
@@ -294,7 +294,7 @@ if (Test-path $Global:ADFSTkPaths.institutionLocalTransformRulesFile )
 else
 {
     Write-ADFSTkHost confNoExistingFileSaveTo -f $Global:ADFSTkPaths.institutionLocalTransformRulesFile -Style Value -AddSpaceAfter
-    Copy-item -Path $Global:ADFSTkPaths.defaultInstitutionLocalTransformRulesFile -Destination $Global:ADFSTkPaths.institutionLocalTransformRulesFile
+    Copy-ADFSTkFile -Path $Global:ADFSTkPaths.defaultInstitutionLocalTransformRulesFile -Destination $Global:ADFSTkPaths.institutionLocalTransformRulesFile
 }
 
 #endregion
