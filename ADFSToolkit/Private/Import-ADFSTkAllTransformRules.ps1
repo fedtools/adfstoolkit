@@ -219,19 +219,23 @@ $TransformRules."transient-id" = [PSCustomObject]@{
     #region Personal attributes
     $TransformRules.givenName = Get-ADFSTkTransformRule -Type "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" `
                                                   -Oid "urn:oid:2.5.4.42" `
-                                                  -AttributeName givenName `                                                  -AttributeGroup "Personal attributes"
+                                                  -AttributeName givenName `
+                                                  -AttributeGroup "Personal attributes"
 
     $TransformRules.sn = Get-ADFSTkTransformRule -Type "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname" `
                                            -Oid "urn:oid:2.5.4.4" `
-                                           -AttributeName sn `                                           -AttributeGroup "Personal attributes"
+                                           -AttributeName sn `
+                                           -AttributeGroup "Personal attributes"
 
     $TransformRules.displayName = Get-ADFSTkTransformRule -Type "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/displayname" `
                                            -Oid "urn:oid:2.16.840.1.113730.3.1.241" `
-                                           -AttributeName displayName `                                           -AttributeGroup "Personal attributes"
+                                           -AttributeName displayName `
+                                           -AttributeGroup "Personal attributes"
                                            
     $TransformRules.cn = Get-ADFSTkTransformRule -Type "http://schemas.xmlsoap.org/claims/CommonName" `
                                            -Oid "urn:oid:2.5.4.3" `
-                                           -AttributeName cn `                                           -AttributeGroup "Personal attributes"
+                                           -AttributeName cn `
+                                           -AttributeGroup "Personal attributes"
     
 #    $TransformRules.cn = [PSCustomObject]@{
 #    Rule=@"
@@ -251,7 +255,8 @@ $TransformRules."transient-id" = [PSCustomObject]@{
 
     $TransformRules.mail = Get-ADFSTkTransformRule -Type "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress" `
                                              -Oid "urn:oid:0.9.2342.19200300.100.1.3" `
-                                             -AttributeName mail `                                             -AttributeGroup "Personal attributes"
+                                             -AttributeName mail `
+                                             -AttributeGroup "Personal attributes"
 
     $TransformRules.personalIdentityNumber = [PSCustomObject]@{
         Rule=@"
@@ -339,19 +344,23 @@ $TransformRules."transient-id" = [PSCustomObject]@{
 
     $TransformRules.eduPersonScopedAffiliation = Get-ADFSTkTransformRule -Type "urn:mace:dir:attribute-def:eduPersonScopedAffiliation" `
                                                         -Oid "urn:oid:1.3.6.1.4.1.5923.1.1.1.9" `
-                                                        -AttributeName eduPersonScopedAffiliation `                                                        -AttributeGroup "eduPerson attributes"
+                                                        -AttributeName eduPersonScopedAffiliation `
+                                                        -AttributeGroup "eduPerson attributes"
 
     $TransformRules.eduPersonAffiliation = Get-ADFSTkTransformRule -Type "urn:mace:dir:attribute-def:eduPersonAffiliation" `
                                                         -Oid "urn:oid:1.3.6.1.4.1.5923.1.1.1.1" `
-                                                        -AttributeName eduPersonAffiliation `                                                        -AttributeGroup "eduPerson attributes"
+                                                        -AttributeName eduPersonAffiliation `
+                                                        -AttributeGroup "eduPerson attributes"
 
     $TransformRules.eduPersonPrimaryAffiliation = Get-ADFSTkTransformRule -Type "urn:mace:dir:attribute-def:eduPersonPrimaryAffiliation" `
                                                         -Oid "urn:oid:1.3.6.1.4.1.5923.1.1.1.5" `
-                                                        -AttributeName eduPersonPrimaryAffiliation `                                                        -AttributeGroup "eduPerson attributes"
+                                                        -AttributeName eduPersonPrimaryAffiliation `
+                                                        -AttributeGroup "eduPerson attributes"
 
     $TransformRules.norEduPersonLIN = Get-ADFSTkTransformRule -Type "urn:mace:dir:attribute-def:norEduPersonLIN" `
                                                         -Oid "urn:oid:1.3.6.1.4.1.2428.90.1.4" `
-                                                        -AttributeName norEduPersonLIN `                                                        -AttributeGroup "norEduPerson attributes"
+                                                        -AttributeName norEduPersonLIN `
+                                                        -AttributeGroup "norEduPerson attributes"
 
     $TransformRules.norEduPersonNIN = [PSCustomObject]@{
         Rule=@"
@@ -370,17 +379,57 @@ $TransformRules."transient-id" = [PSCustomObject]@{
 
     $TransformRules.eduPersonEntitlement = Get-ADFSTkTransformRule -Type "urn:mace:dir:attribute-def:eduPersonEntitlement" `
                                                              -Oid "urn:oid:1.3.6.1.4.1.5923.1.1.1.7" `
-                                                             -AttributeName eduPersonEntitlement `                                                             -AttributeGroup "eduPerson attributes"
+                                                             -AttributeName eduPersonEntitlement `
+                                                             -AttributeGroup "eduPerson attributes"
 
     $TransformRules.eduPersonAssurance = Get-ADFSTkTransformRule -Type "urn:mace:dir:attribute-def:eduPersonAssurance" `
                                                            -Oid "urn:oid:1.3.6.1.4.1.5923.1.1.1.11" `
-                                                           -AttributeName eduPersonAssurance `                                                           -AttributeGroup "eduPerson attributes"
+                                                           -AttributeName eduPersonAssurance `
+                                                           -AttributeGroup "eduPerson attributes"
 
     $TransformRules.eduPersonOrcid = Get-ADFSTkTransformRule -Type "urn:mace:dir:attribute-def:eduPersonOrcid" `
                                                   -Oid "urn:oid:1.3.6.1.4.1.5923.1.1.1.16" `
-                                                  -AttributeName eduPersonOrcid `                                                  -AttributeGroup "norEduPerson attributes"
+                                                  -AttributeName eduPersonOrcid `
+                                                  -AttributeGroup "norEduPerson attributes"
 
     #endregion
+
+    #region Load local institution transform rules if they exists
+    if (Test-Path $Global:ADFSTkPaths.institutionLocalTransformRulesFile) {
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationLocalTransformRulesFoundFile)
+        try {
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationLocalTransformRulesFile)
+            . $Global:ADFSTkPaths.institutionLocalTransformRulesFile
+    
+            if (Test-Path function:Get-ADFSTkLocalTransformRules) {
+                $localTransformRules = Get-ADFSTkLocalTransformRules
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationLocalTransformRulesFound -f $localTransformRules.Count)
+    
+                foreach ($transformRule in $localTransformRules.Keys) {
+                    #Add or replace the standard Entoty Category with the federation one
+                    if ($TransformRules.ContainsKey($transformRule)) {
+                        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationLocalTransformRulesOverwrite -f $transformRule)
+                    }
+                    else {
+                        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationLocalTransformRulesAdd -f $transformRule)
+                    }
+    
+                    $TransformRules.$transformRule = $localTransformRules.$transformRule
+                }
+            }
+            else {
+                Write-ADFSTkLog (Get-ADFSTkLanguageText rulesFederationLocalTransformRulesLoadFail) -EntryType Error
+            }
+        }
+        catch {
+            Write-ADFSTkLog (Get-ADFSTkLanguageText rulesFederationLocalTransformRulesLoadFail) -EntryType Error
+        }
+    }
+    else {
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationLocalTransformRulesFileNotFound)
+    }
+    #endregion
+
 
     $TransformRules
 }
