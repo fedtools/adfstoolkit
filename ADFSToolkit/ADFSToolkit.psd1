@@ -6,6 +6,7 @@
 # Generated on: 11/24/2017
 # v1.0.0.0  on: 04/17/2018
 # v2.0.0    on: 12/17/2020
+# v2.0.1    on: 03/10/2021
 #
 
 @{
@@ -14,7 +15,7 @@
 RootModule = 'ADFSToolkit.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.0.0'
+ModuleVersion = '2.0.1'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
