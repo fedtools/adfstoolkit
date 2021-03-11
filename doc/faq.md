@@ -105,3 +105,44 @@ $IssuanceTransformRuleManualSP["entityid.of.the.sp"] = $ManualSPSettings
 
 ###
 ```
+## How can I transform an attribute before release?
+To transforn an attribute you need to write custom rule(s).
+In the example below the attribute for eduPersonAssurance is read from Active Directory as a single value, AL1 or AL2.
+The value 'AL1' should be transformed to:
+```Powershell
+http://www.swamid.se/policy/assurance/al1
+```
+The value 'AL2' should be transformed to:
+```Powershell
+http://www.swamid.se/policy/assurance/al1
+http://www.swamid.se/policy/assurance/al2
+```
+
+First configure your institution configuration to read from the correct Active Directory attribute:
+```Powershell
+<attribute type="urn:mace:dir:attribute-def:eduPersonAssurance" store="Active Directory" name="AttributeContainingALValue" />
+```
+Next, edit ``C:\ADFSToolkit\config\institution\Get-ADFSTkLocalTransformRules.ps1`` and add the following code:
+```Powershell
+  ### Override eduPersonAssurance
+  $TransformRules.eduPersonAssurance = [PSCustomObject]@{
+    Rule      = @"
+    @RuleName = "Issue eduPersonAssurance AL1"
+    c:[Type == "urn:mace:dir:attribute-def:eduPersonAssurance" , Value == "AL1"]
+    => issue(Type = "urn:oid:1.3.6.1.4.1.5923.1.1.1.11", Value = "http://www.swamid.se/policy/assurance/al1", 
+      Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
+    
+    @RuleName = "Issue eduPersonAssurance AL2 (AL1)"   
+    c:[Type == "urn:mace:dir:attribute-def:eduPersonAssurance", Value == "AL2"]
+    => issue(Type = "urn:oid:1.3.6.1.4.1.5923.1.1.1.11", Value = "http://www.swamid.se/policy/assurance/al1", 
+      Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
+ 
+    @RuleName = "Issue eduPersonAssurance AL2 (AL2)"   
+    c:[Type == "urn:mace:dir:attribute-def:eduPersonAssurance" , Value == "AL2"]
+    => issue(Type = "urn:oid:1.3.6.1.4.1.5923.1.1.1.11", Value = "http://www.swamid.se/policy/assurance/al2", 
+      Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
+"@
+    Attribute = "urn:mace:dir:attribute-def:eduPersonAssurance"
+  }
+  ###
+```
