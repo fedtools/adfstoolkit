@@ -42,9 +42,9 @@ ADFSToolkit V2 now two main steps to configure: one stepfor your federation and 
   - Choose your federation in the presented Grid View and click OK
 - **Next, set Federation defaults if they are available:**
   - ADFSToolkit V2 allows Federations to have defaults set during install (i.e. the URL for the metadata, the fingerprint of the cert, etc)
-  - Some federation default settings [exist here](https://github.comm/fedtools/federation-settings) however if you have been offered a URL for Federation Defaults use it in this command to fetch and install your default settings:
+  - Some federation default settings [exist here](https://github.com/fedtools/federation-settings) however if you have been offered a URL for Federation Defaults use it in this command to fetch and install your default settings:
   ```Powershell
-  get-ADFSTkFederationDefaults https://github.com/fedtools/federation-settings/archive/refs/heads/main.zip -InstallDefaults
+  get-ADFSTkFederationDefaults -URL https://github.com/fedtools/federation-settings/archive/refs/heads/main.zip -InstallDefaults
   ```
     - Removing the -InstallDefaults setting will fetch the file and exit without installing to allow for review prior to use.
     - Federation Operators interested in constructing their own Federation defaults should contact the authors for guidance.
