@@ -21,11 +21,14 @@
     cDone = "Done!"
     cCreated = "Created!"
     cAllDone = "All done!"
+    cInstallationDone = "Installation done!"
+    cUnInstallationDone = "UnInstallation done!"
     cPathExistsAtPath = "{0} exists at {1}"
     cPathNotExistCreatingHere = "{0} did not exist, creating it here: {1}"
     cWorkingWith = "Working with '{0}'..."
     cRemoving = "Removing '{0}'..."
     cCouldNotRemove = "Could not remove '{0}'! Error: {1}"
+    cRestartADFSServiceQuestion = "The ADFS Service needs to be restarted. Do you want to do that now?"
     
     #############################################
     ### Main configuration cmdlets [mainconf] ###
@@ -498,4 +501,24 @@ If deleted all SP's will be re-imported again and this will take some time.
     toolNoTargetSelected = "No target EntityID selected. Aborting!"
     toolAreYouSure = "Are you sure you want to copy the rules from '{0}' to '{1}'?"
     toolRulesCopiedFromTo = "Rules copied to '{0}' from '{1}'`r`nOld rules:`r`n{2}`r`nNew rules:`r`n{3}"
+
+    ############################
+    ### MFA Adapter [mfa]    ###
+    ############################
+
+    mfaEnableAdditionalAuthenticationAsPrimaryQuestion = "You need to enable the Additional Authentication As Primary property on AdfsGlobalAuthenticationPolicy. Do you want ADFSToolkitMFA to do that now?"
+    mfaEnableAdditionalAuthenticationAsPrimaryNeeded = "You have to enable the Additional Authentication as Primary property on AdfsGlobalAuthenticationPolicy to continue!"
+    mfaGettingPathForDll = "Getting path for dll file..."
+    mfaDllFound = "Found dll file with the following path: {0}"
+    mfaLoadingAssembly = "Loading {0} Assembly..."
+    mfaExecutingGacInstall = "Executing GacInstall on dll file..."
+    mfaEnteringPath = "Entering {0} path..."
+    mfaAdapterAlreadyInstalled = "{0} Adapter already installed! Please uninstall first to continue (Uninstall-ADFSTkMFAAdapter -{0})."
+    mfaRetrievingTypeName = "Retrieving Type Name for RefedsMFAUsernamePasswordAdapter..."
+    mfaRegisteringAuthProvider = "Registering Authentication Provider..."
+    mfaRegisterAuthenticationProviderQuestion = "Do you want to register '{0}' as a primary Authentication Provider?"
+    mfaAdapterPresent = "{0} Adapter {1} present!"
+    mfaAdapterNotPresentAborting = "{0} Adapter not present. Aborting..."
+    mfaExecutingGacUnInstall = "Executing GacUnInstall on dll file..."
+    mfaExecutingGacRemove = "Executing GacRemove on dll file..."
 }
