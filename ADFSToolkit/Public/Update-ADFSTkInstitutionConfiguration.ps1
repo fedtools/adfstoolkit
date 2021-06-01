@@ -73,7 +73,7 @@
                 [xml]$defaultFederationConfig = Get-Content $defaultFederationConfigFile
 
                 if ($defaultFederationConfig.configuration.ConfigVersion -ne $currentConfigVersion) {
-                    Write-ADFSTkHost confNotAValidVersionWarning -Style Attention
+                    Write-ADFSTkLog (Get-ADFSTkLanguageText confNotAValidVersionError -f $defaultFederationConfig.configuration.ConfigVersion, $currentConfigVersion) -MajorFault
                 }
             }
             catch {
