@@ -129,6 +129,12 @@ The scheduled task will be disabled when created and you can change triggers as 
     confDefaultConfigNotFound = "Default config file for {0} could not be found. Aborting!"
     confDefaultConfigIncorrectVersion = "The default configuration file '{0}' is of version {1}. Expected version: {2}. Aborting!"
     confCopyFederationDefaultFolderMessage = "If your federation operators provides a federation-specific default configuration file, make sure to copy the folder to '{0}' before proceeding."
+    confNotAValidVersionError = @"
+The version of the federation-specific default configuration file (v{0}) does not match the current ADFS Toolkit configuration file (v{1}).
+The update process is canceled to prevent en incorrect configuration. Please update (or remove) the federation-specific default configuration file.
+
+If your federation provides a URL to the files, use Get-ADFSTkFederationDefaults to get the latest version.
+"@
     confNeedMainConfigurationMessage = @"
 Before proceeding we need to create a configuration file that holds information about how ADFSToolkit runs.
 
