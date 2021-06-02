@@ -67,7 +67,6 @@ param (
 
                 if ($Continue)
                 {
-                        
                     Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText processRPEntityInADFSWillUpdate -f $sp.EntityID)
                 
                     #Update-SPRelyingPartyTrust $_
@@ -76,11 +75,21 @@ param (
                     {
                         Remove-ADFSRelyingPartyTrust -TargetIdentifier $sp.EntityID -Confirm:$false -ErrorAction Stop
                         Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText processRPDeletingRPDone -f $sp.EntityID)
-                        Add-ADFSTkSPRelyingPartyTrust $sp
                     }
                     catch
                     {
                         Write-ADFSTkLog (Get-ADFSTkLanguageText processRPCouldNotDeleteRP -f $sp.EntityID, $_) -EntryType Error -EventID 28
+                    }
+
+                    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText processRPAddingRP -f $sp.EntityID)
+                    try
+                    {
+                        Add-ADFSTkSPRelyingPartyTrust $sp
+                        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText processRPAddRPDone -f $sp.EntityID)
+                    }
+                    catch
+                    {
+                        Write-ADFSTkLog (Get-ADFSTkLanguageText processRPCouldNotAddRP -f $sp.EntityID, $_) -EntryType Error -EventID 28
                     }
                 }
             }

@@ -182,34 +182,6 @@ else
 
 }
 
-#region Add NameID to TransformRules
-    if ([string]::IsNullOrEmpty($NameIDFormat))
-    {
-        $IssuanceTransformRules.'transient-id' = $Global:ADFSTkAllTransformRules.'transient-id'.Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
-        foreach ($Attribute in $Global:ADFSTkAllTransformRules.'transient-id'.Attribute) { 
-            $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
-        }
-    }
-    elseif ($NameIDFormat.Contains('urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'))
-    {
-        $IssuanceTransformRules.'persistent-id' = $Global:ADFSTkAllTransformRules.'persistent-id'.Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
-        foreach ($Attribute in $Global:ADFSTkAllTransformRules.'persistent-id'.Attribute) { 
-            $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
-        }
-    }
-    # elseif ($NameIDFormat.Contains('urn:oasis:names:tc:SAML:2.0:nameid-format:transient'))
-    # {
-    #     
-    # }
-    else
-    {
-        $IssuanceTransformRules.'transient-id' = $Global:ADFSTkAllTransformRules.'transient-id'.Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
-        foreach ($Attribute in $Global:ADFSTkAllTransformRules.'transient-id'.Attribute) { 
-            $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
-        }
-    }
-#endregion
-
 #region Add TransformRules from categories
 $TransformedEntityCategories | % { 
 
@@ -297,26 +269,35 @@ if ($ManualSPTransformRules -ne $null)
     }
 }
 
+#region Add NameID to TransformRules
+#first check if we already has a NameID in the rules
+if ([string]::IsNullOrEmpty($IssuanceTransformRules.'transient-id') -and [string]::IsNullOrEmpty($IssuanceTransformRules.'persistent-id') -and [string]::IsNullOrEmpty($IssuanceTransformRules.'eduPersonTargetedID'))
+{
+    if ([string]::IsNullOrEmpty($NameIDFormat))
+    {
+        $IssuanceTransformRules.'transient-id' = $Global:ADFSTkAllTransformRules.'transient-id'.Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
+        foreach ($Attribute in $Global:ADFSTkAllTransformRules.'transient-id'.Attribute) { 
+            $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
+        }
+    }
+    elseif ($NameIDFormat.Contains('urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'))
+    {
+        $IssuanceTransformRules.'persistent-id' = $Global:ADFSTkAllTransformRules.'persistent-id'.Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
+        foreach ($Attribute in $Global:ADFSTkAllTransformRules.'persistent-id'.Attribute) { 
+            $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
+        }
+    }
+    else
+    {
+        $IssuanceTransformRules.'transient-id' = $Global:ADFSTkAllTransformRules.'transient-id'.Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
+        foreach ($Attribute in $Global:ADFSTkAllTransformRules.'transient-id'.Attribute) { 
+            $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
+        }
+    }
+}
+#endregion
+
 ### This is a good place to remove attributes that shouldn't be sent outside a RegistrationAuthority
-#$removeRules = @()
-#foreach ($rule in $IssuanceTransformRules.Keys)
-#{
-#    $attribute = $Settings.configuration.attributes.attribute | ? name -eq $rule
-#    if ($attribute -ne $null -and $attribute.allowedRegistrationAuthorities -ne $null)
-#    {
-#        $allowedRegistrationAuthorities = @()
-#        $allowedRegistrationAuthorities += $attribute.allowedRegistrationAuthorities.registrationAuthority
-#        if ($allowedRegistrationAuthorities.count -gt 0 -and !$allowedRegistrationAuthorities.contains($RegistrationAuthority))
-#        {
-#            $removeRules += $rule
-#        }
-#    }
-#}
-#
-#$removeRules | % {$IssuanceTransformRules.Remove($_)}
-#
-
-
 $removeRules = @()
 foreach ($attr in $AttributesFromStore.values)
 {
