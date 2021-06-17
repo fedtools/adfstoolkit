@@ -263,6 +263,8 @@ Please open the file and configure how ADFSToolkit can get them (Active Director
     rulesFederationLocalTransformRulesAdd = "The Federation-specific Transform Rule '{0}' found and will be added."
     rulesFederationLocalTransformRulesFileNotFound = "Import-ADFSTkLocalTransformRules.ps1 file not found. Skipping import of local transform rules..."
 
+    rulesReplaceWithAttributeIsMissing = "You have a transform node for the attribute '{0}' with the attribute 'replacetext' in your Institution Config file but the attribute 'replacewith' is missing. Please add that in your Institution Configuration file."
+
     ###############################
     ### Manual SP Settings [ms] ###
     ###############################
