@@ -11,12 +11,12 @@
     $currentAttribute = $Settings.configuration.attributes.attribute | ? type -eq $Rule.Attribute
 
     if (-not [string]::IsNullOrEmpty($currentAttribute) `
-            -and -not [string]::IsNullOrEmpty($currentAttribute.transform)) {
+            -and -not [string]::IsNullOrEmpty($currentAttribute.transformvalue)) {
             
             $prepend = ""
             $append = ""
             $replace = ""
-            foreach ($transform in $currentAttribute.transform) {
+            foreach ($transform in $currentAttribute.transformvalue) {
                 if ($transform.HasAttribute('prepend') `
                         -and -not [string]::IsNullOrEmpty($transform.prepend)) {
                     $prepend += $transform.prepend
@@ -26,15 +26,15 @@
                             $append += $transform.append
                 }
 
-                if ($transform.HasAttribute('replacetext') `
-                        -and -not [string]::IsNullOrEmpty($transform.replacetext)) {
-                    if ($transform.HasAttribute('replacewith')) {
+                if ($transform.HasAttribute('regexreplacetext') `
+                        -and -not [string]::IsNullOrEmpty($transform.regexreplacetext)) {
+                    if ($transform.HasAttribute('regexreplacewith')) {
                         if ([string]::IsNullOrEmpty($replace))
                         {
-                            $replace =  "RegexReplace(c.Value, `"{0}`", `"{1}`")" -f $transform.replacetext, $transform.replacewith
+                            $replace =  "RegexReplace(c.Value, `"{0}`", `"{1}`")" -f $transform.regexreplacetext, $transform.regexreplacewith
                         }
                         else {
-                            $replace = $replace.replace("c.Value", ("RegexReplace(c.Value, `"{0}`", `"{1}`")" -f $transform.replacetext, $transform.replacewith))
+                            $replace = $replace.replace("c.Value", ("RegexReplace(c.Value, `"{0}`", `"{1}`")" -f $transform.regexreplacetext, $transform.regexreplacewith))
                         }
                     }
                     else {
