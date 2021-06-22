@@ -1,0 +1,65 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29911.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapter", "Adapter\Adapter.csproj", "{2EBA733E-E2AB-47C2-A762-B956AB246531}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProxyWeb", "ProxyWeb\ProxyWeb.csproj", "{0CA154DF-8FF7-4F96-B3ED-A90D4E3573EE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdapterTest", "AdapterTest\AdapterTest.csproj", "{CC97EA14-A8DF-48A9-B522-FC7B9FFDCA9C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{ABB86513-0FD9-445C-B585-89C66C9C6706}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{5A3DBBAD-C71C-41A2-97D1-8EEE19CCA29D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2016", "2016", "{A25FC35E-F7E4-4C9D-A48E-FFAE68762389}"
+	ProjectSection(SolutionItems) = preProject
+		Lib\2016\Microsoft.IdentityServer.Web.dll = Lib\2016\Microsoft.IdentityServer.Web.dll
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2019", "2019", "{803944F0-DFC3-4310-A8BC-664B559D8ABE}"
+	ProjectSection(SolutionItems) = preProject
+		Lib\2019\Microsoft.IdentityServer.Web.dll = Lib\2019\Microsoft.IdentityServer.Web.dll
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LdapTest", "LdapTest\LdapTest.csproj", "{73D003C9-CF3C-41FF-A219-C574ECF75344}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2EBA733E-E2AB-47C2-A762-B956AB246531}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EBA733E-E2AB-47C2-A762-B956AB246531}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EBA733E-E2AB-47C2-A762-B956AB246531}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EBA733E-E2AB-47C2-A762-B956AB246531}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CA154DF-8FF7-4F96-B3ED-A90D4E3573EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CA154DF-8FF7-4F96-B3ED-A90D4E3573EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CA154DF-8FF7-4F96-B3ED-A90D4E3573EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CA154DF-8FF7-4F96-B3ED-A90D4E3573EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC97EA14-A8DF-48A9-B522-FC7B9FFDCA9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC97EA14-A8DF-48A9-B522-FC7B9FFDCA9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC97EA14-A8DF-48A9-B522-FC7B9FFDCA9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC97EA14-A8DF-48A9-B522-FC7B9FFDCA9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABB86513-0FD9-445C-B585-89C66C9C6706}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABB86513-0FD9-445C-B585-89C66C9C6706}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABB86513-0FD9-445C-B585-89C66C9C6706}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABB86513-0FD9-445C-B585-89C66C9C6706}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73D003C9-CF3C-41FF-A219-C574ECF75344}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73D003C9-CF3C-41FF-A219-C574ECF75344}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73D003C9-CF3C-41FF-A219-C574ECF75344}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73D003C9-CF3C-41FF-A219-C574ECF75344}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A25FC35E-F7E4-4C9D-A48E-FFAE68762389} = {5A3DBBAD-C71C-41A2-97D1-8EEE19CCA29D}
+		{803944F0-DFC3-4310-A8BC-664B559D8ABE} = {5A3DBBAD-C71C-41A2-97D1-8EEE19CCA29D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {013BBA34-11B9-4719-AB79-C53C8A4D63F0}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,102 @@
+﻿<div id="loginArea">
+    <style>
+        @keyframes ProgressFlagAnimation {
+            from {
+                left: 0px;
+            }
+
+            to {
+                left: 350px;
+            }
+        }
+
+        .ProgressFlag.Show {
+            opacity: 1;
+        }
+
+        .ProgressFlag > div {
+            width: 2px;
+            height: 2px;
+            margin: 0 5px;
+            background: blue;
+            position: relative;
+            -webkit-animation: ProgressFlagAnimation 1.45s infinite ease-in-out; /*Chrome, Safari, Opera */
+            -webkit-animation-delay: -2s; /*Chrome, Safari, Opera */
+            animation: ProgressFlagAnimation 5s infinite ease-in-out;
+            animation-delay -2s;
+            text-align: center;
+            display: inline-block;
+         }
+
+         .ProgressFlag > div:nth-child(1) {
+            -webkit-animation-delay: .0s;
+         }
+
+         .ProgressFlag > div:nth-child(2) {
+            -webkit-animation-delay: .2s;
+         }
+
+         .ProgressFlag > div:nth-child(3) {
+            -webkit-animation-delay: .4s;
+         }
+    </style>
+    <form method="post" id="loginForm" autocomplete="off" novalidate="novalidate" onKeyPress="if (event && event.keyCode == 13) LoginEduId.submitLoginRequest();" action="%PageActionUrl%" >
+        <div id="error" class="fieldMargin error smallText">
+            <label id="errorText" for="%LoginPageErrorCause%">%PageIntroductionText%</label>
+        </div>
+        <!-- These inputs are required by the presentation framework.  Do not modify or remove -->
+        <input id="authMethod" type="hidden" name="AuthMethod" value="%AuthMethod%"/>
+        <input id="context" type="hidden" name="Context" value="%Context%"/>
+        <input id="externalMFAUrl" type="hidden" name="ExternalMFAUrl" value="%ExternalMFAUrl%"/>
+        <input id="trustedUrl" type="hidden" name="TrustedUrl" value="%TrustedUrl%" />
+        <input id="view" type="hidden" name="View" value="%View%" />
+        <input id="externalResponse" type="hidden" name="ExternalResponse" />
+        <!-- End inputs are required by the presentation framework. -->
+
+        <div id="formsAuthenticationArea">
+            <div id="identityBanner" class="text fullWidth">%Username%</div>
+            <div id="tabInfo">%TabInfoText%</div>
+            <div id="Progress" class="ProgressFlag" style="visibility: hidden;">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <!--<div id="submissionArea" class="submitMargin">
+                <span id="submitButton" class="submit" tabindex="4" 
+                    onKeyPress="if (event && event.keyCode == 32) LoginEduId.submitLoginRequest();" 
+                    onclick="LoginEduId.submitLoginRequest();">%PageSubmitButtonLabel%</span>
+            </div>-->
+        </div>
+    </form>
+    <script type="text/javascript" language="JavaScript">
+    //<![CDATA[
+    //alert('start');
+    //start spinner
+    document.getElementById('Progress').style.visibility = 'visible';
+
+    var url = document.getElementById('externalMFAUrl');
+    window.open(url.value, "ExternalRefeds");
+    //alert('%TrustedUrl%');
+    window.onmessage = function (event) {
+        if(event.origin=='%TrustedUrl%'){
+            var t = document.getElementById('externalResponse');
+            t.value = event.data;
+            //alert(event.data);
+
+            //get tab
+            var popup = window.open('','ExternalRefeds');
+            // now popup is known again
+            popup.close();
+            //alert('after popup close');
+            document.forms['loginForm'].submit();
+            return false;
+        } else{
+            var err = document.getElementById('errorText');
+            err.Value="Fel vid extern MFA inloggning";
+        }
+    
+     };
+    //]]>
+    </script>
+</div>
+
