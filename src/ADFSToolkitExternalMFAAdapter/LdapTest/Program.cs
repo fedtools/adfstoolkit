@@ -15,14 +15,14 @@ namespace LdapTest
             {
                 UserName = "",
                 Password = "",
-                SearchRoot = "LDAP://dc=utvad,dc=umu,dc=se",
+                SearchRoot = "LDAP://dc=,dc=,dc=",
                 Filter = "(&(objectClass=user)(sAMAccountName={0}))",
                 AttributeToRetrieve = "employeeID"
             };
             LdapTest app = new LdapTest(settings);
             try
             {
-                var ssn = app.GetCivicNumber("toylon98");
+                var ssn = app.GetCivicNumber("someuser");
                 Console.Out.WriteLine(ssn);
             }
             catch (Exception e)
