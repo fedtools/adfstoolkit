@@ -3,13 +3,13 @@
   "TargetIdp": "http://adfs.xx.se/adfs/services/trust",
   "AuthContextClassRef": "http://schemas.microsoft.com/claims/multipleauthn",
   "IdentityClaimName": "norEduPersonNIN",
-  "ProxySp": "https://client200-180.its.umu.se/EduIDExternalWeb/Default/Index/",
+  "ProxySp": "https://proxy.com/EduIDExternalWeb/Default/Index/",
   "CryptoKey": "F-JaNdRgUjXn2r5u8x/A?D(G+KbPeShV",
   "PersonServiceImpl": "LDAP", 
   "LdapSettings": {
     "UserName": "",
     "Password": "",
-    "SearchRoot": "LDAP://dc=,dc=,dc=se",
+    "SearchRoot": "LDAP://dc=,dc=,dc=",
     "Filter": "(&(objectClass=user)(sAMAccountName={0}))",
     "AttributeToRetrieve": "employeeID"
   },
