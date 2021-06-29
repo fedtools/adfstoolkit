@@ -129,6 +129,12 @@ The scheduled task will be disabled when created and you can change triggers as 
     confDefaultConfigNotFound = "Default config file for {0} could not be found. Aborting!"
     confDefaultConfigIncorrectVersion = "The default configuration file '{0}' is of version {1}. Expected version: {2}. Aborting!"
     confCopyFederationDefaultFolderMessage = "If your federation operators provides a federation-specific default configuration file, make sure to copy the folder to '{0}' before proceeding."
+    confNotAValidVersionError = @"
+The version of the federation-specific default configuration file (v{0}) does not match the current ADFS Toolkit configuration file (v{1}).
+The update process is canceled to prevent en incorrect configuration. Please update (or remove) the federation-specific default configuration file.
+
+If your federation provides a URL to the files, use Get-ADFSTkFederationDefaults to get the latest version.
+"@
     confNeedMainConfigurationMessage = @"
 Before proceeding we need to create a configuration file that holds information about how ADFSToolkit runs.
 
@@ -257,6 +263,8 @@ Please open the file and configure how ADFSToolkit can get them (Active Director
     rulesFederationLocalTransformRulesAdd = "The Federation-specific Transform Rule '{0}' found and will be added."
     rulesFederationLocalTransformRulesFileNotFound = "Import-ADFSTkLocalTransformRules.ps1 file not found. Skipping import of local transform rules..."
 
+    rulesReplaceWithAttributeIsMissing = "You have a transform node for the attribute '{0}' with the attribute 'replacetext' in your Institution Config file but the attribute 'replacewith' is missing. Please add that in your Institution Configuration file."
+
     ###############################
     ### Manual SP Settings [ms] ###
     ###############################
@@ -307,6 +315,9 @@ Please open the file and configure how ADFSToolkit can get them (Active Director
     processRPDeletingRP = "Deleting '{0}'..."
     processRPDeletingRPDone = "Deleting '{0}' done!"
     processRPCouldNotDeleteRP = "Could not delete '{0}'... Error: {1}"
+    processRPAddingRP = "Adding '{0}'..."
+    processRPAddRPDone = "Adding '{0}' done!"
+    processRPCouldNotAddRP = "Could not add '{0}'... Error: {1}"
     processRPSkippingDueToAddRemoveOnlySwitch = "Skipping RP due to -AddRemoveOnly switch..."
     processRPEntityAlreadyExistsDoUpdate = "'{0}' already exists. Do you want to update it?"
     processRPEntityAddedManuallyStillUpdate = "'{0}' added manual in ADFS database, still forcing update?"

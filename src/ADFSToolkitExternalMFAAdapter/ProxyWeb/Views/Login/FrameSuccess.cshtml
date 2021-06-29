@@ -1,0 +1,11 @@
+﻿@model EduIDExternalWeb.Models.LoginResponseModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Success</h1>
+
+<script type="text/javascript">
+    //alert('@Model.Message');
+    window.opener.postMessage('@Model.Message', '@Model.OriginIdp');
+</script>

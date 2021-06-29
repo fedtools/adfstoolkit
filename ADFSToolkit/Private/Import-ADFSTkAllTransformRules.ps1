@@ -113,8 +113,8 @@ $TransformRules."transient-id" = [PSCustomObject]@{
             param = c1.Value, 
             param = c1.OriginalIssuer, 
             param = "", 
-            param = c2.Value);
-
+            param = regexreplace(c2.Value, "(?<start>^.{1,20}).+$", "${start}"));
+            
     @RuleName = "issue transient-id"
     c:[Type == "urn:adfstk:transientid"]
     => issue(
@@ -176,18 +176,46 @@ $TransformRules."transient-id" = [PSCustomObject]@{
     AttributeGroup="ID's"
     }
 
+#     $TransformRules.eduPersonTargetedID = [PSCustomObject]@{
+#     Rule=@"
+#     @RuleName = "compose eduPersonTargetedID"
+#     c:[Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", 
+#     Value !~ "^.+\\"]
+#      => issue(Type = "urn:oid:1.3.6.1.4.1.5923.1.1.1.10", 
+#      Value = c.Value, 
+#      Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
+# "@
+#     Attribute="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+#     AttributeGroup="ID's"
+#     }
+
     $TransformRules.eduPersonTargetedID = [PSCustomObject]@{
-    Rule=@"
-    @RuleName = "compose eduPersonTargetedID"
-    c:[Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", 
-    Value !~ "^.+\\"]
-     => issue(Type = "urn:oid:1.3.6.1.4.1.5923.1.1.1.10", 
-     Value = c.Value, 
-     Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
+        Rule=@"
+        @RuleName = "synthesize eduPersonTargetedID"
+        c:[Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/primarysid"]
+        => add(
+                store = "_OpaqueIdStore", 
+                types = ("urn:adfstk:edupersontargetedid"), 
+                query = "{0};{1};{2}", 
+                param = "ppid", 
+                param = c.Value, 
+                param = c.OriginalIssuer);
+    
+        @RuleName = "issue eduPersonTargetedID"
+        c:[Type == "urn:adfstk:edupersontargetedid"]
+        => issue(
+                Type = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", 
+                Issuer = c.Issuer, 
+                OriginalIssuer = c.OriginalIssuer, 
+                Value = c.Value, 
+                ValueType = c.ValueType, 
+                Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/format"] = "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent", 
+                Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/spnamequalifier"] = "[ReplaceWithSPNameQualifier]", 
+                Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/namequalifier"] = "http://$($Settings.configuration.StaticValues.ADFSExternalDNS)");
 "@
-    Attribute="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
-    AttributeGroup="ID's"
-    }
+        Attribute=""
+        AttributeGroup="ID's"
+        }
 
     $TransformRules.eduPersonUniqueID = [PSCustomObject]@{
     Rule=@"
@@ -215,12 +243,16 @@ $TransformRules."transient-id" = [PSCustomObject]@{
     AttributeGroup="ID's"
     }
 
+    $TransformRules.schacPersonalUniqueCode = Get-ADFSTkTransformRule -Type "urn:mace:dir:attribute-def:schacPersonalUniqueCode" `
+                                           -Oid "urn:oid:1.3.6.1.4.1.25178.1.2.14" `
+                                           -AttributeName schacPersonalUniqueCode `
+                                           -AttributeGroup "ID's"    
     #endregion
     #region Personal attributes
     $TransformRules.givenName = Get-ADFSTkTransformRule -Type "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" `
-                                                  -Oid "urn:oid:2.5.4.42" `
-                                                  -AttributeName givenName `
-                                                  -AttributeGroup "Personal attributes"
+                                           -Oid "urn:oid:2.5.4.42" `
+                                           -AttributeName givenName `
+                                           -AttributeGroup "Personal attributes"
 
     $TransformRules.sn = Get-ADFSTkTransformRule -Type "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname" `
                                            -Oid "urn:oid:2.5.4.4" `
