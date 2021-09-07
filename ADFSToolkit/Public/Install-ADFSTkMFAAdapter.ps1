@@ -42,7 +42,7 @@ function Install-ADFSTkMFAAdapter {
         </IssuanceAuthorizationRules>
     </PolicyMetadata>  
 "@
-        New-AdfsAccessControlPolicy -Name "ADFSToolkit - Permit everyone and force MFA" `
+        New-AdfsAccessControlPolicy -Name "ADFSTk:Permit everyone and force MFA" `
             -Identifier ADFSToolkitPermitEveryoneAndRequireMFA `
             -Description "Grant access to everyone and require MFA for everyone." `
             -PolicyMetadata $ACPMetadata | Out-Null
