@@ -97,6 +97,53 @@ param (
     }
 
     $IssuanceTransformRuleCategories.Add("http://www.geant.net/uri/dataprotection-code-of-conduct/v1",$TransformRules)
+
+    #Anonumous Authorization – REFEDS
+    $TransformRules = [Ordered]@{}
+    $TransformRules.eduPersonScopedAffiliation = $Global:ADFSTkAllTransformRules.eduPersonScopedAffiliation
+    $TransformRules.eduPersonOrgDN = $Global:ADFSTkAllTransformRules.eduPersonOrgDN
+    $TransformRules.schacHomeOrganizationType = $Global:ADFSTkAllTransformRules.schacHomeOrganizationType
     
+    $TransformRules.eduPersonEntitlement = $Global:ADFSTkAllTransformRules.eduPersonEntitlement
+    $IssuanceTransformRuleCategories.Add("http://refeds.org/category/anonymous/",$TransformRules)
+    
+    #Pseudonymous Authorization – REFEDS
+    $TransformRules = [Ordered]@{}
+    $TransformRules.eduPersonScopedAffiliation = $Global:ADFSTkAllTransformRules.eduPersonScopedAffiliation
+    $TransformRules.eduPersonOrgDN = $Global:ADFSTkAllTransformRules.eduPersonOrgDN 
+    $TransformRules.schacHomeOrganizationType = $Global:ADFSTkAllTransformRules.schacHomeOrganizationType
+    
+    $TransformRules.eduPersonEntitlement = $Global:ADFSTkAllTransformRules.eduPersonEntitlement
+    $TransformRules.samlPairwiseID = $Global:ADFSTkAllTransformRules.samlPairwiseID #new unique per SP and anonymous https://docs.oasis-open.org/security/saml-subject-id-attr/v1.0/cs01/saml-subject-id-attr-v1.0-cs01.html 3.4
+    $IssuanceTransformRuleCategories.Add("http://refeds.org/category/pseudonymous",$TransformRules)
+    
+    #Personalized Authorization – REFEDS
+    $TransformRules = [Ordered]@{}
+    $TransformRules.schacHomeOrganizationType = $Global:ADFSTkAllTransformRules.schacHomeOrganizationType
+    $TransformRules.'subject-id' = $Global:ADFSTkAllTransformRules.'subject-id' #new same as eppn if unique
+    $TransformRules.displayName = $Global:ADFSTkAllTransformRules.displayName 
+    $TransformRules.givenName = $Global:ADFSTkAllTransformRules.givenName 
+    $TransformRules.sn = $Global:ADFSTkAllTransformRules.sn
+    $TransformRules.mail = $Global:ADFSTkAllTransformRules.mail
+    $TransformRules.eduPersonScopedAffiliation = $Global:ADFSTkAllTransformRules.eduPersonScopedAffiliation
+    $IssuanceTransformRuleCategories.Add("http://refeds.org/category/pseudonymous",$TransformRules)
+    
+    #European Student Identifier Entity Category
+    $TransformRules = [Ordered]@{}
+    $TransformRules.schacPersonalUniqueCode = [PSCustomObject]@{
+        Rule=@"
+        @RuleName = "compose schacPersonalUniqueCode for ESI"
+        c:[Type == "urn:mace:dir:attribute-def:schacPersonalUniqueCode", Value ~= "^urn:schac:PersonalUniqueCode:int:esi:"] 
+         => issue(Type = "urn:oid:1.3.6.1.4.1.25178.1.2.14", 
+         Value = c.Value, 
+         Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
+"@
+        Attribute="urn:mace:dir:attribute-def:schacPersonalUniqueCode"
+        AttributeGroup="ID's"
+    }
+    $IssuanceTransformRuleCategories.Add("https://myacademicid.org/entity-categories/esi",$TransformRules)
+
+    ###
+
     return $IssuanceTransformRuleCategories
 }
