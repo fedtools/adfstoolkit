@@ -43,7 +43,13 @@ function get-ADFSTkLocalManualSPSettings
     #    TransformRules = [Ordered]@{}
     #    AuthorizationRules = @{}
     #    HashAlgorithm = $SecureHashAlgorithm.SHA1
-    #    ApplyMFAConfiguration = AzureMFA
+    #    ApplyMFAConfiguration = @{AzureMFA = @{ 
+        #     phoneconfirmation = $false      # Call to phone
+        #     phoneotp = $false               # 
+        #     phoneappnotification = $false   # Push to phone app
+        #     smsotp  = $false                # OTP from SMS
+        #     otp  = $true                    # OTP from phone app
+        # }}
     #    EntityCategories = @("http://www.geant.net/uri/dataprotection-code-of-conduct/v1")
     #    SamlResponseSignature = 'MessageAndAssertion' #Valid SamlResponseSignatures: AssertionOnly, MessageAndAssertion, MessageOnly
     #}
