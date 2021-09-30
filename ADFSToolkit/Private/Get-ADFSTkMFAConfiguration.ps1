@@ -62,45 +62,6 @@ function Get-ADFSTkMFAConfiguration {
     }
 
     if ($ApplyMFAConfiguration -ne $null -and $ApplyMFAConfiguration.ContainsKey('azuremfa')) { 
-        ### DO WE NEED THIS HERE TO?
-        #region Add Access Control Policy if needed
-        if ((Get-AdfsAccessControlPolicy -Identifier ADFSToolkitPermitEveryoneAndRequireMFA) -eq $null) {
-            $ACPMetadata = @"
-<PolicyMetadata xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2012/04/ADFS">
-  <RequireFreshAuthentication>false</RequireFreshAuthentication>
-  <IssuanceAuthorizationRules>
-    <Rule>
-      <Conditions>
-        <Condition i:type="SpecificClaimCondition">
-          <ClaimType>http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod</ClaimType>
-          <Operator>Equals</Operator>
-          <Values>
-            <Value>https://refeds.org/profile/mfa</Value>
-          </Values>
-        </Condition>
-        <Condition i:type="MultiFactorAuthenticationCondition">
-          <Operator>IsPresent</Operator>
-          <Values />
-        </Condition>
-      </Conditions>
-    </Rule>
-    <Rule>
-      <Conditions>
-        <Condition i:type="AlwaysCondition">
-          <Operator>IsPresent</Operator>
-          <Values />
-        </Condition>
-      </Conditions>
-    </Rule>
-  </IssuanceAuthorizationRules>
-</PolicyMetadata>
-"@
-            New-AdfsAccessControlPolicy -Name "ADFSTk:Permit everyone and force MFA" `
-                -Identifier ADFSToolkitPermitEveryoneAndRequireMFA `
-                -Description "Grant access to everyone and require MFA for everyone." `
-                -PolicyMetadata $ACPMetadata | Out-Null
-        }
-        #endregion
     
         $mfaRules = @()
         $mfaRulesText = @()
@@ -161,7 +122,6 @@ NOT EXISTS([Type == "urn:adfstk:mfalogon"])
 => issue(Type = "http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod", Value = "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport");
 "@
         
-        
     }
     else {
         # Check if the ADFSTK MFA Adapter is installed and add rules if so
@@ -173,8 +133,8 @@ NOT EXISTS([Type == "urn:adfstk:mfalogon"])
         if ($Global:ADFSTKRefedsMFAUsernamePasswordAdapterInstalled)
         {
             $mfaRules += @"
-            @RuleName = "Make sure that ADFSTk MFA Adapter were not used incorrectly"
-            COUNT([Type == "http://schemas.microsoft.com/claims/authnmethodsproviders"]) < 2
+            @RuleName = "Assert Refeds MFA is compliant with"
+            COUNT([Type == "http://schemas.microsoft.com/claims/authnmethodsproviders"]) = 1
             && EXISTS([Type == "http://schemas.microsoft.com/claims/authnmethodsreferences", 
                        Value == "https://refeds.org/profile/mfa"])
             => issue(Type = "http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod", 
