@@ -12,6 +12,24 @@ function Install-ADFSTkMFAAdapter {
         [switch]$RefedsSFA
     )
 
+    #region Get all locales from the toolkit
+    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths)) {
+        $Global:ADFSTkPaths = Get-ADFSTKPaths
+    }
+
+    $languageFileName = "ADFSTk_EndUserTexts_{0}.pson"
+    $languagePacks = Join-Path $Global:ADFSTKPaths.modulePath "languagePacks" 
+
+    #Get all directories that contains a language file with the right name
+    $possibleLanguageDirs = Get-ChildItem $languagePacks -Directory | ? { Test-Path (Join-Path $_.FullName ($languageFileName -f $_.Name)) }
+
+    #Filter out the directories that doesn't have a correct name
+    $configFoundLanguages = (Compare-ADFSTkObject -FirstSet $possibleLanguageDirs.Name `
+            -SecondSet ([System.Globalization.CultureInfo]::GetCultures("SpecificCultures").Name) `
+            -CompareType Intersection).CompareSet
+    #endregion
+
+
     $authProviders = Get-AdfsAuthenticationProvider
     $restart = $true
     
@@ -92,6 +110,11 @@ function Install-ADFSTkMFAAdapter {
                 $authPolicy = Get-AdfsGlobalAuthenticationPolicy
                 Set-AdfsGlobalAuthenticationPolicy -PrimaryExtranetAuthenticationProvider ($authPolicy.PrimaryExtranetAuthenticationProvider + $nameMFA) `
                     -PrimaryIntranetAuthenticationProvider ($authPolicy.PrimaryIntranetAuthenticationProvider + $nameMFA) | Out-Null
+
+                # Add display names for the authentication provider for all languages
+                Set-ADFSTkAdapterLanguageTexts -adapterName $nameMFA -textID 'mfaSignInWithTwoStepVerification'
+                
+                $Global:ADFSTKRefedsMFAUsernamePasswordAdapterInstalled = $true
             }
             else {
                 $restart = $false
@@ -121,6 +144,9 @@ function Install-ADFSTkMFAAdapter {
                 $authPolicy = Get-AdfsGlobalAuthenticationPolicy
                 Set-AdfsGlobalAuthenticationPolicy -PrimaryExtranetAuthenticationProvider ($authPolicy.PrimaryExtranetAuthenticationProvider + $nameSFA) `
                     -PrimaryIntranetAuthenticationProvider ($authPolicy.PrimaryIntranetAuthenticationProvider + $nameSFA) | Out-Null
+
+                # Add display names for the authentication provider for all languages
+                Set-ADFSTkAdapterLanguageTexts -adapterName $nameMFA -textID 'mfaSignInWithRefedsSFA'
             }
             else {
                 $restart = $false
@@ -131,5 +157,36 @@ function Install-ADFSTkMFAAdapter {
     if ($restart -and (Get-ADFSTkAnswer (Get-ADFSTkLanguageText cRestartADFSServiceQuestion) -DefaultYes)) {
         net stop adfssrv
         net start adfssrv
+    }
+}
+
+# If we need end user text in more places this should be incoperated in Get-ADFSTkLanguageText
+function Set-ADFSTkAdapterLanguageTexts {
+    param (
+        $adapterName,
+        $textID,
+        [switch]$WhatIf
+    )
+
+    foreach ($language in $configFoundLanguages) {
+        $languagePackDir = Join-Path $languagePacks $language
+        $languageFile = Join-Path $languagePackDir $languageFileName
+
+        try {
+            $languageContent = Get-Content ($languageFile -f $language) | Out-String
+            $languageData = Invoke-Expression $languageContent
+        
+            if ($languageData.ContainsKey('mfaSignInWithTwoStepVerification')) {
+                if ($PSBoundParameters.ContainsKey('WhatIf') -and $PSBoundParameters.WhatIf -eq $true) {
+                    Write-Host "Whould have written '$($languageData.$textID)' to the '$adapterName' adapter in '$language'"
+                }
+                else {
+                    Set-AdfsAuthenticationProviderWebContent -Name $adapterName -DisplayName ($languageData.$textID) -Locale $laguage -WhatIf
+                }
+            }
+        }
+        catch {
+            # Not to big concern...
+        }
     }
 }
