@@ -134,7 +134,7 @@ NOT EXISTS([Type == "urn:adfstk:mfalogon"])
         {
             $mfaRules += @"
             @RuleName = "Assert Refeds MFA is compliant with"
-            COUNT([Type == "http://schemas.microsoft.com/claims/authnmethodsproviders"]) = 1
+            COUNT([Type == "http://schemas.microsoft.com/claims/authnmethodsproviders"]) == 1
             && EXISTS([Type == "http://schemas.microsoft.com/claims/authnmethodsreferences", 
                        Value == "https://refeds.org/profile/mfa"])
             => issue(Type = "http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod", 
