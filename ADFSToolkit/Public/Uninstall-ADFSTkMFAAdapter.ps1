@@ -39,6 +39,9 @@ function Uninstall-ADFSTkMFAAdapter {
             # Remove the display names of the authentication provider for all languages
             Remove-AdfsAuthenticationProviderWebContent -Name $nameMFA
 
+            ### Remove all SP Hash Files to re-load all SP's!
+            Remove-ADFSTkCache -SPHashFileForALLConfigurations -Force
+
             $Global:ADFSTKRefedsMFAUsernamePasswordAdapterInstalled = $false
         }
     }

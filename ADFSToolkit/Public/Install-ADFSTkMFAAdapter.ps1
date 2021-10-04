@@ -130,6 +130,9 @@ function Install-ADFSTkMFAAdapter {
                 Set-ADFSTkAdapterLanguageTexts -adapterName $nameMFA -textID 'mfaSignInWithTwoStepVerification'
                 
                 $Global:ADFSTKRefedsMFAUsernamePasswordAdapterInstalled = $true
+
+                ### Remove all SP Hash Files!
+                Remove-ADFSTkCache -SPHashFileForALLConfigurations -Force
             }
             else {
                 $restart = $false
