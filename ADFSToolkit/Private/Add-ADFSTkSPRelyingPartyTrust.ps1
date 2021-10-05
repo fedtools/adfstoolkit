@@ -191,7 +191,6 @@ function Add-ADFSTkSPRelyingPartyTrust {
         $rpParams.IssuanceAuthorizationRules = Get-ADFSTkIssuanceAuthorizationRules -EntityId $entityID
     }
     else {
-        #Should we use Identity and get the name from Get-AdfsAccessControlPolicy -Identifier ADFSToolkitPermitEveryoneAndRequireMFA?
         $rpParams.AccessControlPolicyName = 'ADFSTk:Permit everyone and force MFA'
         $rpParams.IssuanceTransformRules += $mfaRules
     }

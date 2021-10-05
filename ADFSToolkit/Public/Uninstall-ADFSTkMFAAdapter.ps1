@@ -35,6 +35,14 @@ function Uninstall-ADFSTkMFAAdapter {
                 -PrimaryIntranetAuthenticationProvider $authPolicy.PrimaryIntranetAuthenticationProvider | Out-Null
 
             Unregister-AdfsAuthenticationProvider -Name $nameMFA -Confirm:$false
+
+            # Remove the display names of the authentication provider for all languages
+            Remove-AdfsAuthenticationProviderWebContent -Name $nameMFA
+
+            ### Remove all SP Hash Files to re-load all SP's!
+            Remove-ADFSTkCache -SPHashFileForALLConfigurations -Force
+
+            $Global:ADFSTKRefedsMFAUsernamePasswordAdapterInstalled = $false
         }
     }
     elseif ($PSCmdlet.ParameterSetName -eq 'RefedsSFA') {
@@ -49,6 +57,9 @@ function Uninstall-ADFSTkMFAAdapter {
                 -PrimaryIntranetAuthenticationProvider $authPolicy.PrimaryIntranetAuthenticationProvider | Out-Null
         
             Unregister-AdfsAuthenticationProvider -Name $nameSFA -Confirm:$false | Out-Null
+
+            # Remove the display names of the authentication provider for all languages
+            Remove-AdfsAuthenticationProviderWebContent -Name $nameSFA
         }
     }
 

@@ -12,9 +12,15 @@ function Remove-ADFSTkCache {
         #Removes the SP Hash file. Attention! This will force ADFS Toolkit to re-import ALL SP's again
         [switch]
         $SPHashFile,
+        #Removes ALL SP Hash files for ALL configurations. Attention! This will force ADFS Toolkit to re-import ALL SP's again
+        [switch]
+        $SPHashFileForALLConfigurations,
         #Reloads the language tables and chosen language
         [switch]
-        $LanguageTables
+        $LanguageTables,
+        #Forces the deletion of (SP Hash file) without asking
+        [switch]
+        $Force
     )
 
     #We don't want to use the memory cache in here in case of deletion ;)
@@ -62,22 +68,31 @@ function Remove-ADFSTkCache {
 
     if ($PSBoundParameters.ContainsKey('SPHashFile') -and $SPHashFile -ne $false) {
         $Config = Get-ADFSTkInstitutionConfig
-        $SPHashFilePath = Join-Path $ADFSTkPaths.cacheDir $Config.configuration.SPHashFile
-        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cacheSelectedSPHashFile -f $MetadataCacheFile)
-        Write-ADFSTkHost -TextID cacheSelectedSPHashFileMessage -f $SPHashFilePath -Style Attention
-        if (![string]::IsNullOrEmpty($SPHashFilePath) -and `
-            (Test-Path $SPHashFilePath) -and `
-                (Get-ADFSTkAnswer (Get-ADFSTkLanguageText cacheSelectedSPHashFileAreYouSure)) `
-        ) {
-            try {
-                Remove-Item $SPHashFilePath -Force -Confirm:$false -ErrorAction Stop
-                Write-ADFSTkLog (Get-ADFSTkLanguageText cacheSelectedSPHashFileRemoved -f $SPHashFilePath) -EventID 38 -EntryType Information
-            }
-            catch {
-                Write-ADFSTkLog (Get-ADFSTkLanguageText cacheSelectedSPHashFileNotRemoved -f $SPHashFilePath, $_) -EventID 39 -MajorFault
+        Handle-SPHashFile -Config $Config
+        $anyCacheCleared = $true
+    }
+
+    if ($PSBoundParameters.ContainsKey('SPHashFileForALLConfigurations') -and $SPHashFileForALLConfigurations -ne $false) {
+        #Get all configs (even the disabled ones)
+        $ConfigFiles = Get-ADFSTkConfiguration -ConfigFilesOnly | Select -ExpandProperty ConfigFile
+        
+        foreach ($ConfigFile in $ConfigFiles) {
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cacheSelectedSPHashFile -f $ConfigFile)
+            #Test if the config actually exists on disk
+            if (Test-Path $ConfigFile) {
+                #Try to open the config file, silenty fail
+                try {
+                    [xml]$Config = Get-Content $ConfigFile
+                }
+                catch {}
+            
+                #Continue only if the config file could be opened
+                if (![string]::IsNullOrEmpty($Config)) {
+                    Handle-SPHashFile -Config $Config
+                    $anyCacheCleared = $true
+                }
             }
         }
-        $anyCacheCleared = $true
     }
 
     if (!$anyCacheCleared -or ($PSBoundParameters.ContainsKey('AttributeMemoryCache') -and $AttributeMemoryCache -ne $false)) {
@@ -86,5 +101,27 @@ function Remove-ADFSTkCache {
         $Global:ADFSTkAllTransformRules = $null
 
         Write-ADFSTkHost cacheCleared -f "Attribute Memory Cache" -Style Info -ForegroundColor Green
+    }
+}
+
+function Handle-SPHashFile {
+    param (
+        $Config
+    )
+    $SPHashFilePath = Join-Path $ADFSTkPaths.cacheDir $Config.configuration.SPHashFile
+    Write-ADFSTkHost -TextID cacheSelectedSPHashFileMessage -f $SPHashFilePath -Style Attention
+    if (![string]::IsNullOrEmpty($SPHashFilePath) -and `
+        (Test-Path $SPHashFilePath) -and `
+        ($Force -or (Get-ADFSTkAnswer (Get-ADFSTkLanguageText cacheSelectedSPHashFileAreYouSure))) `
+    ) {
+        
+        
+        try {
+            Remove-Item $SPHashFilePath -Force -Confirm:$false -ErrorAction Stop
+            Write-ADFSTkLog (Get-ADFSTkLanguageText cacheSelectedSPHashFileRemoved -f $SPHashFilePath) -EventID 38 -EntryType Information
+        }
+        catch {
+            Write-ADFSTkLog (Get-ADFSTkLanguageText cacheSelectedSPHashFileNotRemoved -f $SPHashFilePath, $_) -EventID 39 -MajorFault
+        }
     }
 }
