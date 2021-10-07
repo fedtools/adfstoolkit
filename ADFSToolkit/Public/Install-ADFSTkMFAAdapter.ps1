@@ -131,7 +131,7 @@ function Install-ADFSTkMFAAdapter {
                 
                 $Global:ADFSTKRefedsMFAUsernamePasswordAdapterInstalled = $true
 
-                ### Remove all SP Hash Files!
+                ### Remove all SP Hash Files to re-load all SP's!
                 Remove-ADFSTkCache -SPHashFileForALLConfigurations -Force
             }
             else {
