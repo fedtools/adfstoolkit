@@ -16,11 +16,6 @@
         $healtChecks.signatureCheck = $false
     }
 
-    #Get All paths
-    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths)) {
-        $Global:ADFSTkPaths = Get-ADFSTKPaths
-    }
-
     $finalResult = $true
 
     #region check script signatures
