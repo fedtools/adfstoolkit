@@ -84,10 +84,10 @@ function Import-ADFSTkMetadata {
             #    Write-ADFSTkLog (Get-ADFSTkLanguageText importIncompatibleInstitutionConfigVersion -f $Settings.configuration.ConfigVersion, $CompatibleConfigVersion) -MajorFault
             #}
             if ($PSBoundParameters.ContainsKey('criticalHealthChecksOnly') -and $criticalHealthChecksOnly -ne $false) {
-                $healthCheckResult = Get-ADFSTkHealth -ConfigFile $ConfigFile -HealthCheckMode CriticalOnly
+                $healthCheckResult = Get-ADFSTkHealth -ConfigFile $ConfigFile -HealthCheckMode CriticalOnly -Silent
             }
             else {
-                $healthCheckResult = Get-ADFSTkHealth -ConfigFile $ConfigFile -HealthCheckMode Full
+                $healthCheckResult = Get-ADFSTkHealth -ConfigFile $ConfigFile -HealthCheckMode Full -Silent
             }
 
             if ($healthCheckResult -eq $false) {

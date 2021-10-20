@@ -244,6 +244,7 @@
                 $instConfig = Get-ADFSTkInstitutionConfig -ConfigFile $cf
 
                 $spHashFile = Join-Path $Global:ADFSTkPaths.cacheDir $instConfig.configuration.SPHashFile
+                $metadataCacheFile =  Join-Path $Global:ADFSTkPaths.cacheDir $instConfig.configuration.MetadataCacheFile
                 if (Test-Path $spHashFile) {
                     try {
                         $fromHash = [string[]](Import-Clixml $spHashFile).Keys
@@ -259,7 +260,7 @@
                     }
 
                     if ($resultObject.ResultValue -ne [Result]::Fail) {
-                        $MetadataXML = Get-ADFSTkMetadata -metadataURL $instConfig.configuration.metadataURL -CachedMetadataFile $instConfig.configuration.MetadataCacheFile
+                        $MetadataXML = Get-ADFSTkMetadata -metadataURL $instConfig.configuration.metadataURL -CachedMetadataFile $metadataCacheFile
 
                         $RawAllSPs = $MetadataXML.EntitiesDescriptor.EntityDescriptor | ? { $_.SPSSODescriptor -ne $null }
                         $MetadataSPs = $RawAllSPs.EntityID
