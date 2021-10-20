@@ -246,7 +246,8 @@ $TransformRules."transient-id" = [PSCustomObject]@{
     $TransformRules.schacPersonalUniqueCode = Get-ADFSTkTransformRule -Type "urn:mace:dir:attribute-def:schacPersonalUniqueCode" `
                                            -Oid "urn:oid:1.3.6.1.4.1.25178.1.2.14" `
                                            -AttributeName schacPersonalUniqueCode `
-                                           -AttributeGroup "ID's"    
+                                           -AttributeGroup "ID's"
+
     #endregion
     #region Personal attributes
     $TransformRules.givenName = Get-ADFSTkTransformRule -Type "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" `
