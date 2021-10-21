@@ -303,19 +303,7 @@ else
 
     if (Get-ADFSTkAnswer (Get-ADFSTkLanguageText confCreateScheduledTask))
     {
-        $stAction = New-ScheduledTaskAction -Execute 'Powershell.exe' `
-                                            -Argument "-NoProfile -WindowStyle Hidden -Command &{Sync-ADFSTkAggregates}"
-
-        $stTrigger =  New-ScheduledTaskTrigger -Daily -DaysInterval 1 -At (Get-Date)
-        $stSettings = New-ScheduledTaskSettingsSet -Disable -MultipleInstances IgnoreNew -ExecutionTimeLimit ([timespan]::FromHours(12))
-
-        Register-ScheduledTask -Action $stAction `
-                               -Trigger $stTrigger `
-                               -TaskName (Get-ADFSTkLanguageText confImportMetadata) `
-                               -Description (Get-ADFSTkLanguageText confTHisSchedTaskWillDoTheImport) `
-                               -RunLevel Highest `
-                               -Settings $stSettings `
-                               -TaskPath "\ADFSToolkit\"
+        Register-ADFSTkScheduledTask
     }
 
     Write-ADFSTkHost -WriteLine -AddSpaceAfter

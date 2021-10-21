@@ -12,6 +12,7 @@
         versionCheck            = $true
         mfaAccesControlPolicy   = $true
         removedSPsStillInSPHash = ($HealthCheckMode -eq "Full") #Only run in Full mode
+        missingSPsInADFS        = ($HealthCheckMode -eq "Full") #Only run in Full mode
         scheduledTaskPresent    = ($HealthCheckMode -eq "Full") #Checks if there are a Scheduled Task with the name 'Import Federated Metadata with ADFSToolkit'
     }
 
@@ -76,7 +77,7 @@
                     CheckID       = "signatureCheck"
                     CheckName     = "Signature check"
                     ResultValue   = [Result]::Fail
-                    ResultText    = "{0} signatures missing in Powershell Module files" -f $missingSignatures.Count
+                    ResultText    = Get-ADFSTkLanguageText healthCheckSignatureMissingSignaturesResult -f $missingSignatures.Count
                     ResultData    = $missingSignatures
                     ReferenceFile = ""
                     FixID         = ""
@@ -92,7 +93,7 @@
         if ($invalidSignatures.Count -gt 0) {
             $resultObject = [PSCustomObject]@{
                 CheckID       = "signatureCheck"
-                CheckName     = "Signature check"
+                CheckName     = Get-ADFSTkLanguageText healthCheckSignatureName
                 ResultValue   = [Result]::Fail
                 ResultText    = Get-ADFSTkLanguageText healthCheckSignatureInvalidSignaturesMessage -f ($invalidSignatures | Out-String)
                 ResultData    = $invalidSignatures
@@ -244,7 +245,7 @@
                 $instConfig = Get-ADFSTkInstitutionConfig -ConfigFile $cf
 
                 $spHashFile = Join-Path $Global:ADFSTkPaths.cacheDir $instConfig.configuration.SPHashFile
-                $metadataCacheFile =  Join-Path $Global:ADFSTkPaths.cacheDir $instConfig.configuration.MetadataCacheFile
+                $metadataCacheFile = Join-Path $Global:ADFSTkPaths.cacheDir $instConfig.configuration.MetadataCacheFile
                 if (Test-Path $spHashFile) {
                     try {
                         $fromHash = [string[]](Import-Clixml $spHashFile).Keys
@@ -297,6 +298,105 @@
     }
     #endregion
 
+    #region remove/rerun missing SP's
+    
+    if ($healtChecks.missingSPsInADFS) {
+        #Automatically remove SP's from SPHash File that's not in the Metadata
+
+        foreach ($cf in $configFiles) {
+            $resultObject = [PSCustomObject]@{
+                CheckID       = "missingSPsInADFS"
+                CheckName     = "SP's in SPHash File missing in ADFS"
+                ResultValue   = [Result]::None
+                ResultText    = ""
+                ResultData    = @()
+                ReferenceFile = $cf
+                FixID         = ""
+            }
+
+            try {
+                $instConfig = Get-ADFSTkInstitutionConfig -ConfigFile $cf
+
+                $spHashFile = Join-Path $Global:ADFSTkPaths.cacheDir $instConfig.configuration.SPHashFile
+                $metadataCacheFile = Join-Path $Global:ADFSTkPaths.cacheDir $instConfig.configuration.MetadataCacheFile
+                if (Test-Path $spHashFile) {
+                    try {
+                        $fromHash = [string[]](Import-Clixml $spHashFile).Keys
+                    }
+                    catch {
+                        #What to do?
+                        #Rename it? Delete it?
+                        $resultObject.Checkname = "SPHash File corrupt"
+                        $resultObject.ResultValue = [Result]::Fail
+                        $resultObject.ResultText = ("The SP Hash file '{0}' is corrupt!" -f $spHashFile)
+                        $resultObject.ReferenceFile = $spHashFile
+                        $resultObject.FixID = "deleteSPHashFile"
+                    }
+
+                    if ($resultObject.ResultValue -ne [Result]::Fail) {
+                        $installed = [string[]](Get-ADFSTkToolEntityId -All | Select -ExpandProperty Identifier)
+    
+                        $compare = Compare-ADFSTkObject $installed $fromHash -CompareType InSecondSetOnly
+    
+                        if ($compare.MembersInCompareSet -gt 0) {
+                            $resultObject.ResultValue = [Result]::Warning
+                            $resultObject.ResultText = ("{0} SP's found in the SP Hash file that are missing in ADFS" -f $compare.MembersInCompareSet)
+                            $resultObject.ResultData = $compare.CompareSet
+                            $resultObject.ReferenceFile = $spHashFile
+                            $resultObject.FixID = "addMissingSPsInADFS"
+                        }
+                        else {
+                            $resultObject.ResultValue = [Result]::Pass
+                            $resultObject.ResultText = "No SP's found in the SP Hash file that are missing in ADFS"
+                        }
+                    }
+                }
+                else {
+                    $resultObject.CheckID = "SPHashMissing"
+                    $resultObject.CheckName = "SP Hash File existance"
+                    $resultObject.ResultValue = [Result]::Warning
+                    $resultObject.ResultText = ("SP Hash file '{0}' missing. All SP's will be imported from the Federation metadata" -f $spHashFile)
+                    $resultObject.ReferenceFile = $spHashFile
+                }
+            }
+            catch {
+                $resultObject.ResultValue = [Result]::Fail
+                $resultObject.ResultText = $_
+            }
+            $healthResults += $resultObject
+        }
+    }
+    #endregion
+
+    #region Check if Scheduled Task is present
+    if ($healtChecks.scheduledTaskPresent) {
+        #Automatically remove SP's from SPHash File that's not in the Metadata
+
+        $resultObject = [PSCustomObject]@{
+            CheckID       = "scheduledTaskPresent"
+            CheckName     = "Scheduled Task present"
+            ResultValue   = [Result]::None
+            ResultText    = ""
+            ResultData    = @()
+            ReferenceFile = ""
+            FixID         = ""
+        }
+
+        $schedTask = Get-ScheduledTask -TaskName 'Import Federated Metadata with ADFSToolkit' -TaskPath "\ADFSToolkit\" -ErrorAction SilentlyContinue
+
+        if (![string]::IsNullOrEmpty($schedTask)) {
+            $resultObject.ResultValue = [Result]::Pass
+            $resultObject.ResultText = "Scheduled Task present"
+        }
+        else {
+            $resultObject.ResultValue = [Result]::Warning
+            $resultObject.ResultText = "Scheduled Task not present"
+            $resultObject.FixID = "registerScheduledTask"
+        }
+        $healthResults += $resultObject
+    }
+    #endregion
+
     #region Show result
     if (!$Silent) {
         # if ($healthResults.Values.ResultValue.Contains([Result]::Pass)) {
@@ -343,7 +443,7 @@
         #     }
         # }
 
-        $healthResults | Select CheckName, ResultValue, ResultText, ReferenceFile | sort ResultValue | ft -AutoSize -Wrap
+        $healthResults | Select CheckName, ResultValue, ResultText, ReferenceFile | sort ResultValue, CheckName, ReferenceFile | ft -AutoSize -Wrap
     }
 
     #endregion
@@ -444,18 +544,53 @@
     }
     #endregion
 
+    #region removedSPsStillInSPHash
+    #Do we have SP's in SP Hash file that are missing in ADFS? They should be removed from SP Hash File...
+    $addMissingSPs = $healthResults | ? FixID -eq "addMissingSPsInADFS"
+    if (![String]::IsNullOrEmpty($addMissingSPs)) {
+        foreach ($resultObject in $addMissingSPs) {
+            if ($Silent -or (Get-ADFSTkAnswer ("Do you want to remove SP's from the SP Hash file '{0}' that doesn't exists in ADFS?" -f $resultObject.ReferenceFile ))) {
+                Remove-ADFSTkEntityHash -SPHashFile $resultObject.ReferenceFile -EntityIDs $resultObject.ResultData
+
+                $resultObject.ResultText = "(Fixed)" + $resultObject.ResultText
+                $resultObject.ResultValue = [Result]::Pass 
+
+                $FixedAnything = $true
+            }
+            else {
+                #No need to fail, carry on!
+            }
+        }
+    }
+
+    #endregion
+        
+    #region Add Scheduled Task
+    #Only if run manually
+    if (!$Silent) {
+        $addMissingSPs = $healthResults | ? FixID -eq "registerScheduledTask"
+        if (![String]::IsNullOrEmpty($addMissingSPs)) {
+            if ((Get-ADFSTkAnswer "Do you want to create the Scheduled Task?")) {
+                Register-ADFSTkScheduledTask
+                
+                $resultObject.ResultText = "(Fixed)" + $resultObject.ResultText
+                $resultObject.ResultValue = [Result]::Pass 
+
+                $FixedAnything = $true
+            }
+        }
+    }
     #endregion
 
     if ($FixedAnything -and -not $Silent) {
-        $healthResults | Select CheckName, ResultValue, ResultText, ReferenceFile | sort ResultValue | ft -AutoSize -Wrap
+        $healthResults | Select CheckName, ResultValue, ResultText, ReferenceFile | sort ResultValue, CheckName, ReferenceFile | ft -AutoSize -Wrap
     }
 
     if ($Silent) {
-    return !($healthResults.ResultValue.Contains([Result]::Fail))
+        return !($healthResults.ResultValue.Contains([Result]::Fail))
     }
     else {
-        if ($healthResults.ResultValue.Contains([Result]::Fail))
-        {
+        if ($healthResults.ResultValue.Contains([Result]::Fail)) {
             Write-ADFSTkLog -Message "ADFSTkHealth FAILED" -EntryType Error
         }
         elseif ($healthResults.ResultValue.Contains([Result]::Warning)) {
