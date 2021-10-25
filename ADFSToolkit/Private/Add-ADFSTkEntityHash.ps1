@@ -9,7 +9,7 @@ param (
     {
         if ([string]::IsNullOrEmpty($spHash))
         {
-            $spHash = New-ADFSTkEntityHash $SP
+            $spHash = Get-ADFSTkEntityHash -EntityID $EntityID
         }
     
         $SPHashList.$EntityID = $spHash

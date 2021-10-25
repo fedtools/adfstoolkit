@@ -97,6 +97,23 @@ param (
     }
 
     $IssuanceTransformRuleCategories.Add("http://www.geant.net/uri/dataprotection-code-of-conduct/v1",$TransformRules)
-    
+
+    #European Student Identifier Entity Category
+    $TransformRules = [Ordered]@{}
+    $TransformRules.schacPersonalUniqueCode = [PSCustomObject]@{
+        Rule=@"
+        @RuleName = "compose schacPersonalUniqueCode for ESI"
+        c:[Type == "urn:mace:dir:attribute-def:schacPersonalUniqueCode", Value =~ "^urn:schac:PersonalUniqueCode:int:esi:"] 
+         => issue(Type = "urn:oid:1.3.6.1.4.1.25178.1.2.14", 
+         Value = c.Value, 
+         Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
+"@
+        Attribute="urn:mace:dir:attribute-def:schacPersonalUniqueCode"
+        AttributeGroup="ID's"
+    }
+    $IssuanceTransformRuleCategories.Add("https://myacademicid.org/entity-categories/esi",$TransformRules)
+
+    ###
+
     return $IssuanceTransformRuleCategories
 }

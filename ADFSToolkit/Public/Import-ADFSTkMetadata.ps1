@@ -59,6 +59,7 @@ function Import-ADFSTkMetadata {
             }
             else {
                 [xml]$Settings = Get-Content ($ConfigFile)
+                $Global:ADFSTkCurrentInstitutionConfig = $ConfigFile
             }
 
             # set appropriate logging via EventLog mechanisms
