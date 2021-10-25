@@ -48,11 +48,6 @@ function Import-ADFSTkMetadata {
             Remove-ADFSTkCache -AttributeMemoryCache
         }
 
-        #Get All paths
-        if ([string]::IsNullOrEmpty($Global:ADFSTkPaths)) {
-            $Global:ADFSTkPaths = Get-ADFSTKPaths
-        }
-
         try {
             # Add some variables
             $md5 = new-object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider

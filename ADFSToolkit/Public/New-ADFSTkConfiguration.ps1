@@ -5,13 +5,6 @@ param(
     [switch]$Passthru
 )
 
-   #Get All paths  and assert they exist  
-   if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
-    {  
-        $Global:ADFSTkPaths = Get-ADFSTKPaths
-    
-    }
-    
     Write-ADFSTkHost mainconfStartMessage -Style Info -AddLinesOverAndUnder
     
     if (Test-Path $Global:ADFSTKPaths.mainConfigFile)
