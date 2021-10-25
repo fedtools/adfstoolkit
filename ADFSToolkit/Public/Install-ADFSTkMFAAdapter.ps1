@@ -13,10 +13,6 @@ function Install-ADFSTkMFAAdapter {
     )
 
     #region Get all locales from the toolkit
-    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths)) {
-        $Global:ADFSTkPaths = Get-ADFSTKPaths
-    }
-
     $languageFileName = "ADFSTk_EndUserTexts_{0}.pson"
     $languagePacks = Join-Path $Global:ADFSTKPaths.modulePath "languagePacks" 
 

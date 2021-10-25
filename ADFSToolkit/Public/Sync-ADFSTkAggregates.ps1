@@ -5,11 +5,6 @@ param(
     [switch]$criticalHealthChecksOnly
 )
 
-    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
-    {
-        $Global:ADFSTkPaths = Get-ADFSTKPaths
-    }
-    
 #region Check and setup Event Log
     # set appropriate logging via EventLog mechanisms
 

@@ -21,6 +21,6 @@ Write-Verbose -Message "ADFSToolkit Private: $Private"
         }
     }
 
+Export-ModuleMember -Function  Import-ADFSTkMetadata,New-ADFSTkConfiguration,Unpublish-ADFSTkAggregate,Get-ADFSTkTransformRuleObjects,Update-ADFSTkInstitutionConfiguration,Sync-ADFSTkAggregates,New-ADFSTkInstitutionConfiguration,Enable-ADFSTkInstitutionConfiguration,Disable-ADFSTkInstitutionConfiguration,Get-ADFSTkToolsIssuanceTransformRules,Get-ADFSTkHealth,Get-ADFSTkPaths,Get-ADFSTkFederationDefaults,Remove-ADFSTkCache,Copy-ADFSTkToolRules,Get-ADFSTkToolEntityId,Install-ADFSTkMFAAdapter,Uninstall-ADFSTkMFAAdapter,Get-ADFSTkMFAAdapter,Get-ADFSTkEntityHash,Remove-ADFSTkEntityHash,Get-ADFSTkMetadata,Get-ADFSTkHealth,Register-ADFSTkScheduledTask
 
-Export-ModuleMember -Function  Import-ADFSTkMetadata,New-ADFSTkConfiguration,Unpublish-ADFSTkAggregate,Get-ADFSTkTransformRuleObjects,Update-ADFSTkInstitutionConfiguration,Sync-ADFSTkAggregates,New-ADFSTkInstitutionConfiguration,Enable-ADFSTkInstitutionConfiguration,Disable-ADFSTkInstitutionConfiguration,Get-ADFSTkToolsIssuanceTransformRules,Get-ADFSTkHealth,Get-ADFSTkPaths,Get-ADFSTkFederationDefaults,Remove-ADFSTkCache,Copy-ADFSTkToolRules,Get-ADFSTkToolEntityId,Install-ADFSTkMFAAdapter,Uninstall-ADFSTkMFAAdapter,Get-ADFSTkMFAAdapter,Get-ADFSTkEntityHash 
 

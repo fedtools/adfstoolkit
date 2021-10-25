@@ -5,15 +5,7 @@ function New-ADFSTkInstitutionConfiguration {
     Param (
     )
 
-
-    #Get All paths  and assert they exist 
-    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
-    {   
-        $Global:ADFSTkPaths = Get-ADFSTKPaths
-    }
-
-$CompatibleConfigVersion = "1.3"
-
+    $CompatibleConfigVersion = "1.3"
     
     try {
         $mainConfiguration = Get-ADFSTkConfiguration
@@ -303,19 +295,7 @@ else
 
     if (Get-ADFSTkAnswer (Get-ADFSTkLanguageText confCreateScheduledTask))
     {
-        $stAction = New-ScheduledTaskAction -Execute 'Powershell.exe' `
-                                            -Argument "-NoProfile -WindowStyle Hidden -Command &{Sync-ADFSTkAggregates}"
-
-        $stTrigger =  New-ScheduledTaskTrigger -Daily -DaysInterval 1 -At (Get-Date)
-        $stSettings = New-ScheduledTaskSettingsSet -Disable -MultipleInstances IgnoreNew -ExecutionTimeLimit ([timespan]::FromHours(12))
-
-        Register-ScheduledTask -Action $stAction `
-                               -Trigger $stTrigger `
-                               -TaskName (Get-ADFSTkLanguageText confImportMetadata) `
-                               -Description (Get-ADFSTkLanguageText confTHisSchedTaskWillDoTheImport) `
-                               -RunLevel Highest `
-                               -Settings $stSettings `
-                               -TaskPath "\ADFSToolkit\"
+        Register-ADFSTkScheduledTask
     }
 
     Write-ADFSTkHost -WriteLine -AddSpaceAfter
