@@ -79,10 +79,10 @@ function Import-ADFSTkMetadata {
             #    Write-ADFSTkLog (Get-ADFSTkLanguageText importIncompatibleInstitutionConfigVersion -f $Settings.configuration.ConfigVersion, $CompatibleConfigVersion) -MajorFault
             #}
             if ($PSBoundParameters.ContainsKey('criticalHealthChecksOnly') -and $criticalHealthChecksOnly -ne $false) {
-                $healthCheckResult = Get-ADFSTkHealth -ConfigFile $ConfigFile -HealthCheckMode CriticalOnly
+                $healthCheckResult = Get-ADFSTkHealth -ConfigFile $ConfigFile -HealthCheckMode CriticalOnly -Silent
             }
             else {
-                $healthCheckResult = Get-ADFSTkHealth -ConfigFile $ConfigFile -HealthCheckMode Full
+                $healthCheckResult = Get-ADFSTkHealth -ConfigFile $ConfigFile -HealthCheckMode Full -Silent
             }
 
             if ($healthCheckResult -eq $false) {
@@ -378,9 +378,11 @@ function Import-ADFSTkMetadata {
                                 Write-ADFSTkLog (Get-ADFSTkLanguageText cCouldNotRemove -f $rp, $_) -EntryType Error -EventID 17
                             }
                         }
+                        Remove-ADFSTkEntityHash -EntityIDs $CompareSets.CompareSet
                     }
                     else {
-                        foreach ($rp in ($CompareSets.CompareSet | Get-ADFSTkAnswer -Caption (Get-ADFSTkLanguageText importDoYouWantToRemoveRPsNotInMetadata))) {
+                        $removeSet = $CompareSets.CompareSet | Get-ADFSTkAnswer -Caption (Get-ADFSTkLanguageText importDoYouWantToRemoveRPsNotInMetadata)
+                        foreach ($rp in $removeSet) {
                             Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cRemoving -f $rp)
                             try {
                                 Remove-ADFSRelyingPartyTrust -TargetIdentifier $rp -Confirm:$false -ErrorAction Stop
@@ -389,6 +391,7 @@ function Import-ADFSTkMetadata {
                             catch {
                                 Write-ADFSTkLog (Get-ADFSTkLanguageText importCouldNotRemove -f $rp, $_) -EntryType Error -EventID 18
                             }
+                            Remove-ADFSTkEntityHash -EntityIDs $removeSet
                         }
                     }
                 }
