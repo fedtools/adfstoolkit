@@ -24,12 +24,6 @@ param (
     $NameIDFormat
 )
 
-#Get All paths
-if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
-{
-    $Global:ADFSTkPaths = Get-ADFSTKPaths
-}
-
 if ([string]::IsNullOrEmpty($Global:ADFSTkAllAttributes) -or $Global:ADFSTkAllAttributes.Count -eq 0)
 {
     $Global:ADFSTkAllAttributes = Import-ADFSTkAllAttributes

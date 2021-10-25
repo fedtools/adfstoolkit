@@ -5,15 +5,7 @@ function New-ADFSTkInstitutionConfiguration {
     Param (
     )
 
-
-    #Get All paths  and assert they exist 
-    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
-    {   
-        $Global:ADFSTkPaths = Get-ADFSTKPaths
-    }
-
-$CompatibleConfigVersion = "1.3"
-
+    $CompatibleConfigVersion = "1.3"
     
     try {
         $mainConfiguration = Get-ADFSTkConfiguration
