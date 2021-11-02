@@ -70,6 +70,10 @@ find attributes in you environment.
 To create a Institution config file use the cmdlet:
 
 New-ADFSTkInstitutionConfiguration
+
+Before you do that, if your Federation Operators has provided a Federation Default file that will help you on the creation of the Institution Config file, first run the cmdlet:
+
+Get-ADFSTkFederationDefaults -URL [the URL provided from your Federation Operators]
 "@
 
     mainconfNoConfigFileFound = "No ADFSTk configuration file found!"
