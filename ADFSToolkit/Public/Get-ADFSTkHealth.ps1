@@ -8,12 +8,12 @@
     )
 
     $healtChecks = @{
-        signatureCheck          = ($HealthCheckMode -ne "CriticalOnly") #Don't run i CriticalOnly
-        versionCheck            = $true
-        mfaAccesControlPolicy   = $true
+        CheckSignature          = ($HealthCheckMode -ne "CriticalOnly") #Don't run i CriticalOnly
+        CheckConfigVersion      = $true
+        MFAAccesControlPolicy   = $true
         removedSPsStillInSPHash = ($HealthCheckMode -eq "Full") #Only run in Full mode
-        missingSPsInADFS        = ($HealthCheckMode -eq "Full") #Only run in Full mode
-        scheduledTaskPresent    = ($HealthCheckMode -eq "Full") #Checks if there are a Scheduled Task with the name 'Import Federated Metadata with ADFSToolkit'
+        MissingSPsInADFS        = ($HealthCheckMode -eq "Full") #Only run in Full mode
+        ScheduledTaskPresent    = ($HealthCheckMode -eq "Full") #Checks if there are a Scheduled Task with the name 'Import Federated Metadata with ADFSToolkit'
     }
 
     enum Result {
@@ -44,7 +44,7 @@
     #endregion
 
     #region check script signatures
-    if ($healtChecks.signatureCheck) {
+    if ($healtChecks.CheckSignature) {
         Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckSignatureStartMessage)
         $Signatures = Get-ChildItem -Path $Global:ADFSTkPaths.modulePath -Filter *.ps1 -Recurse | Get-AuthenticodeSignature
         $validSignatures = $Signatures | ? Status -eq Valid | Select -ExpandProperty Path
@@ -59,7 +59,7 @@
         if ($missingSignatures.Count -gt 0) {
             if ($Global:ADFSTkSkipNotSignedHealthCheck -eq $true) {
                 $resultObject = [PSCustomObject]@{
-                    CheckID       = "signatureCheck"
+                    CheckID       = "CheckSignature"
                     CheckName     = "Signature check"
                     ResultValue   = [Result]::Pass
                     ResultText    = Get-ADFSTkLanguageText healthCheckSignatureSkipNotSignedMessage
@@ -74,7 +74,7 @@
             }
             else {
                 $resultObject = [PSCustomObject]@{
-                    CheckID       = "signatureCheck"
+                    CheckID       = "CheckSignature"
                     CheckName     = "Signature check"
                     ResultValue   = [Result]::Fail
                     ResultText    = Get-ADFSTkLanguageText healthCheckSignatureMissingSignaturesResult -f $missingSignatures.Count
@@ -92,7 +92,7 @@
         #Invalid signature(s)...
         if ($invalidSignatures.Count -gt 0) {
             $resultObject = [PSCustomObject]@{
-                CheckID       = "signatureCheck"
+                CheckID       = "CheckSignature"
                 CheckName     = Get-ADFSTkLanguageText healthCheckSignatureName
                 ResultValue   = [Result]::Fail
                 ResultText    = Get-ADFSTkLanguageText healthCheckSignatureInvalidSignaturesMessage -f ($invalidSignatures | Out-String)
@@ -106,24 +106,23 @@
             $healthResults += $resultObject
         }
 
-        # if ($resultObject.ResultValue -eq [Result]::Pass) {
-        #     Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckSignaturePass)
-        # }
-        # else {
-        #     Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckSignatureFail)
-        #     $finalResult = $false
-        # }
+        if ($resultObject.ResultValue -eq [Result]::Pass) {
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckSignaturePass)
+        }
+        else {
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckSignatureFail)
+        }
     }
     #endregion
 
     #region check config version
-    if ($healtChecks.versionCheck) {
+    if ($healtChecks.CheckConfigVersion) {
 
         Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionStartMessage)
 
         foreach ($cf in $configFiles) {
             $resultObject = [PSCustomObject]@{
-                CheckID       = "versionCheck"
+                CheckID       = "CheckConfigVersion"
                 CheckName     = "Version control"
                 ResultValue   = [Result]::None
                 ResultText    = ""
@@ -172,24 +171,21 @@
                 Write-ADFSTkLog $resultObject.ResultText  -EntryType Warning
             }
             $healthResults += $resultObject
+
+            if ($resultObject.ResultValue -eq [Result]::Pass) {
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionPass)
+            }
+            else {
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionFail)
+            }
         }
-
-        # if ($resultObject.ResultValue -eq [Result]::Pass) {
-        #     Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionPass)
-        # }
-        # else {
-        #     Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionFail)
-        #     $finalResult = $false
-        # }
-
-
     }
     #endregion
 
     #region check Access Control Policy if MFA Adapter is installed
-    if ($healtChecks.mfaAccesControlPolicy) {
+    if ($healtChecks.MFAAccesControlPolicy) {
         $resultObject = [PSCustomObject]@{
-            CheckID       = "mfaAccesControlPolicy"
+            CheckID       = "MFAAccesControlPolicy"
             CheckName     = "MFA Access Control Policy"
             ResultValue   = [Result]::None
             ResultText    = ""
@@ -207,20 +203,27 @@
         if ($Global:ADFSTKRefedsMFAUsernamePasswordAdapterInstalled) {
             if ((Get-AdfsAccessControlPolicy -Identifier ADFSToolkitPermitEveryoneAndRequireMFA) -eq $null) {
                 $resultObject.ResultValue = [Result]::Fail
-                $resultObject.ResultText = "MFA Adapter installed but Access Control Policy is missing!"
-                $resultObject.FixID = "createACP"
+                $resultObject.ResultText = Get-ADFSTkLanguageText healthMFAAccesControlPolicyInstalledACPMissing
+                $resultObject.FixID = "CreateACP"
             }
             else {
                 $resultObject.ResultValue = [Result]::Pass
-                $resultObject.ResultText = "MFA Adapter installed and Access Control Policy present"
+                $resultObject.ResultText = Get-ADFSTkLanguageText healthMFAAccesControlPolicyInstalledACPPresent
             }
         }
         else {
             $resultObject.ResultValue = [Result]::Pass
-            $resultObject.ResultText = "MFA Adapter not installed"
+            $resultObject.ResultText = Get-ADFSTkLanguageText healthMFAAccesControlPolicyNotInstalled
         }
 
         $healthResults += $resultObject
+
+        if ($resultObject.ResultValue -eq [Result]::Pass) {
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthMFAAccesControlPolicyPass)
+        }
+        else {
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthMFAAccesControlPolicyFail)
+        }
     }
     #endregion
 
@@ -230,7 +233,7 @@
 
         foreach ($cf in $configFiles) {
             $resultObject = [PSCustomObject]@{
-                CheckID       = "removedSPsStillInSPHash"
+                CheckID       = "RemovedSPsStillInSPHash"
                 CheckName     = "SP's in SPHash File not in Metadata"
                 ResultValue   = [Result]::None
                 ResultText    = ""
@@ -253,9 +256,9 @@
                         #Rename it? Delete it?
                         $resultObject.Checkname = "SPHash File corrupt"
                         $resultObject.ResultValue = [Result]::Fail
-                        $resultObject.ResultText = ("The SP Hash file '{0}' is corrupt!" -f $spHashFile)
+                        $resultObject.ResultText = (Get-ADFSTkLanguageText healthCheckRemovedSPsStillInSPHashSPHashCorrupt -f $spHashFile)
                         $resultObject.ReferenceFile = $spHashFile
-                        $resultObject.FixID = "deleteSPHashFile"
+                        $resultObject.FixID = "DeleteSPHashFile"
                     }
 
                     if ($resultObject.ResultValue -ne [Result]::Fail) {
@@ -268,14 +271,14 @@
 
                         if ($compare.MembersInCompareSet -gt 0) {
                             $resultObject.ResultValue = [Result]::Warning
-                            $resultObject.ResultText = ("{0} SP's found in the SP Hash file that are missing in the Federation metadata" -f $compare.MembersInCompareSet)
+                            $resultObject.ResultText = (Get-ADFSTkLanguageText healthCheckRemovedSPsStillInSPHashMissingInMetadata -f $compare.MembersInCompareSet)
                             $resultObject.ReferenceFile = $spHashFile
                             $resultObject.ResultData = $compare.CompareSet
-                            $resultObject.FixID = "removeSPsFromSPHashFile"
+                            $resultObject.FixID = "RemoveSPsFromSPHashFile"
                         }
                         else {
                             $resultObject.ResultValue = [Result]::Pass
-                            $resultObject.ResultText = "No SP's found in the SP Hash file that are missing in the Federation metadata"
+                            $resultObject.ResultText = Get-ADFSTkLanguageText healthCheckRemovedSPsStillInSPHashNoSPsMissingInMetadata
                         }
                     }
                 }
@@ -283,7 +286,7 @@
                     $resultObject.CheckID = "SPHashMissing"
                     $resultObject.CheckName = "SP Hash File existance"
                     $resultObject.ResultValue = [Result]::Warning
-                    $resultObject.ResultText = ("SP Hash file '{0}' missing. All SP's will be imported from the Federation metadata" -f $spHashFile)
+                    $resultObject.ResultText = (Get-ADFSTkLanguageText healthCheckRemovedSPsStillInSPHashAllSPsWillBeImported -f $spHashFile)
                     $resultObject.ReferenceFile = $spHashFile
                 }
             }
@@ -298,12 +301,12 @@
 
     #region remove/rerun missing SP's
     
-    if ($healtChecks.missingSPsInADFS) {
+    if ($healtChecks.MissingSPsInADFS) {
         #Automatically remove SP's from SPHash File that's not in the Metadata
 
         foreach ($cf in $configFiles) {
             $resultObject = [PSCustomObject]@{
-                CheckID       = "missingSPsInADFS"
+                CheckID       = "MissingSPsInADFS"
                 CheckName     = "SP's in SPHash File missing in ADFS"
                 ResultValue   = [Result]::None
                 ResultText    = ""
@@ -326,9 +329,9 @@
                         #Rename it? Delete it?
                         $resultObject.Checkname = "SPHash File corrupt"
                         $resultObject.ResultValue = [Result]::Fail
-                        $resultObject.ResultText = ("The SP Hash file '{0}' is corrupt!" -f $spHashFile)
+                        $resultObject.ResultText = (Get-ADFSTkLanguageText healthCheckRemovedSPsStillInSPHashSPHashCorrupt -f $spHashFile)
                         $resultObject.ReferenceFile = $spHashFile
-                        $resultObject.FixID = "deleteSPHashFile"
+                        $resultObject.FixID = "DeleteSPHashFile"
                     }
 
                     if ($resultObject.ResultValue -ne [Result]::Fail) {
@@ -338,14 +341,14 @@
     
                         if ($compare.MembersInCompareSet -gt 0) {
                             $resultObject.ResultValue = [Result]::Warning
-                            $resultObject.ResultText = ("{0} SP's found in the SP Hash file that are missing in ADFS" -f $compare.MembersInCompareSet)
+                            $resultObject.ResultText = (Get-ADFSTkLanguageText healthMissingSPsInADFSSPsMissingInADFS -f $compare.MembersInCompareSet)
                             $resultObject.ResultData = $compare.CompareSet
                             $resultObject.ReferenceFile = $spHashFile
-                            $resultObject.FixID = "addMissingSPsInADFS"
+                            $resultObject.FixID = "AddMissingSPsInADFS"
                         }
                         else {
                             $resultObject.ResultValue = [Result]::Pass
-                            $resultObject.ResultText = "No SP's found in the SP Hash file that are missing in ADFS"
+                            $resultObject.ResultText = Get-ADFSTkLanguageText healthMissingSPsInADFSNoSPsMissingInADFS
                         }
                     }
                 }
@@ -353,7 +356,7 @@
                     $resultObject.CheckID = "SPHashMissing"
                     $resultObject.CheckName = "SP Hash File existance"
                     $resultObject.ResultValue = [Result]::Warning
-                    $resultObject.ResultText = ("SP Hash file '{0}' missing. All SP's will be imported from the Federation metadata" -f $spHashFile)
+                    $resultObject.ResultText = (Get-ADFSTkLanguageText healthCheckRemovedSPsStillInSPHashAllSPsWillBeImported -f $spHashFile)
                     $resultObject.ReferenceFile = $spHashFile
                 }
             }
@@ -367,11 +370,11 @@
     #endregion
 
     #region Check if Scheduled Task is present
-    if ($healtChecks.scheduledTaskPresent) {
+    if ($healtChecks.ScheduledTaskPresent) {
         #Automatically remove SP's from SPHash File that's not in the Metadata
 
         $resultObject = [PSCustomObject]@{
-            CheckID       = "scheduledTaskPresent"
+            CheckID       = "ScheduledTaskPresent"
             CheckName     = "Scheduled Task present"
             ResultValue   = [Result]::None
             ResultText    = ""
@@ -384,12 +387,12 @@
 
         if (![string]::IsNullOrEmpty($schedTask)) {
             $resultObject.ResultValue = [Result]::Pass
-            $resultObject.ResultText = "Scheduled Task present"
+            $resultObject.ResultText = Get-ADFSTkLanguageText healthScheduledTaskPresentScheduledTaskPresent
         }
         else {
             $resultObject.ResultValue = [Result]::Warning
-            $resultObject.ResultText = "Scheduled Task not present"
-            $resultObject.FixID = "registerScheduledTask"
+            $resultObject.ResultText = Get-ADFSTkLanguageText healthScheduledTaskPresentScheduledTasNotPresent
+            $resultObject.FixID = "RegisterScheduledTask"
         }
         $healthResults += $resultObject
     }
@@ -449,11 +452,11 @@
 
     #region Correct fixable errors
     $FixedAnything = $false
-    #region mfaAccesControlPolicyCheck
+    #region MFAAccesControlPolicy
     #createACP
-    $mfaAccesControlPolicyCheck = $healthResults | ? { $_.CheckID -eq 'mfaAccesControlPolicyCheck' -and $_.ResultValue -eq [Result]::Fail }
-    if (![String]::IsNullOrEmpty($mfaAccesControlPolicyCheck)) {
-        if ($Silent -or (Get-ADFSTkAnswer "Do you want to create the missing Access Control Policy?")) {
+    $MFAAccesControlPolicy = $healthResults | ? FixID -eq "CreateACP"
+    if (![String]::IsNullOrEmpty($MFAAccesControlPolicy)) {
+        if ($Silent -or (Get-ADFSTkAnswer (Get-ADFSTkLanguageText healthMFAAccesControlPolicyRegisterACP))) {
             $ACPMetadata = @"
     <PolicyMetadata xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2012/04/ADFS">
       <RequireFreshAuthentication>false</RequireFreshAuthentication>
@@ -491,28 +494,23 @@
 
             Write-ADFSTkLog "Access Control Policy 'ADFSTk:Permit everyone and force MFA' created."
 
-            $mfaAccesControlPolicyCheck.ResultValue = [Result]::Pass
-            $mfaAccesControlPolicyCheck.ResultText = "MFA Adapter installed and Access Control Policy present"
+            $MFAAccesControlPolicy.ResultValue = [Result]::Pass
+            $MFAAccesControlPolicy.ResultText = (Get-ADFSTkLanguageText healthFixed) + $resultObject.ResultText
 
             $FixedAnything = $true
-        }
-        else {
-            $mfaAccesControlPolicyCheck.ResultValue = [Result]::Fail
-            $mfaAccesControlPolicyCheck.ResultText = "MFA Adapter installed but Access Control Policy is missing. Cannot continue!"
-            $finalResult = $false
         }
     }
     #endregion
 
-    #region removedSPsStillInSPHash
+    #region RemovedSPsStillInSPHash
     #Do we have SP's in SP Hash file that are missing in the Metadata? They should be removed...
-    $removedSPsStillInSPHash = $healthResults | ? FixID -eq "removeSPsFromSPHashFile"
+    $removedSPsStillInSPHash = $healthResults | ? FixID -eq "RemoveSPsFromSPHashFile"
     if (![String]::IsNullOrEmpty($removedSPsStillInSPHash)) {
         foreach ($resultObject in $removedSPsStillInSPHash) {
-            if ($Silent -or (Get-ADFSTkAnswer ("Do you want to remove the SP's from the SP Hash file '{0}' that doesn't exists in the Metadata?" -f $resultObject.ReferenceFile ))) {
+            if ($Silent -or (Get-ADFSTkAnswer (Get-ADFSTkLanguageText healthRemoveSPsFromSPHashFileRemoveSPsNotInMetadata -f $resultObject.ReferenceFile ))) {
                 Remove-ADFSTkEntityHash -SPHashFile $resultObject.ReferenceFile -EntityIDs $resultObject.ResultData
                 
-                $resultObject.ResultText = "(Fixed)" + $resultObject.ResultText
+                $resultObject.ResultText = (Get-ADFSTkLanguageText healthFixed) + $resultObject.ResultText
                 $resultObject.ResultValue = [Result]::Pass 
 
                 $FixedAnything = $true
@@ -524,13 +522,13 @@
     }
 
     #Do we have corrupt SP Hash files?
-    $removedSPsStillInSPHash = $healthResults | ? FixID -eq 'deleteSPHashFile'
+    $removedSPsStillInSPHash = $healthResults | ? FixID -eq 'DeleteSPHashFile'
     if (![String]::IsNullOrEmpty($removedSPsStillInSPHash)) {
         foreach ($resultObject in $removedSPsStillInSPHash) {
-            if ($Silent -or (Get-ADFSTkAnswer ("Do you want to delete the corrupt SP Hash file '{0}'?" -f $resultObject.ReferenceFile ))) {
+            if ($Silent -or (Get-ADFSTkAnswer (Get-ADFSTkLanguageText healthDeleteSPHashFileDeleteCorruptSPHashFile -f $resultObject.ReferenceFile ))) {
                 Remove-Item -Path $resultObject.ReferenceFile
                 
-                $resultObject.ResultText = "(Fixed)" + $resultObject.ResultText
+                $resultObject.ResultText = (Get-ADFSTkLanguageText healthFixed) + $resultObject.ResultText
                 $resultObject.ResultValue = [Result]::Pass 
 
                 $FixedAnything = $true
@@ -542,15 +540,15 @@
     }
     #endregion
 
-    #region removedSPsStillInSPHash
+    #region RemovedSPsStillInSPHash
     #Do we have SP's in SP Hash file that are missing in ADFS? They should be removed from SP Hash File...
-    $addMissingSPs = $healthResults | ? FixID -eq "addMissingSPsInADFS"
+    $addMissingSPs = $healthResults | ? FixID -eq "AddMissingSPsInADFS"
     if (![String]::IsNullOrEmpty($addMissingSPs)) {
         foreach ($resultObject in $addMissingSPs) {
-            if ($Silent -or (Get-ADFSTkAnswer ("Do you want to remove SP's from the SP Hash file '{0}' that doesn't exists in ADFS?" -f $resultObject.ReferenceFile ))) {
+            if ($Silent -or (Get-ADFSTkAnswer (Get-ADFSTkLanguageText healthAddMissingSPsInADFSRemoveMissingSPs -f $resultObject.ReferenceFile ))) {
                 Remove-ADFSTkEntityHash -SPHashFile $resultObject.ReferenceFile -EntityIDs $resultObject.ResultData
 
-                $resultObject.ResultText = "(Fixed)" + $resultObject.ResultText
+                $resultObject.ResultText = (Get-ADFSTkLanguageText healthFixed) + $resultObject.ResultText
                 $resultObject.ResultValue = [Result]::Pass 
 
                 $FixedAnything = $true
@@ -566,12 +564,12 @@
     #region Add Scheduled Task
     #Only if run manually
     if (!$Silent) {
-        $addMissingSPs = $healthResults | ? FixID -eq "registerScheduledTask"
+        $addMissingSPs = $healthResults | ? FixID -eq "RegisterScheduledTask"
         if (![String]::IsNullOrEmpty($addMissingSPs)) {
-            if ((Get-ADFSTkAnswer "Do you want to create the Scheduled Task?")) {
+            if ((Get-ADFSTkAnswer (Get-ADFSTkLanguageText healthRegisterScheduledTaskCreateSchedTask))) {
                 Register-ADFSTkScheduledTask
                 
-                $resultObject.ResultText = "(Fixed)" + $resultObject.ResultText
+                $resultObject.ResultText = (Get-ADFSTkLanguageText healthFixed) + $resultObject.ResultText
                 $resultObject.ResultValue = [Result]::Pass 
 
                 $FixedAnything = $true

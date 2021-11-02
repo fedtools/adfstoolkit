@@ -427,6 +427,7 @@ Please open the file and configure how ADFSToolkit can get them (Active Director
     ### ADFSTkHealth [health] ###
     #############################
     
+    healthFixed = "(Fixed)"
     healthIncompatibleInstitutionConfigVersion = @"
 The provided Institution Configuration File is incompatible with this version of ADFS Toolkit!
 The Institution Configuration File version is {0} and the minimum version needs to be {1}.
@@ -462,8 +463,25 @@ If you don't know why this occurred, reinstallation of ADFS Toolkit is recommend
     healthCheckConfigVersionVerifyingVersionSucceeded = "Compatible version succeeded!"
     healthCheckConfigVersionPass = "Versioncheck PASSED!"
     healthCheckConfigVersionFail = "Versioncheck FAILED!"
-
-
+    healthMFAAccesControlPolicyInstalledACPMissing = "MFA Adapter installed but Access Control Policy is missing!"
+    healthMFAAccesControlPolicyInstalledACPPresent = "MFA Adapter installed and Access Control Policy present"
+    healthMFAAccesControlPolicyNotInstalled = "MFA Adapter not installed"
+    healthMFAAccesControlPolicyPass = "MFA Access Control Policy test PASSED!"
+    healthMFAAccesControlPolicyFail = "MFA Access Control Policy test FAILED!"
+    healthCheckRemovedSPsStillInSPHashSPHashCorrupt = "The SP Hash file '{0}' is corrupt!"
+    healthCheckRemovedSPsStillInSPHashMissingInMetadata = "{0} SP's found in the SP Hash file that are missing in the Federation metadata"
+    healthCheckRemovedSPsStillInSPHashNoSPsMissingInMetadata = "No SP's found in the SP Hash file that are missing in the Federation metadata"
+    healthCheckRemovedSPsStillInSPHashAllSPsWillBeImported = "SP Hash file '{0}' missing. All SP's will be imported from the Federation metadata"
+    healthMissingSPsInADFSSPsMissingInADFS = "{0} SP's found in the SP Hash file that are missing in ADFS"
+    healthMissingSPsInADFSNoSPsMissingInADFS = "No SP's found in the SP Hash file that are missing in ADFS"
+    healthScheduledTaskPresentScheduledTaskPresent = "Scheduled Task present"
+    healthScheduledTaskPresentScheduledTaskNotPresent = "Scheduled Task not present"
+    healthMFAAccesControlPolicyRegisterACP = "Do you want to create the missing Access Control Policy?"
+    healthRemoveSPsFromSPHashFileRemoveSPsNotInMetadata = "Do you want to remove the SP's from the SP Hash file '{0}' that doesn't exists in the Metadata?"
+    healthDeleteSPHashFileDeleteCorruptSPHashFile = "Do you want to delete the corrupt SP Hash file '{0}'?"
+    healthAddMissingSPsInADFSRemoveMissingSPs = "Do you want to remove SP's from the SP Hash file '{0}' that doesn't exists in ADFS?"
+    healthRegisterScheduledTaskCreateSchedTask = "Do you want to create the Scheduled Task?"
+    
     ##############################################
     ### ADFSTkFederationDefaults [feddefaults] ###
     ##############################################
