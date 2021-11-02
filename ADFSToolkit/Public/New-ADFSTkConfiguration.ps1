@@ -86,7 +86,7 @@ param(
     $configurationNode = $config.CreateNode("element","Configuration",$null)
         
     $configVersionNode = $config.CreateNode("element","ConfigVersion",$null)
-    $configVersionNode.InnerText = "1.0"
+    $configVersionNode.InnerText = $Global:ADFSTkCompatibleADFSTkConfigVersion
 
     $configurationNode.AppendChild($configVersionNode) | Out-Null
 

@@ -5,8 +5,6 @@ function New-ADFSTkInstitutionConfiguration {
     Param (
     )
 
-    $CompatibleConfigVersion = "1.3"
-    
     try {
         $mainConfiguration = Get-ADFSTkConfiguration
     }
@@ -82,9 +80,9 @@ function New-ADFSTkInstitutionConfiguration {
     try {
         [xml]$defaultConfig = Get-Content $defaultConfigFile
 
-        if ($defaultConfig.configuration.ConfigVersion -ne $CompatibleConfigVersion)
+        if ($defaultConfig.configuration.ConfigVersion -ne $Global:ADFSTkCompatibleInstitutionConfigVersion)
         {
-            Write-ADFSTkLog (Get-ADFSTkLanguageText confDefaultConfigIncorrectVersion -f $defaultConfigFile,$defaultConfig.configuration.ConfigVersion,$CompatibleConfigVersion) -MajorFault
+            Write-ADFSTkLog (Get-ADFSTkLanguageText confDefaultConfigIncorrectVersion -f $defaultConfigFile,$defaultConfig.configuration.ConfigVersion,$Global:ADFSTkCompatibleInstitutionConfigVersion) -MajorFault
         }
     }
     catch {

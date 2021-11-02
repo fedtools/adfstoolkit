@@ -119,8 +119,6 @@
     #region check config version
     if ($healtChecks.versionCheck) {
 
-        $CompatibleConfigVersion = "1.3"
-
         Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionStartMessage)
 
         foreach ($cf in $configFiles) {
@@ -143,8 +141,8 @@
 
                     #Check against compatible version
                     Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionVerifyingVersionStart)
-                    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionVerifyingVersionCompareVersions -f $xmlCf.configuration.ConfigVersion, $CompatibleConfigVersion)
-                    if ([float]$xmlCf.configuration.ConfigVersion -ge [float]$CompatibleConfigVersion) {
+                    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionVerifyingVersionCompareVersions -f $xmlCf.configuration.ConfigVersion, $Global:ADFSTkCompatibleInstitutionConfigVersion)
+                    if ([float]$xmlCf.configuration.ConfigVersion -ge [float]$Global:ADFSTkCompatibleInstitutionConfigVersion) {
                         $resultObject.ResultValue = [Result]::Pass
                         $resultObject.ResultText = Get-ADFSTkLanguageText healthCheckConfigVersionVerifyingVersionSucceeded
 
@@ -152,7 +150,7 @@
                     }
                     else {
                         $resultObject.ResultValue = [Result]::Fail
-                        $resultObject.ResultText = Get-ADFSTkLanguageText healthIncompatibleInstitutionConfigVersion -f $xmlCf.configuration.ConfigVersion, $CompatibleConfigVersion
+                        $resultObject.ResultText = Get-ADFSTkLanguageText healthIncompatibleInstitutionConfigVersion -f $xmlCf.configuration.ConfigVersion, $Global:ADFSTkCompatibleInstitutionConfigVersion
                         $resultObject.ResultData = $xmlCf.configuration.ConfigVersion
 
                         Write-ADFSTkLog $resultObject.ResultText -EntryType Warning

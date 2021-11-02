@@ -4,9 +4,6 @@
         $ConfigurationFile
     )
 
-    #This is ther version we can upgrade to
-    $currentConfigVersion = '1.3'
-
     try {
         $mainConfiguration = Get-ADFSTkConfiguration
     }
@@ -58,8 +55,8 @@
             try {
                 [xml]$defaultFederationConfig = Get-Content $defaultFederationConfigFile
 
-                if ($defaultFederationConfig.configuration.ConfigVersion -ne $currentConfigVersion) {
-                    Write-ADFSTkLog (Get-ADFSTkLanguageText confNotAValidVersionError -f $defaultFederationConfig.configuration.ConfigVersion, $currentConfigVersion) -MajorFault
+                if ($defaultFederationConfig.configuration.ConfigVersion -ne $Global:ADFSTkCompatibleInstitutionConfigVersion) {
+                    Write-ADFSTkLog (Get-ADFSTkLanguageText confNotAValidVersionError -f $defaultFederationConfig.configuration.ConfigVersion, $Global:ADFSTkCompatibleInstitutionConfigVersion) -MajorFault
                 }
             }
             catch {
@@ -222,8 +219,8 @@
             if ([string]::IsNullOrEmpty($config.configuration.ConfigVersion)) {
                 Write-ADFSTkLog (Get-ADFSTkLanguageText confCouldNotRetrieveVersion) -EntryType Error
             }
-            elseif ($config.configuration.ConfigVersion -eq $currentConfigVersion) {
-                Write-ADFSTkLog (Get-ADFSTkLanguageText confInstConfAlreadyCorrectVersion -f $currentConfigVersion) -EntryType Information
+            elseif ($config.configuration.ConfigVersion -eq $Global:ADFSTkCompatibleInstitutionConfigVersion) {
+                Write-ADFSTkLog (Get-ADFSTkLanguageText confInstConfAlreadyCorrectVersion -f $Global:ADFSTkCompatibleInstitutionConfigVersion) -EntryType Information
             }
             else {
                 $oldConfigVersion = $config.configuration.ConfigVersion
@@ -350,7 +347,7 @@
                     $config.Save($configFile.configFile);
                 }
 
-                Write-ADFSTkLog (Get-ADFSTkLanguageText confUpdatedInstConfigDone -f $configFile.configFile, $oldConfigVersion, $currentConfigVersion) -EntryType Information
+                Write-ADFSTkLog (Get-ADFSTkLanguageText confUpdatedInstConfigDone -f $configFile.configFile, $oldConfigVersion, $Global:ADFSTkCompatibleInstitutionConfigVersion) -EntryType Information
             }
 
             #Add any new attributes from Default Config or Default Federation Config to the Institution Config
