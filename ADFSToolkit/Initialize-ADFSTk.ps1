@@ -6,7 +6,7 @@ $modulePath = Get-Module -ListAvailable ADFSToolkit | Sort-Object Version -Desce
 $Global:ADFSTkPaths = Get-ADFSTKPaths
 $Global:ADFSTkCompatibleInstitutionConfigVersion = "1.3"
 $Global:ADFSTkCompatibleADFSTkConfigVersion = "1.0"
-$Global:ADFSTkCompatibleLanguageTableConfigVersion = "1.0"
+$Global:ADFSTkCompatibleLanguageTableConfigVersion = "2.1"
 
 #region Create main dirs
 ADFSTk-TestAndCreateDir -Path $Global:ADFSTkPaths.mainDir               -PathName "ADFSTk install directory" #C:\ADFSToolkit
