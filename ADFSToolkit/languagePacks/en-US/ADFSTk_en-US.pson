@@ -29,7 +29,8 @@
     cRemoving = "Removing '{0}'..."
     cCouldNotRemove = "Could not remove '{0}'! Error: {1}"
     cRestartADFSServiceQuestion = "The ADFS Service needs to be restarted. Do you want to do that now?"
-    
+    cFileNotFound = "File not found!"
+
     #############################################
     ### Main configuration cmdlets [mainconf] ###
     #############################################
@@ -551,4 +552,12 @@ If deleted all SP's will be re-imported again and this will take some time.
     mfaAdapterNotPresentAborting = "{0} Adapter not present. Aborting..."
     mfaExecutingGacUnInstall = "Executing GacUnInstall on dll file..."
     mfaExecutingGacRemove = "Executing GacRemove on dll file..."
+
+    #############################
+    ### SP Hash File [sphash] ###
+    #############################
+
+    sphashSPSuccessfullyRemoved = "{0} were successfully removed from the SPHash List."
+    sphashSPAlreadyRemoved = "{0} already removed from the SPHash List."
+    sphashListEmpty = "SPHash List empty. Cannot remove {0}"
 }

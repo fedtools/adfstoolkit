@@ -24,7 +24,7 @@ function Remove-ADFSTkEntityHash {
             }
         }
         else {
-            Throw "File not found!"
+            Throw (Get-ADFSTkLanguageText cFileNotFound)
         }
     }
     elseif ($PSCmdlet.ParameterSetName -eq 'Default') {
@@ -43,7 +43,7 @@ function Remove-ADFSTkEntityHash {
                 }
             }
             else {
-                Throw "File not found!"
+                Throw (Get-ADFSTkLanguageText cFileNotFound)
             }
         }
     }
@@ -53,14 +53,14 @@ function Remove-ADFSTkEntityHash {
             if ($SPHashList.ContainsKey($EntityID)) {
                 $SPHashList.Remove($EntityID)
                 $SPHashList | Export-Clixml $SPHashFile
-                Write-ADFSTkVerboseLog ("{0} were successfully removed from the SPHash List." -f $EntityID)
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText sphashSPSuccessfullyRemoved -f $EntityID)
             }
             else {
-                Write-ADFSTkVerboseLog ("{0} already removed from the SPHash List." -f $EntityID)
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText sphashSPAlreadyRemoved -f $EntityID)
             }
         }
     }
     else {
-        Write-ADFSTkVerboseLog ("SPHash List empty. Cannot remove {0}" -f $EntityID)
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText sphashListEmpty -f $EntityID)
     }
 }

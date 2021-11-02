@@ -26,7 +26,7 @@ function Get-ADFSTkEntityHash {
             }
         }
         else {
-            Throw "File not found!"
+            Throw (Get-ADFSTkLanguageText cFileNotFound)
         }
     }
     elseif ($PSCmdlet.ParameterSetName -eq 'Default') {
