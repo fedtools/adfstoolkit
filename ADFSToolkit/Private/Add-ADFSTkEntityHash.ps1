@@ -5,7 +5,7 @@ param (
     [Parameter(Mandatory=$false, Position=1)]
     $spHash = $null
 )
-    if (![string]::IsNullOrEmpty($SP))
+    if (![string]::IsNullOrEmpty($EntityID))
     {
         if ([string]::IsNullOrEmpty($spHash))
         {
