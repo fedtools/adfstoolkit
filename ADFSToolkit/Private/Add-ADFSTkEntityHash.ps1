@@ -9,8 +9,8 @@ param (
     {
         if ([string]::IsNullOrEmpty($spHash))
         {
-            $spHash = Get-ADFSTkEntityHash -EntityID $EntityID
-        }
+            $spHash = New-ADFSTkEntityHash -SP $sp
+        } 
     
         $SPHashList.$EntityID = $spHash
         $SPHashList | Export-Clixml $SPHashFile
