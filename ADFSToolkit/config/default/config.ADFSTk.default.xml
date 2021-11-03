@@ -10,15 +10,15 @@
 	<Logging useEventLog="true">
 		<LogName>ADFSToolkit</LogName>
 		<Source>Import-ADFSTkMetadata</Source>
-	</Logging>   
-	<metadataURL/> 
+	</Logging>
+	<metadataURL/>
 	<signCertFingerprint/>
 	<claimsProviders>
 		<claimsProvider>Active Directory</claimsProvider>
 	</claimsProviders>
 	<staticValues>
 		<o/>
-		<co/>		
+		<co/>
 		<c/>
 		<schacHomeOrganization/>
 		<norEduOrgAcronym/>
@@ -42,7 +42,7 @@
 		</stores>
 	</storeConfig>
 	<transformRules>
-		<rule name="ADFSTkExtractSubjectUniqueId" originClaim="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn" /> 
+		<rule name="ADFSTkExtractSubjectUniqueId" originClaim="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn" />
 	</transformRules>
 	<attributes>
 		<attribute type="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" store="Active Directory" name="givenname" />
@@ -64,13 +64,13 @@
              -->
 
 		<!-- Scenario A. Static assignment (default, comment out if you enable another technique
-             <attribute type="urn:mace:dir:attribute-def:eduPersonAffiliation" store="Static" >
+             <attribute type="urn:mace:dir:attribute-def:eduPersonAffiliation" store="Static">
                <value>member</value>
              </attribute>
              end Scenario A. Static assignment -->
 
 		<!-- note that in this template this field will be dynamically updated by eduPersonAfilliation above by new-ADFSTkConfiguration baking in the domain
-              <attribute type="urn:mace:dir:attribute-def:eduPersonScopedAffiliation" store="Static" >
+              <attribute type="urn:mace:dir:attribute-def:eduPersonScopedAffiliation" store="Static">
               </attribute>
               end Scenario A. Static assignment -->
 
@@ -86,7 +86,7 @@
                 <group name="SID-FOR-MEMBER-GROUP" value="member"/>
                 <group name="SID-FOR-LIBRARYWALKIN-GROUP" value="library-walk-in"/>
             </attribute>
-      <attribute type="urn:mace:dir:attribute-def:eduPersonScopedAffiliation" store="Active Directory" name="eduPersonScopedAffiliation" useGroups="true" claimOrigin="http://schemas.microsoft.com/ws/2008/06/identity/claims/groupsid" >
+      <attribute type="urn:mace:dir:attribute-def:eduPersonScopedAffiliation" store="Active Directory" name="eduPersonScopedAffiliation" useGroups="true" claimOrigin="http://schemas.microsoft.com/ws/2008/06/identity/claims/groupsid">
                 <group name="SID-FOR-FACULTY-GROUP" value="faculty@EXAMPLE.COM"/>
                 <group name="SID-FOR-STAFF-GROUP" value="staff@EXAMPLE.COM"/>
                 <group name="SID-FOR-EMPLOYEE-GROUP" value="employee@EXAMPLE.COM"/>
@@ -112,7 +112,7 @@
 			<restrictedvalue>library-walk-in</restrictedvalue>
 		</attribute>
 
-		<attribute type="urn:mace:dir:attribute-def:eduPersonScopedAffiliation" store="Active Directory" name="eduPersonScopedAffiliation" >
+		<attribute type="urn:mace:dir:attribute-def:eduPersonScopedAffiliation" store="Active Directory" name="eduPersonScopedAffiliation">
 		</attribute>
 
 		<!-- end Scenario C. Attribute assignment -->
@@ -121,18 +121,25 @@
 
              Absence of allowedRegsitrationAuthorities - no action taken
              Presence of allowedRegistrationAuthorities - attribute filters to be present in only said RA (one or more)
-            --> 
+            -->
 
 		<!-- Attention! You might need to filter this attribute on SP level before releasing it. (Not needed for the European Student Identifier Entity Category) -->
 		<attribute type="urn:mace:dir:attribute-def:schacPersonalUniqueCode " store="Active Directory" name="schacPersonalUniqueCode " />
-		
+
 		<!-- Attention! You might need to filter this attribute on SP level before releasing it. -->
 		<attribute type="urn:mace:dir:attribute-def:eduPersonEntitlement" store="Active Directory" name="edupersonentitlement" />
 
 		<!-- Attention! Never send any AssuranceLevel(s) your institution isn't certified for -->
 		<attribute type="urn:mace:dir:attribute-def:eduPersonAssurance" store="Static">
-			<value>http://www.EXAMPLE.COM/policy/assurance/al1</value>
-			<value>http://www.EXAMPLE.COM/policy/assurance/al2</value>
+			<value>https://refeds.org/assurance</value>
+			<value>https://refeds.org/assurance/IAP/local-enterprise</value>
+			<value>https://refeds.org/assurance/ID/eppn-unique-no-reassign</value>
+			<!-- <value>https://refeds.org/assurance/IAP/low</value>
+			<value>https://refeds.org/assurance/IAP/medium</value>
+			<value>https://refeds.org/assurance/profile/cappuccino</value>
+			<value>https://refeds.org/assurance/ID/unique</value>
+			<value>https://refeds.org/assurance/ATP/ePA-1m</value>
+			<value>https://refeds.org/assurance/ATP/ePA-1d</value> -->
 		</attribute>
 
 		<attribute type="urn:mace:dir:attribute-def:eduPersonUniqueID" store="Active Directory" name="objectGUID" />

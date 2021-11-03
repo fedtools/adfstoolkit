@@ -11,7 +11,7 @@
         CheckSignature          = ($HealthCheckMode -ne "CriticalOnly") #Don't run i CriticalOnly
         CheckConfigVersion      = $true
         MFAAccesControlPolicy   = $true
-        removedSPsStillInSPHash = ($HealthCheckMode -eq "Full") #Only run in Full mode
+        RemovedSPsStillInSPHash = ($HealthCheckMode -eq "Full") #Only run in Full mode
         MissingSPsInADFS        = ($HealthCheckMode -eq "Full") #Only run in Full mode
         ScheduledTaskPresent    = ($HealthCheckMode -eq "Full") #Checks if there are a Scheduled Task with the name 'Import Federated Metadata with ADFSToolkit'
     }
@@ -24,14 +24,11 @@
     }
 
     $healthResults = @()
-    $finalResult = $true
 
     #Get All paths
     if ([string]::IsNullOrEmpty($Global:ADFSTkPaths)) {
         $Global:ADFSTkPaths = Get-ADFSTKPaths
     }
-
-
 
     #region get config file(s)
     $configFiles = @()
@@ -400,50 +397,6 @@
 
     #region Show result
     if (!$Silent) {
-        # if ($healthResults.Values.ResultValue.Contains([Result]::Pass)) {
-        #     $PassedResultObjects = $healthResults.Values | ? { $_.ResultValue -eq ([Result]::Pass) }
-
-        #     Write-ADFSTkHost -Text "Passed tests" -ForegroundColor Green -AddLinesOverAndUnder
-
-        #     foreach ($resultObjects in $PassedResultObjects) {
-        #         foreach ($resultObject in $resultObjects) {
-        #             Write-ADFSTkHost -Text "{0} - {1}" -f $resultObject.Check, $resultObject.ResultText -ForegroundColor Green
-        #         }
-        #     }
-        # }
-
-        # if ($healthResults.Values.ResultValue.Contains([Result]::Warning)) {
-        #     $resultObjectsWithWarning = $healthResults.Values | ? { $_.ResultValue -eq ([Result]::Warning) }
-
-        #     Write-ADFSTkHost -Text "Tests with warnings" -ForegroundColor Yellow -AddLinesOverAndUnder
-
-        #     foreach ($resultObjects in $resultObjectsWithWarning) {
-        #         foreach ($resultObject in $resultObjects) {
-        #             Write-ADFSTkHost -Text "{0} (fixable={1}) - {2}" -f $resultObject.Check, `
-        #             ($resultObject.Check -eq "SP's in SPHash File not in Metadata" -or `
-        #                     $resultObject.Check -eq "SPHash File corrupt" -or `
-        #                     $resultObject.Check -eq "MFA Access Control Policy"), `
-        #                 $resultObject.ResultText -ForegroundColor Yellow
-        #         }
-        #     }
-        # }
-
-        # if ($healthResults.Values.ResultValue.Contains([Result]::Fail)) {
-        #     $failedResultObjects = $healthResults.Values | ? { $_.ResultValue -eq ([Result]::Fail) }
-
-        #     Write-ADFSTkHost -Text "Tests that failed" -ForegroundColor Red -AddLinesOverAndUnder
-
-        #     foreach ($resultObjects in $failedResultObjects) {
-        #         foreach ($resultObject in $resultObjects) {
-        #             Write-ADFSTkHost -Text "{0} (fixable={1}) - {2}" -f $resultObject.Check, `
-        #             ($resultObject.Check -eq "SP's in SPHash File not in Metadata" -or `
-        #                     $resultObject.Check -eq "SPHash File corrupt" -or `
-        #                     $resultObject.Check -eq "MFA Access Control Policy"), `
-        #                 $resultObject.ResultText -ForegroundColor Red
-        #         }
-        #     }
-        # }
-
         $healthResults | Select CheckName, ResultValue, ResultText, ReferenceFile | sort ResultValue, CheckName, ReferenceFile | ft -AutoSize -Wrap
     }
 
@@ -452,45 +405,13 @@
 
     #region Correct fixable errors
     $FixedAnything = $false
+    
     #region MFAAccesControlPolicy
     #createACP
     $MFAAccesControlPolicy = $healthResults | ? FixID -eq "CreateACP"
     if (![String]::IsNullOrEmpty($MFAAccesControlPolicy)) {
         if ($Silent -or (Get-ADFSTkAnswer (Get-ADFSTkLanguageText healthMFAAccesControlPolicyRegisterACP))) {
-            $ACPMetadata = @"
-    <PolicyMetadata xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2012/04/ADFS">
-      <RequireFreshAuthentication>false</RequireFreshAuthentication>
-      <IssuanceAuthorizationRules>
-        <Rule>
-          <Conditions>
-            <Condition i:type="SpecificClaimCondition">
-              <ClaimType>http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod</ClaimType>
-              <Operator>Equals</Operator>
-              <Values>
-                <Value>https://refeds.org/profile/mfa</Value>
-              </Values>
-            </Condition>
-            <Condition i:type="MultiFactorAuthenticationCondition">
-              <Operator>IsPresent</Operator>
-              <Values />
-            </Condition>
-          </Conditions>
-        </Rule>
-        <Rule>
-          <Conditions>
-            <Condition i:type="AlwaysCondition">
-              <Operator>IsPresent</Operator>
-              <Values />
-            </Condition>
-          </Conditions>
-        </Rule>
-      </IssuanceAuthorizationRules>
-    </PolicyMetadata>
-"@
-            New-AdfsAccessControlPolicy -Name "ADFSTk:Permit everyone and force MFA" `
-                -Identifier ADFSToolkitPermitEveryoneAndRequireMFA `
-                -Description "Grant access to everyone and require MFA for everyone." `
-                -PolicyMetadata $ACPMetadata | Out-Null
+            New-ADFSTKAccessControlPolicy
 
             Write-ADFSTkLog "Access Control Policy 'ADFSTk:Permit everyone and force MFA' created."
 
@@ -587,13 +508,13 @@
     }
     else {
         if ($healthResults.ResultValue.Contains([Result]::Fail)) {
-            Write-ADFSTkLog -Message "ADFSTkHealth FAILED" -EntryType Error
+            Write-ADFSTkLog -Message (Get-ADFSTkLanguageText healthFailed) -EntryType Error
         }
         elseif ($healthResults.ResultValue.Contains([Result]::Warning)) {
-            Write-ADFSTkLog -Message "ADFSTkHealth PASSED with warnings"  -EntryType Warning
+            Write-ADFSTkLog -Message (Get-ADFSTkLanguageText healthPassedWithWarnings) -EntryType Warning
         }
         else {
-            Write-ADFSTkLog -Message "ADFSTkHealth PASSED" -EntryType Information -ForegroundColor Green
+            Write-ADFSTkLog -Message (Get-ADFSTkLanguageText healthPassed) -EntryType Information -ForegroundColor Green
         }
     }
 }

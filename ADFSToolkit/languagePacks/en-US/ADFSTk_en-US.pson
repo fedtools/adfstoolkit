@@ -486,6 +486,9 @@ If you don't know why this occurred, reinstallation of ADFS Toolkit is recommend
     healthDeleteSPHashFileDeleteCorruptSPHashFile = "Do you want to delete the corrupt SP Hash file '{0}'?"
     healthAddMissingSPsInADFSRemoveMissingSPs = "Do you want to remove SP's from the SP Hash file '{0}' that doesn't exists in ADFS?"
     healthRegisterScheduledTaskCreateSchedTask = "Do you want to create the Scheduled Task?"
+    healthFailed = "ADFSTkHealth FAILED"
+    healthPassedWithWarnings = "ADFSTkHealth PASSED with warnings"
+    healthPassed =  "ADFSTkHealth PASSED" 
     
     ##############################################
     ### ADFSTkFederationDefaults [feddefaults] ###
