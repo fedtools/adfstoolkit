@@ -1,7 +1,7 @@
 ﻿function Get-ADFSTkFederationDefaults {
     [CmdletBinding()]
     param (
-        [Parameter(ParameterSetName = 'Default')]
+        [Parameter(ParameterSetName = 'Default', Position = 0)]
         [ValidateNotNullOrEmpty()]
         [string]
         $URL,
