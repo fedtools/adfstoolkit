@@ -49,10 +49,6 @@ function Import-ADFSTkMetadata {
         }
 
         try {
-            # Add some variables
-            $md5 = new-object -TypeName System.Security.Cryptography.MD5CryptoServiceProvider
-            $utf8 = new-object -TypeName System.Text.UTF8Encoding
-
             # load configuration file
             if (!(Test-Path ( $ConfigFile ))) {
                 throw (Get-ADFSTkLanguageText cFileDontExist -f $ConfigFile)
