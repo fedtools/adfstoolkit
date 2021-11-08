@@ -202,13 +202,21 @@ Process {
             
             if ($EntryType -eq "Error")
             { 
-                Write-Error $Message
-                if ($Underline) { Write-Error "$([string]::Empty.PadLeft($ScreenMessage.Length,$UnderlineChar))" }
+                $ColorParams = @{
+                    ForegroundColor = [System.ConsoleColor]::Red
+                    BackgroundColor = [System.ConsoleColor]::Black
+                }
+                Write-Host "ERROR: $Message" @ColorParams
+                if ($Underline) { Write-Host "$([string]::Empty.PadLeft($ScreenMessage.Length + 7,$UnderlineChar))" @ColorParams }
             }
             elseif ($EntryType -eq "Warning")
             {
-                Write-Warning $Message
-                if ($Underline) { Write-Warning "$([string]::Empty.PadLeft($ScreenMessage.Length,$UnderlineChar))" }
+                $ColorParams = @{
+                    ForegroundColor = [System.ConsoleColor]::Yellow
+                    BackgroundColor = [System.ConsoleColor]::Black
+                }
+                Write-Host "WARNING: $Message" @ColorParams
+                if ($Underline) { Write-Host "$([string]::Empty.PadLeft($ScreenMessage.Length + 9,$UnderlineChar))" @ColorParams}
             }
             else
             {

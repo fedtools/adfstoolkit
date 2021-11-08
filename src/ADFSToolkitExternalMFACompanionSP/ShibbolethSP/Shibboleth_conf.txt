@@ -1,0 +1,25 @@
+ #Shibboleth2.xml
+	<ApplicationDefaults entityID="https://aaa.bbb/shibboleth"
+        REMOTE_USER="eppn subject-id pairwise-id persistent-id" 
+        cipherSuites="DEFAULT:!EXP:!LOW:!aNULL:!eNULL:!DES:!IDEA:!SEED:!RC4:!3DES:!kRSA:!SSLv2:!SSLv3:!TLSv1:!TLSv1.1"
+		metadataAttributePrefix="Meta-" >
+
+	<Errors supportContact="aaa.bbb@cc.com"
+            helpLocation="/about.html"
+            styleSheet="/shibboleth-sp/main.css"
+			session="sessionError.html" />
+			
+<!-- Extracts support information for IdP from its metadata. -->
+		<AttributeExtractor type="Metadata" reloadChanges="true" errorURL="errorURL" DisplayName="displayName"
+                    InformationURL="informationURL" PrivacyStatementURL="privacyStatementURL"
+                    OrganizationURL="organizationURL">
+			<ContactPerson id="Support-Contact"  contactType="support" formatter="$EmailAddress" />
+			<ContactPerson id="Other-Contact"  contactType="other" formatter="$EmailAddress" />
+			<Logo id="Small-Logo" height="16" width="16" formatter="$_string"/>
+		</AttributeExtractor>
+
+#attribute-map.xml
+<!-- for EC / Assurance checks -->
+    <Attribute name="urn:oasis:names:tc:SAML:attribute:assurance-certification" id="Assurance-Certification"/>
+    <Attribute name="http://macedir.org/entity-category" id="Entity-Category"/>
+    <Attribute name="http://macedir.org/entity-category-support" id="Entity-Category-Support"/>

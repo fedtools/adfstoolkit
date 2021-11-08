@@ -5,28 +5,6 @@ param(
     [switch]$criticalHealthChecksOnly
 )
 
-    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
-    {
-        $Global:ADFSTkPaths = Get-ADFSTKPaths
-    }
-    
-#region Check and setup Event Log
-    # set appropriate logging via EventLog mechanisms
-
-    $LogName = 'ADFSToolkit'
-    $Source = 'Sync-ADFSTkAggregates'
-    if (Verify-ADFSTkEventLogUsage -LogName $LogName -Source $Source)
-    {
-        #If we evaluated as true, the eventlog is now set up and we link the WriteADFSTklog to it
-        Write-ADFSTkLog -SetEventLogName $LogName -SetEventLogSource $Source
-    }
-    else 
-    {
-        # No Event logging is enabled, just this one to a file
-        Write-ADFSTkLog (Get-ADFSTkLanguageText importEventLogMissingInSettings) -MajorFault            
-    }
-#endregion
-
     Write-ADFSTkLog (Get-ADFSTkLanguageText syncStart) -EventID 35
 
 #region Checking configfile

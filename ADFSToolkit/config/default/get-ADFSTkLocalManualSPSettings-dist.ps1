@@ -43,6 +43,13 @@ function get-ADFSTkLocalManualSPSettings
     #    TransformRules = [Ordered]@{}
     #    AuthorizationRules = @{}
     #    HashAlgorithm = $SecureHashAlgorithm.SHA1
+    #    ApplyMFAConfiguration = @{AzureMFA = @{ 
+        #     phoneconfirmation = $false      # Call to phone
+        #     phoneotp = $false               # Click on number on phone
+        #     phoneappnotification = $false   # Push to phone app
+        #     smsotp  = $false                # OTP from SMS
+        #     otp  = $true                    # OTP from phone app
+        # }}
     #    EntityCategories = @("http://www.geant.net/uri/dataprotection-code-of-conduct/v1")
     #    SamlResponseSignature = 'MessageAndAssertion' #Valid SamlResponseSignatures: AssertionOnly, MessageAndAssertion, MessageOnly
     #}
@@ -52,6 +59,10 @@ function get-ADFSTkLocalManualSPSettings
     <#
     ### Attribute release for ALL SP:s
     
+    $ManualSPSettings = @{
+        TransformRules = [Ordered]@{}
+    }
+
     $ManualSPSettings.TransformRules = [Ordered]@{}
     $ManualSPSettings.TransformRules.norEduPersonNIN = $AllTransformRules.norEduPersonNIN
     
@@ -59,11 +70,34 @@ function get-ADFSTkLocalManualSPSettings
 
     ### Attribute release for all SP:s for one institution
     
+    $ManualSPSettings = @{
+        TransformRules = [Ordered]@{}
+    }
+
     $ManualSPSettings.TransformRules = [Ordered]@{}
     $ManualSPSettings.TransformRules.norEduPersonLIN = $AllTransformRules.norEduPersonLIN
     
     $IssuanceTransformRuleManualSP["urn:adfstk:entityiddnsendswith:swamid.se"] = $ManualSPSettings
     
+    ### Attribute release for one specific SP
+
+    $ManualSPSettings = @{
+        TransformRules = [Ordered]@{}
+    }
+
+    $ManualSPSettings.TransformRules.schacPersonalUniqueCode = [PSCustomObject]@{
+        Rule=@"
+        @RuleName = "compose schacPersonalUniqueCode for [entityID]"
+        c:[Type == "urn:mace:dir:attribute-def:schacPersonalUniqueCode", Value ~= "^only_release_values_starting_with_this_string"] 
+         => issue(Type = "urn:oid:1.3.6.1.4.1.25178.1.2.14", 
+         Value = c.Value, 
+         Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
+"@
+        Attribute="urn:mace:dir:attribute-def:schacPersonalUniqueCode"
+        AttributeGroup="ID's"
+    }
+
+    $IssuanceTransformRuleManualSP["entityID"] = $ManualSPSettings
     #>
 
     # see below documentation for example Powershell code blocks to copy and paste here

@@ -17,7 +17,6 @@ function Add-ADFSTkSPRelyingPartyTrust {
         ClaimsProviderName                   = @("Active Directory")
         ErrorAction                          = 'Stop'
         SignatureAlgorithm                   = Get-ADFSTkSecureHashAlgorithm -EntityId $entityID -CertificateSignatureAlgorithm $SigningCertificate.SignatureAlgorithm.Value
-        IssuanceAuthorizationRules           = Get-ADFSTkIssuanceAuthorizationRules -EntityId $entityID
         SamlResponseSignature                = Get-ADFSTkSamlResponseSignature -EntityId $entityID
     }
 
@@ -62,7 +61,8 @@ function Add-ADFSTkSPRelyingPartyTrust {
                 Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPConvertionEncryptionCertDone)
             }
 
-            if ($CertificateString -is [Object[]]) { #Just for logging!
+            if ($CertificateString -is [Object[]]) {
+                #Just for logging!
                 Write-ADFSTkLog (Get-ADFSTkLanguageText addRPMultipleEncryptionCertsFound -f $EncryptionCertificate.Thumbprint)  -EntryType Warning -EventID 30
             }
         }
@@ -86,7 +86,8 @@ function Add-ADFSTkSPRelyingPartyTrust {
         $CertificateString = ($sp.SPSSODescriptor.KeyDescriptor | ? use -ne "encryption"  | select -ExpandProperty KeyInfo).X509Data.X509Certificate #or shoud 'use' not be present?
     }
     
-    if ($CertificateString -ne $null) { #foreach insted create $SigningCertificates array
+    if ($CertificateString -ne $null) {
+        #foreach insted create $SigningCertificates array
         try {
             $rpParams.RequestSigningCertificate = @()
 
@@ -180,6 +181,19 @@ function Add-ADFSTkSPRelyingPartyTrust {
         -RequestedAttribute $sp.SPSSODescriptor.AttributeConsumingService.RequestedAttribute `
         -RegistrationAuthority $sp.Extensions.RegistrationInfo.registrationAuthority `
         -NameIdFormat $sp.SPSSODescriptor.NameIDFormat
+    #endregion
+
+    #region Add MFA Access Policy and extra rules if needed
+
+    $mfaRules = Get-ADFSTkMFAConfiguration -EntityId $entityID
+
+    if ([string]::IsNullOrEmpty($mfaRules)) {
+        $rpParams.IssuanceAuthorizationRules = Get-ADFSTkIssuanceAuthorizationRules -EntityId $entityID
+    }
+    else {
+        $rpParams.AccessControlPolicyName = 'ADFSTk:Permit everyone and force MFA'
+        $rpParams.IssuanceTransformRules += $mfaRules
+    }
     #endregion
 
     if ((Get-ADFSRelyingPartyTrust -Identifier $entityID) -eq $null) {

@@ -42,21 +42,12 @@ param (
 
     if ($RequestedAttributes.Count -gt 0)
     {
-        #if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.6")) {
-        #    $TransformRules.c = $Global:ADFSTkAllTransformRules.c
-        #}
         if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.3")) {
             $TransformRules.cn = $Global:ADFSTkAllTransformRules.cn
         }
-        #if ($RequestedAttributes.ContainsKey("urn:oid:0.9.2342.19200300.100.1.43")) {
-        #    $TransformRules.co = $Global:ADFSTkAllTransformRules.co
-        #}
         if ($RequestedAttributes.ContainsKey("urn:oid:2.16.840.1.113730.3.1.241")) { 
             $TransformRules.displayName = $Global:ADFSTkAllTransformRules.displayName 
         }
-        #if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.6")) { 
-        #    $TransformRules.countryName = $Global:ADFSTkAllTransformRules.countryName 
-        #}
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.1")) {
             $TransformRules.eduPersonAffiliation = $Global:ADFSTkAllTransformRules.eduPersonAffiliation
         }
@@ -73,32 +64,21 @@ param (
             $TransformRules.eduPersonScopedAffiliation = $Global:ADFSTkAllTransformRules.eduPersonScopedAffiliation
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.10")) { 
-            $TransformRules.eduPersonTargetedID = $Global:ADFSTkAllTransformRules.eduPersonTargetedID
+            #eduPersonTargetedID should only be released if eduPersonPrincipalName i ressignable
+            if (![string]::IsNullOrEmpty($Settings.configuration.eduPersonPrincipalNameRessignable) -and $Settings.configuration.eduPersonPrincipalNameRessignable.ToLower() -eq "true")
+            {
+                $TransformRules.eduPersonTargetedID = $Global:ADFSTkAllTransformRules.eduPersonTargetedID
+            }
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.13")) { 
             $TransformRules.eduPersonUniqueID = $Global:ADFSTkAllTransformRules.eduPersonUniqueID
         }
-        #if ($RequestedAttributes.ContainsKey("urn:oid:0.9.2342.19200300.100.1.43")) { 
-        #    $TransformRules.friendlyCountryName = $Global:ADFSTkAllTransformRules.friendlyCountryName 
-        #}
         if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.42")) { 
             $TransformRules.givenName = $Global:ADFSTkAllTransformRules.givenName 
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:0.9.2342.19200300.100.1.3")) { 
             $TransformRules.mail = $Global:ADFSTkAllTransformRules.mail
         }
-        #if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.2428.90.1.6")) { 
-        #    $TransformRules.norEduOrgAcronym = $Global:ADFSTkAllTransformRules.norEduOrgAcronym 
-        #}
-        #if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.2428.90.1.5")) {
-        #    $TransformRules.norEduPersonNIN = $Global:ADFSTkAllTransformRules.norEduPersonNIN
-        #}
-        #if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.10")) {
-        #    $TransformRules.o = $Global:ADFSTkAllTransformRules.o
-        #}
-        #if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.10")) { 
-        #    $TransformRules.organizationName = $Global:ADFSTkAllTransformRules.organizationName 
-        #}
         if ($RequestedAttributes.ContainsKey("urn:oid:1.2.752.29.4.13")) {
             $TransformRules.personalIdentityNumber = $Global:ADFSTkAllTransformRules.personalIdentityNumber
         }
@@ -117,6 +97,23 @@ param (
     }
 
     $IssuanceTransformRuleCategories.Add("http://www.geant.net/uri/dataprotection-code-of-conduct/v1",$TransformRules)
-    
+
+    #European Student Identifier Entity Category
+    $TransformRules = [Ordered]@{}
+    $TransformRules.schacPersonalUniqueCode = [PSCustomObject]@{
+        Rule=@"
+        @RuleName = "compose schacPersonalUniqueCode for ESI"
+        c:[Type == "urn:mace:dir:attribute-def:schacPersonalUniqueCode", Value =~ "^urn:schac:PersonalUniqueCode:int:esi:"] 
+         => issue(Type = "urn:oid:1.3.6.1.4.1.25178.1.2.14", 
+         Value = c.Value, 
+         Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
+"@
+        Attribute="urn:mace:dir:attribute-def:schacPersonalUniqueCode"
+        AttributeGroup="ID's"
+    }
+    $IssuanceTransformRuleCategories.Add("https://myacademicid.org/entity-categories/esi",$TransformRules)
+
+    ###
+
     return $IssuanceTransformRuleCategories
 }

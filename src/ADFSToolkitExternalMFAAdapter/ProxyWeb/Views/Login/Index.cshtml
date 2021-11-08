@@ -1,0 +1,42 @@
+﻿
+@model Dictionary<string, string>
+@*@model IEnumerable<System.Security.Claims.Claim>*@
+
+@{
+    ViewBag.Title = "Display Claims";
+}
+
+<h2>Display Headers</h2>
+
+@if (Model == null)
+{
+    <p class="alert-danger">No claims found</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <tr>
+            <th>Subject</th>
+            <th>Issuer</th>
+            <th>Type</th>
+            <th>Value</th>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Key</td>
+                <td>@item.Value</td>
+
+            </tr>
+        }
+        @*@foreach (var claim in Model.OrderBy(x => x.Type))
+            {
+                <tr>
+                    <td>@claim.Subject.Name</td>
+                    <td>@claim.Issuer</td>
+                    <td>@claim.Type</td>
+                    <td>@claim.Value</td>
+                </tr>
+            }*@
+    </table>
+}
