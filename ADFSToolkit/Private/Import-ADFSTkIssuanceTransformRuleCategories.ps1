@@ -103,12 +103,12 @@ param (
     $TransformRules.schacPersonalUniqueCode = [PSCustomObject]@{
         Rule=@"
         @RuleName = "compose schacPersonalUniqueCode for ESI"
-        c:[Type == "urn:mace:dir:attribute-def:schacPersonalUniqueCode", Value =~ "^urn:schac:PersonalUniqueCode:int:esi:"] 
+        c:[Type == "urn:schac:personalUniqueCode", Value =~ "^urn:schac:personalUniqueCode:int:esi:"] 
          => issue(Type = "urn:oid:1.3.6.1.4.1.25178.1.2.14", 
          Value = c.Value, 
          Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
 "@
-        Attribute="urn:mace:dir:attribute-def:schacPersonalUniqueCode"
+        Attribute="urn:schac:personalUniqueCode"
         AttributeGroup="ID's"
     }
     $IssuanceTransformRuleCategories.Add("https://myacademicid.org/entity-categories/esi",$TransformRules)

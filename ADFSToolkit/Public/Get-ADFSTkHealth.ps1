@@ -388,7 +388,7 @@
         }
         else {
             $resultObject.ResultValue = [Result]::Warning
-            $resultObject.ResultText = Get-ADFSTkLanguageText healthScheduledTaskPresentScheduledTasNotPresent
+            $resultObject.ResultText = Get-ADFSTkLanguageText healthScheduledTaskPresentScheduledTaskNotPresent
             $resultObject.FixID = "RegisterScheduledTask"
         }
         $healthResults += $resultObject

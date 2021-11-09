@@ -243,7 +243,7 @@ $TransformRules."transient-id" = [PSCustomObject]@{
     AttributeGroup="ID's"
     }
 
-    $TransformRules.schacPersonalUniqueCode = Get-ADFSTkTransformRule -Type "urn:mace:dir:attribute-def:schacPersonalUniqueCode" `
+    $TransformRules.schacPersonalUniqueCode = Get-ADFSTkTransformRule -Type "urn:schac:personalUniqueCode" `
                                            -Oid "urn:oid:1.3.6.1.4.1.25178.1.2.14" `
                                            -AttributeName schacPersonalUniqueCode `
                                            -AttributeGroup "ID's"
