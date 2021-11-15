@@ -12,12 +12,6 @@ function get-ADFSTkManualSPSettings
 
     $ManualSPSettings = @{}
 
-    #Get All paths
-    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
-    {
-        $Global:ADFSTkPaths = Get-ADFSTKPaths
-    }
-
     try {
         #Attempt to Get local override
         if ([string]::IsNullOrEmpty($Settings.configuration.LocalRelyingPartyFile))

@@ -7,7 +7,7 @@
 # v1.0.0.0  on: 04/17/2018
 # v2.0.0    on: 12/17/2020
 # v2.0.1    on: 03/10/2021
-#
+# v2.1.0-RC1  : 11/15/2021
 
 @{
 
@@ -15,7 +15,7 @@
 RootModule = 'ADFSToolkit.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.0.1'
+ModuleVersion = '2.1.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -60,7 +60,7 @@ PowerShellVersion = '5.0'
 # RequiredAssemblies = @()
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
-# ScriptsToProcess = @()
+# ScriptsToProcess = @("Initialize-ADFSTk.ps1")
 
 # Type files (.ps1xml) to be loaded when importing this module
 # TypesToProcess = @()
@@ -72,7 +72,7 @@ PowerShellVersion = '5.0'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Import-ADFSTkMetadata', 'New-ADFSTkConfiguration', 'Unpublish-ADFSTkAggregate', 'Get-ADFSTkTransformRuleObjects', 'Update-ADFSTkInstitutionConfiguration', 'Sync-ADFSTkAggregates', 'New-ADFSTkInstitutionConfiguration', 'Enable-ADFSTkInstitutionConfiguration', 'Disable-ADFSTkInstitutionConfiguration', 'Get-ADFSTkToolsIssuanceTransformRules', 'Get-ADFSTkHealth', 'Get-ADFSTkPaths', 'Get-ADFSTkFederationDefaults', 'Remove-ADFSTkCache', 'Copy-ADFSTkToolRules', 'Get-ADFSTkToolEntityId'
+FunctionsToExport = 'Import-ADFSTkMetadata', 'New-ADFSTkConfiguration', 'Unpublish-ADFSTkAggregate', 'Get-ADFSTkTransformRuleObjects', 'Update-ADFSTkInstitutionConfiguration', 'Sync-ADFSTkAggregates', 'New-ADFSTkInstitutionConfiguration', 'Enable-ADFSTkInstitutionConfiguration', 'Disable-ADFSTkInstitutionConfiguration', 'Get-ADFSTkToolsIssuanceTransformRules', 'Get-ADFSTkHealth', 'Get-ADFSTkPaths', 'Get-ADFSTkFederationDefaults', 'Remove-ADFSTkCache', 'Copy-ADFSTkToolRules', 'Get-ADFSTkToolEntityId', 'Install-ADFSTkMFAAdapter','Uninstall-ADFSTkMFAAdapter','Get-ADFSTkMFAAdapter','Get-ADFSTkEntityHash','Remove-ADFSTkEntityHash','Get-ADFSTkMetadata', 'Get-ADFSTkHealth', 'Register-ADFSTkScheduledTask', 'Get-ADFSTkToolSpInfoFromMetadata'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 #CmdletsToExport = @(Import-Metadata)
@@ -98,7 +98,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('ADFS','SAML2','SAML', 'Federation' ,'Aggregates','CANARIE','CAF','FIMS','SWAMID','ADFSToolkit')
+        Tags = @('ADFS','SAML2','SAML', 'Federation' ,'Aggregates','CANARIE','CAF','FIMS','SWAMID','ADFSToolkit','MFA','REFEDS-MFA','REFEDS','REFEDSMFA')
 
         # A URL to the license for this module.
          LicenseUri = 'http://www.apache.org/licenses/LICENSE-2.0'
@@ -113,7 +113,7 @@ PrivateData = @{
         # ReleaseNotes = ''
 
         # Prerelease string of this module
-        # Prerelease = 'RC10'
+        Prerelease = 'RC1'
 
     } # End of PSData hashtable
 

@@ -113,7 +113,7 @@ $TransformRules."transient-id" = [PSCustomObject]@{
             param = c1.Value, 
             param = c1.OriginalIssuer, 
             param = "", 
-            param = regexreplace(c2.Value, "(?<start>^.{1,20}).+$", "${start}"));
+            param = c2.Value);
             
     @RuleName = "issue transient-id"
     c:[Type == "urn:adfstk:transientid"]
@@ -243,10 +243,11 @@ $TransformRules."transient-id" = [PSCustomObject]@{
     AttributeGroup="ID's"
     }
 
-    $TransformRules.schacPersonalUniqueCode = Get-ADFSTkTransformRule -Type "urn:mace:dir:attribute-def:schacPersonalUniqueCode" `
+    $TransformRules.schacPersonalUniqueCode = Get-ADFSTkTransformRule -Type "urn:schac:personalUniqueCode" `
                                            -Oid "urn:oid:1.3.6.1.4.1.25178.1.2.14" `
                                            -AttributeName schacPersonalUniqueCode `
-                                           -AttributeGroup "ID's"    
+                                           -AttributeGroup "ID's"
+
     #endregion
     #region Personal attributes
     $TransformRules.givenName = Get-ADFSTkTransformRule -Type "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" `

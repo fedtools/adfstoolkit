@@ -11,7 +11,7 @@ param (
         $signCertificate.Import($signCertificateBytes)
     }
     catch {
-        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText importCouldNotConvertSigningSert) -MajorFault
+        Write-ADFSTkLog (Get-ADFSTkLanguageText importCouldNotConvertSigningSert) -MajorFault
     }
         
    
@@ -21,7 +21,7 @@ param (
     if ([string]::IsNullOrEmpty($Settings.configuration.signCertFingerprint))
     {
 
-        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText importNoCertFingerprintInConfig) -MajorFault
+        Write-ADFSTkLog (Get-ADFSTkLanguageText importNoCertFingerprintInConfig) -MajorFault
 
     }
     else

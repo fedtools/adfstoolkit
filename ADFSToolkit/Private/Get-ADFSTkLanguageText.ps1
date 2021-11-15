@@ -10,11 +10,6 @@ param (
     $languageFileName = "ADFSTk_{0}.pson"
     $selectedLanguage = $null
 
-    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
-    {
-        $Global:ADFSTkPaths = Get-ADFSTKPaths
-    }
-  
     if ($PSBoundParameters.ContainsKey('Language'))
     {
         $selectedLanguage = $Language
@@ -135,11 +130,6 @@ param (
 
     if (!$Global:ADFSTkLanguageTables.ContainsKey($selectedLanguage))
     {
-        if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
-        {
-            $Global:ADFSTkPaths = Get-ADFSTKPaths
-        }
-        
         $languagePacks = Join-Path $Global:ADFSTKPaths.modulePath "languagePacks" 
 
         $languageDir = Join-Path $languagePacks $selectedLanguage

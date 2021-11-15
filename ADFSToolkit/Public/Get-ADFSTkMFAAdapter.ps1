@@ -9,16 +9,16 @@ function Get-ADFSTkMFAAdapter {
     $nameSFA = "RefedsSFAUsernamePasswordAdapter"
     
     if ($authProviders.Name.Contains($nameMFA)) {
-        Write-ADFSTkHost "RefedsMFA Adapter IS present!" -ForegroundColor Green
+        Write-ADFSTkHost mfaAdapterPresent -f 'RefedsMFA','IS' -ForegroundColor Green
     }
     else {
-        Write-ADFSTkHost "RefedsMFA Adapter IS NOT present!" -ForegroundColor Red
+        Write-ADFSTkHost mfaAdapterPresent -f 'RefedsMFA','IS NOT' -ForegroundColor Red
     }
     
     if ($authProviders.Name.Contains($nameSFA)) {
-        Write-ADFSTkHost "RefedsSFA Adapter IS present!" -ForegroundColor Green
+        Write-ADFSTkHost mfaAdapterPresent -f 'RefedsSFA','IS' -ForegroundColor Green
     }
     else {
-        Write-ADFSTkHost "RefedsSFA Adapter IS NOT present!" -ForegroundColor Red
+        Write-ADFSTkHost mfaAdapterPresent -f 'RefedsSFA','IS NOT' -ForegroundColor Red
     }
 }

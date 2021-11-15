@@ -5,16 +5,6 @@ function New-ADFSTkInstitutionConfiguration {
     Param (
     )
 
-
-    #Get All paths  and assert they exist 
-    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
-    {   
-        $Global:ADFSTkPaths = Get-ADFSTKPaths
-    }
-
-$CompatibleConfigVersion = "1.3"
-
-    
     try {
         $mainConfiguration = Get-ADFSTkConfiguration
     }
@@ -90,9 +80,9 @@ $CompatibleConfigVersion = "1.3"
     try {
         [xml]$defaultConfig = Get-Content $defaultConfigFile
 
-        if ($defaultConfig.configuration.ConfigVersion -ne $CompatibleConfigVersion)
+        if ($defaultConfig.configuration.ConfigVersion -ne $Global:ADFSTkCompatibleInstitutionConfigVersion)
         {
-            Write-ADFSTkLog (Get-ADFSTkLanguageText confDefaultConfigIncorrectVersion -f $defaultConfigFile,$defaultConfig.configuration.ConfigVersion,$CompatibleConfigVersion) -MajorFault
+            Write-ADFSTkLog (Get-ADFSTkLanguageText confDefaultConfigIncorrectVersion -f $defaultConfigFile,$defaultConfig.configuration.ConfigVersion,$Global:ADFSTkCompatibleInstitutionConfigVersion) -MajorFault
         }
     }
     catch {
@@ -303,19 +293,7 @@ else
 
     if (Get-ADFSTkAnswer (Get-ADFSTkLanguageText confCreateScheduledTask))
     {
-        $stAction = New-ScheduledTaskAction -Execute 'Powershell.exe' `
-                                            -Argument "-NoProfile -WindowStyle Hidden -Command &{Sync-ADFSTkAggregates}"
-
-        $stTrigger =  New-ScheduledTaskTrigger -Daily -DaysInterval 1 -At (Get-Date)
-        $stSettings = New-ScheduledTaskSettingsSet -Disable -MultipleInstances IgnoreNew -ExecutionTimeLimit ([timespan]::FromHours(12))
-
-        Register-ScheduledTask -Action $stAction `
-                               -Trigger $stTrigger `
-                               -TaskName (Get-ADFSTkLanguageText confImportMetadata) `
-                               -Description (Get-ADFSTkLanguageText confTHisSchedTaskWillDoTheImport) `
-                               -RunLevel Highest `
-                               -Settings $stSettings `
-                               -TaskPath "\ADFSToolkit\"
+        Register-ADFSTkScheduledTask
     }
 
     Write-ADFSTkHost -WriteLine -AddSpaceAfter
