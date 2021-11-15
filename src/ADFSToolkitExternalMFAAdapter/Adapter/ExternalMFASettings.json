@@ -1,0 +1,23 @@
+{
+  "OriginIdp": "http://adfs.xx.se/adfs/services/trust",
+  "TargetIdp": "http://adfs.xx.se/adfs/services/trust",
+  "AuthContextClassRef": "http://schemas.microsoft.com/claims/multipleauthn",
+  "IdentityClaimName": "norEduPersonNIN",
+  "ProxySp": "https://proxy.com/EduIDExternalWeb/Default/Index/",
+  "CryptoKey": "F-JaNdRgUjXn2r5u8x/A?D(G+KbPeShV",
+  "PersonServiceImpl": "LDAP", 
+  "LdapSettings": {
+    "UserName": "",
+    "Password": "",
+    "SearchRoot": "LDAP://dc=,dc=,dc=",
+    "Filter": "(&(objectClass=user)(sAMAccountName={0}))",
+    "AttributeToRetrieve": "employeeID"
+  },
+  "SqlSettings": {
+    "GuestConnStr": "Server=; Database=;Integrated Security=true;",
+    "UserConnStr": "Server=; Database=;Integrated Security=true;",
+    "GuestCmd": "Select nin from guest where guestUsername=@uid",
+    "UserCmd": "Select nin from guest where guestUsername=@uid"
+  }
+
+}

@@ -4,11 +4,6 @@ param (
     [switch]$Force
 )
 #https://technical.edugain.org/api.php?action=list_feds
-    #Get All paths
-    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
-    {
-        $Global:ADFSTkPaths = Get-ADFSTKPaths
-    }
 
     $federationsFile = $Global:ADFSTkPaths.federationsFile
     $defaultFederationsFile = Join-Path $Global:ADFSTkPaths.moduleConfigDefaultDir federations.xml

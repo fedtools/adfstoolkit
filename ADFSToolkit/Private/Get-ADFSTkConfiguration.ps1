@@ -3,11 +3,6 @@ param(
     [switch]$ConfigFilesOnly
 )
 
-    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
-    {
-        $Global:ADFSTkPaths = Get-ADFSTKPaths
-    }
-    
     if(!(Test-Path $Global:ADFSTKPaths.mainConfigFile))
     {
         Write-ADFSTkLog (Get-ADFSTkLanguageText mainconfNoConfigFileFound) -MajorFault

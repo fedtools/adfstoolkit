@@ -24,12 +24,6 @@ param (
     $NameIDFormat
 )
 
-#Get All paths
-if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
-{
-    $Global:ADFSTkPaths = Get-ADFSTKPaths
-}
-
 if ([string]::IsNullOrEmpty($Global:ADFSTkAllAttributes) -or $Global:ADFSTkAllAttributes.Count -eq 0)
 {
     $Global:ADFSTkAllAttributes = Import-ADFSTkAllAttributes
@@ -182,34 +176,6 @@ else
 
 }
 
-#region Add NameID to TransformRules
-    if ([string]::IsNullOrEmpty($NameIDFormat))
-    {
-        $IssuanceTransformRules.'transient-id' = $Global:ADFSTkAllTransformRules.'transient-id'.Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
-        foreach ($Attribute in $Global:ADFSTkAllTransformRules.'transient-id'.Attribute) { 
-            $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
-        }
-    }
-    elseif ($NameIDFormat.Contains('urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'))
-    {
-        $IssuanceTransformRules.'persistent-id' = $Global:ADFSTkAllTransformRules.'persistent-id'.Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
-        foreach ($Attribute in $Global:ADFSTkAllTransformRules.'persistent-id'.Attribute) { 
-            $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
-        }
-    }
-    # elseif ($NameIDFormat.Contains('urn:oasis:names:tc:SAML:2.0:nameid-format:transient'))
-    # {
-    #     
-    # }
-    else
-    {
-        $IssuanceTransformRules.'transient-id' = $Global:ADFSTkAllTransformRules.'transient-id'.Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
-        foreach ($Attribute in $Global:ADFSTkAllTransformRules.'transient-id'.Attribute) { 
-            $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
-        }
-    }
-#endregion
-
 #region Add TransformRules from categories
 $TransformedEntityCategories | % { 
 
@@ -218,7 +184,7 @@ $TransformedEntityCategories | % {
         foreach ($Rule in $IssuanceTransformRuleCategories[$_].Keys) { 
             if ($IssuanceTransformRuleCategories[$_][$Rule] -ne $null)
             {
-                $IssuanceTransformRules[$Rule] = $IssuanceTransformRuleCategories[$_][$Rule].Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
+                $IssuanceTransformRules[$Rule] = Get-ADFSTkEnhancedRule -Rule $IssuanceTransformRuleCategories[$_][$Rule] -EntityId $EntityId
                 foreach ($Attribute in $IssuanceTransformRuleCategories[$_][$Rule].Attribute) { 
                     $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
                 }
@@ -234,7 +200,7 @@ if ($Global:ADFSTkManualSPSettings.ContainsKey('urn:adfstk:allsps'))
     foreach ($Rule in $Global:ADFSTkManualSPSettings['urn:adfstk:allsps'].TransformRules.Keys) { 
         if ($Global:ADFSTkManualSPSettings['urn:adfstk:allsps'].TransformRules[$Rule] -ne $null)
         {                
-            $IssuanceTransformRules[$Rule] = $Global:ADFSTkManualSPSettings['urn:adfstk:allsps'].TransformRules[$Rule].Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
+            $IssuanceTransformRules[$Rule] = Get-ADFSTkEnhancedRule -Rule $Global:ADFSTkManualSPSettings['urn:adfstk:allsps'].TransformRules[$Rule] -EntityId $EntityId
             foreach ($Attribute in $Global:ADFSTkManualSPSettings['urn:adfstk:allsps'].TransformRules[$Rule].Attribute) { 
                 $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
             }
@@ -273,7 +239,7 @@ if ($EntityId -ne $null)
         foreach ($Rule in $Global:ADFSTkManualSPSettings["urn:adfstk:entityiddnsendswith:$settingsDNS"].TransformRules.Keys) { 
             if ($Global:ADFSTkManualSPSettings["urn:adfstk:entityiddnsendswith:$settingsDNS"].TransformRules[$Rule] -ne $null)
             {                
-                $IssuanceTransformRules[$Rule] = $Global:ADFSTkManualSPSettings["urn:adfstk:entityiddnsendswith:$settingsDNS"].TransformRules[$Rule].Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
+                $IssuanceTransformRules[$Rule] = Get-ADFSTkEnhancedRule -Rule $Global:ADFSTkManualSPSettings["urn:adfstk:entityiddnsendswith:$settingsDNS"].TransformRules[$Rule] -EntityId $EntityId
                 foreach ($Attribute in $Global:ADFSTkManualSPSettings["urn:adfstk:entityiddnsendswith:$settingsDNS"].TransformRules[$Rule].Attribute) { 
                     $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
                 }
@@ -289,7 +255,7 @@ if ($ManualSPTransformRules -ne $null)
     foreach ($Rule in $ManualSPTransformRules.Keys) { 
         if ($ManualSPTransformRules[$Rule] -ne $null)
         {                
-            $IssuanceTransformRules[$Rule] = $ManualSPTransformRules[$Rule].Rule.Replace("[ReplaceWithSPNameQualifier]",$EntityId)
+            $IssuanceTransformRules[$Rule] = Get-ADFSTkEnhancedRule -Rule $ManualSPTransformRules[$Rule] -EntityId $EntityId
             foreach ($Attribute in $ManualSPTransformRules[$Rule].Attribute) { 
                 $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
             }
@@ -297,26 +263,35 @@ if ($ManualSPTransformRules -ne $null)
     }
 }
 
+#region Add NameID to TransformRules
+#first check if we already has a NameID in the rules
+if ([string]::IsNullOrEmpty($IssuanceTransformRules.'transient-id') -and [string]::IsNullOrEmpty($IssuanceTransformRules.'persistent-id') -and [string]::IsNullOrEmpty($IssuanceTransformRules.'eduPersonTargetedID'))
+{
+    if ([string]::IsNullOrEmpty($NameIDFormat))
+    {
+        $IssuanceTransformRules.'transient-id' = Get-ADFSTkEnhancedRule -Rule $Global:ADFSTkAllTransformRules.'transient-id' -EntityId $EntityId
+        foreach ($Attribute in $Global:ADFSTkAllTransformRules.'transient-id'.Attribute) { 
+            $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
+        }
+    }
+    elseif ($NameIDFormat.Contains('urn:oasis:names:tc:SAML:2.0:nameid-format:persistent'))
+    {
+        $IssuanceTransformRules.'persistent-id' = Get-ADFSTkEnhancedRule -Rule $Global:ADFSTkAllTransformRules.'persistent-id' -EntityId $EntityId
+        foreach ($Attribute in $Global:ADFSTkAllTransformRules.'persistent-id'.Attribute) { 
+            $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
+        }
+    }
+    else
+    {
+        $IssuanceTransformRules.'transient-id' = Get-ADFSTkEnhancedRule -Rule $Global:ADFSTkAllTransformRules.'transient-id' -EntityId $EntityId
+        foreach ($Attribute in $Global:ADFSTkAllTransformRules.'transient-id'.Attribute) { 
+            $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
+        }
+    }
+}
+#endregion
+
 ### This is a good place to remove attributes that shouldn't be sent outside a RegistrationAuthority
-#$removeRules = @()
-#foreach ($rule in $IssuanceTransformRules.Keys)
-#{
-#    $attribute = $Settings.configuration.attributes.attribute | ? name -eq $rule
-#    if ($attribute -ne $null -and $attribute.allowedRegistrationAuthorities -ne $null)
-#    {
-#        $allowedRegistrationAuthorities = @()
-#        $allowedRegistrationAuthorities += $attribute.allowedRegistrationAuthorities.registrationAuthority
-#        if ($allowedRegistrationAuthorities.count -gt 0 -and !$allowedRegistrationAuthorities.contains($RegistrationAuthority))
-#        {
-#            $removeRules += $rule
-#        }
-#    }
-#}
-#
-#$removeRules | % {$IssuanceTransformRules.Remove($_)}
-#
-
-
 $removeRules = @()
 foreach ($attr in $AttributesFromStore.values)
 {

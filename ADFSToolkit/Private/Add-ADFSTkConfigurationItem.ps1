@@ -6,11 +6,6 @@ param
     [switch]$PassThru
 )
 
-    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
-    {
-        $Global:ADFSTkPaths = Get-ADFSTKPaths
-    }
-
     [xml]$config = Get-Content $Global:ADFSTkPaths.mainConfigFile
 
     if (![string]::IsNullOrEmpty($config.Configuration.ConfigFiles.HasChildNodes) -and ($config.Configuration.ConfigFiles.ConfigFile.InnerText).Contains($ConfigurationItem))

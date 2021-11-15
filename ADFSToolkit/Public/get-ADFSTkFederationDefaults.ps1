@@ -1,7 +1,7 @@
 ﻿function Get-ADFSTkFederationDefaults {
     [CmdletBinding()]
     param (
-        [Parameter(ParameterSetName = 'Default')]
+        [Parameter(ParameterSetName = 'Default', Position = 0)]
         [ValidateNotNullOrEmpty()]
         [string]
         $URL,
@@ -17,12 +17,6 @@
     process {
         #Prepare to be able to use zip files 
         Add-Type -assembly "System.IO.Compression.FileSystem"
-
-        #Get All paths  and assert they exist 
-       
-        if ([string]::IsNullOrEmpty($Global:ADFSTkPaths)) {
-            $Global:ADFSTkPaths = Get-ADFSTKPaths
-        }   
 
         # setup our files
         $nowStamp = [DateTime]::Now.ToString("yyyyMMdd-HHmmss")
