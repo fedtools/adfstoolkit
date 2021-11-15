@@ -98,7 +98,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('ADFS','SAML2','SAML', 'Federation' ,'Aggregates','CANARIE','CAF','FIMS','SWAMID','ADFSToolkit','MFA','REFEDS-MFA','REFEDS','REFEDS MFA')
+        Tags = @('ADFS','SAML2','SAML', 'Federation' ,'Aggregates','CANARIE','CAF','FIMS','SWAMID','ADFSToolkit','MFA','REFEDS-MFA','REFEDS','REFEDSMFA')
 
         # A URL to the license for this module.
          LicenseUri = 'http://www.apache.org/licenses/LICENSE-2.0'
