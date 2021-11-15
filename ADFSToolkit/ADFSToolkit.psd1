@@ -7,7 +7,7 @@
 # v1.0.0.0  on: 04/17/2018
 # v2.0.0    on: 12/17/2020
 # v2.0.1    on: 03/10/2021
-#
+# v2.1.0-RC1  : 11/15/2021
 
 @{
 
@@ -15,7 +15,7 @@
 RootModule = 'ADFSToolkit.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.0.1'
+ModuleVersion = '2.1.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -98,7 +98,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('ADFS','SAML2','SAML', 'Federation' ,'Aggregates','CANARIE','CAF','FIMS','SWAMID','ADFSToolkit')
+        Tags = @('ADFS','SAML2','SAML', 'Federation' ,'Aggregates','CANARIE','CAF','FIMS','SWAMID','ADFSToolkit','MFA','REFEDS-MFA','REFEDS','REFEDS MFA')
 
         # A URL to the license for this module.
          LicenseUri = 'http://www.apache.org/licenses/LICENSE-2.0'
@@ -113,7 +113,7 @@ PrivateData = @{
         # ReleaseNotes = ''
 
         # Prerelease string of this module
-        # Prerelease = 'RC10'
+        Prerelease = 'RC1'
 
     } # End of PSData hashtable
 
