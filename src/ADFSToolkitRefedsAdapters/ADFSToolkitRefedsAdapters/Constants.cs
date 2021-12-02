@@ -38,8 +38,8 @@ namespace ADFSTk
 
         public static class ResourceNames
         {
-            public const string AdminFriendlyNameMFA = "AdminFriendlyNameMFA";
-            public const string AdminFriendlyNameSFA = "AdminFriendlyNameSFA";
+            public const string AdminFriendlyNameMFA = "Forms Authentication (RefedsMFA)";
+            public const string AdminFriendlyNameSFA = "Forms Authentication (RefedsSFA)";
             public const string Description = "Description";
             public const string FriendlyName = "FriendlyName";//saknas i resources
             public const string PageIntroductionTitle = "PageIntroductionTitle";
