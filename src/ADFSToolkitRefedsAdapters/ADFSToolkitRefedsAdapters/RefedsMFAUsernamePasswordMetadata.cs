@@ -36,7 +36,7 @@ namespace ADFSTk
 
         public string AdminName
         {
-            get { return GetMetadataResource(Constants.ResourceNames.AdminFriendlyNameMFA, CultureInfo.CurrentUICulture.LCID); }
+            get { return Constants.ResourceNames.AdminFriendlyNameMFA; }
         }
 
         public virtual string[] AuthenticationMethods
