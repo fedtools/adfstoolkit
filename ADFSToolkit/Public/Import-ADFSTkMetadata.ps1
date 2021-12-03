@@ -79,7 +79,7 @@ function Import-ADFSTkMetadata {
                 $healthCheckResult = Get-ADFSTkHealth -ConfigFile $ConfigFile -HealthCheckMode CriticalOnly -Silent
             }
             else {
-                $healthCheckResult = Get-ADFSTkHealth -ConfigFile $ConfigFile -HealthCheckMode Full -Silent
+                $healthCheckResult = Get-ADFSTkHealth -ConfigFile $ConfigFile -Silent
             }
 
             if ($healthCheckResult -eq $false) {
