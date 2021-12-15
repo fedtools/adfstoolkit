@@ -1,12 +1,12 @@
 ﻿function Get-ADFSTkHealth {
     [CmdletBinding()]
     param (
-        # The path to the institution configuration file that should be handled. If not provided all institution config files present in ADFSTk config will be used.
+        #The path to the institution configuration file that should be handled. If not provided all institution config files present in ADFSTk config will be used.
         $ConfigFile,
-        # The HealtheCheckMode states how rigorous tests should be done. Defalut is done every time Sync-ADFSTkAggregates are run.
+        #The HealtheCheckMode states how rigorous tests should be done. Defalut is done every time Sync-ADFSTkAggregates are run.
         [ValidateSet("CriticalOnly", "Default", "Full")]
         $HealthCheckMode = "Default",
-        # Silent only reports true/false without output. It also tries to fix errors that can be fixed automatically.
+        #Silent only reports true/false without output. It also tries to fix errors that can be fixed automatically.
         [switch]$Silent
     )
 
@@ -520,8 +520,6 @@
             Write-ADFSTkLog -Message (Get-ADFSTkLanguageText healthPassed) -EntryType Information -ForegroundColor Green
         }
     }
-}
-
 <#
 .SYNOPSIS
     Use this cmdlet to check the health of your installation of ADFS Toolkit
@@ -545,3 +543,4 @@
     Run this after upgrade of the ADFS Toolkit. It does a full scan of the installation
     including tests of missing SP's.
 #>
+}
