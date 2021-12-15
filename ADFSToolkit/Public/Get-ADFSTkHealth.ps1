@@ -1,9 +1,12 @@
 ﻿function Get-ADFSTkHealth {
     [CmdletBinding()]
     param (
+        # The path to the institution configuration file that should be handled. If not provided all institution config files present in ADFSTk config will be used.
         $ConfigFile,
+        # The HealtheCheckMode states how rigorous tests should be done. Defalut is done every time Sync-ADFSTkAggregates are run.
         [ValidateSet("CriticalOnly", "Default", "Full")]
         $HealthCheckMode = "Default",
+        # Silent only reports true/false without output. It also tries to fix errors that can be fixed automatically.
         [switch]$Silent
     )
 
@@ -518,3 +521,27 @@
         }
     }
 }
+
+<#
+.SYNOPSIS
+    Use this cmdlet to check the health of your installation of ADFS Toolkit
+.DESCRIPTION
+    This cmdlet can check different things on the installation of ADFS Toolkit. 
+    Every time Sync-ADFSTkAggregates are run a default helath check is run. If an
+    error is found that the health check can fix you will be asked if you want to
+    do so. If the cmdlet is run with -Silent it will automatically fix errors.
+.EXAMPLE
+    PS C:\> Get-ADFSTkHealth
+    Does a default check which includes checking that all files in the module are 
+    signed and has not been altered, that the institution configuration files has
+    the correct version for the installed version of ADFS Toolkit and that the 
+    MFA Access Control Policy exists (if the Refeds MFA adapter is installed).
+.EXAMPLE
+    PS C:\> Get-ADFSTkHealth -HealthCheckMode CriticalOnly
+    This excludes the check of signatures. Run this if you have changed any files
+    in the module.
+.EXAMPLE
+    PS C:\> Get-ADFSTkHealth -HealthCheckMode Full
+    Run this after upgrade of the ADFS Toolkit. It does a full scan of the installation
+    including tests of missing SP's.
+#>
