@@ -24,7 +24,7 @@ ADFSToolkit works within the confines of various design decisions and supported 
 
 **ADFSToolkit goes to great lengths to align with REFEDS MFA behaviour on your behalf and diminish risk, however it cannot be eliminated.  If configuration is only partially followed/performed, your installation may be at risk claiming MFA when it is not MFA.**
 
-AD FS configurations ADFSToolkit performs on your behalf to support REFEDS MFA are:
+Configuration ADFSToolkit performs on your behalf to AD FS to support REFEDS MFA are:
 - Slight Adjustments to AD FS Global Defaults
 - Creation of a REFEDS MFA Access Control Policie in AD FS
 - Addition to each of the Relying Parties (RPs) that ADFSToolkit oversees adding a transformation rule as a safety measure to prevent improper MFA attestation. 
@@ -54,7 +54,7 @@ All the steps below assume you have done a base installation of the [ADFSToolkit
 
 If you have no MFA provider, enable it first THEN return to these steps.
 
-### Step 1: install the adapter with via PowerShell command:**
+### Step 1: install the adapter with via PowerShell command:
   - Open a PowerShell prompt or PowerShell ISE window as administrator  
   - Run the following to download and install the latest stable ADFSToolkit:
   ```PowerShell
