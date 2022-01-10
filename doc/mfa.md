@@ -1,14 +1,16 @@
-# Installation and Configuration of MFA for ADFSToolkit V2
+# Installation and configuration of REFEDS MFA for ADFSToolkit
 
-The use of the REFEDS MFA portion of ADFSToolkit is optional. 
-ADFSToolkit out of the box will function normally for regular sign on requests and AD FS will deny REFEDS MFA SAML transactions as an error, which is an appropriate response for AD FS to issue. 
+Out of the box AD FS with ADFSToolkit will handle all regular SAML2 sign-on requests. Like all SAML2 sign-on requests, there is either an implied or explicit _context_ for these requests which the SAML protocol calls the [AuthenticationContext](https://docs.oasis-open.org/security/saml/v2.0/saml-authn-context-2.0-os.pdf). When this _context_ is absent, it is an implied AuthenticationContext of PasswordProtectedTransport.  RPs wanting to enforce Multi-Factor Authentication(MFA)  signal it as a different context of  [REFEDS MFA](https://refeds.org/profile/mfa). This URL is the exact string  being used for the context. AD FS will consider the context unsupported  or unknown and halt  the user from signing in until you finish installation and configuration of the ADFSToolkit REFEDS MFA plugin.
 
-This installation guidance is geared toward the AD FS administrator who is responsible for the ADFSToolkit installation in AD FS and will require involvment and understanding on how to use your 3rd party MFA provider  which may be DUO Security or Azure MFA. 
+## Audience for this guide
+This installation guidance is geared toward the AD FS administrator who is responsible for the ADFSToolkit installation in AD FS and will require involvment and understanding on how to use your 3rd party MFA provider which may be DUO Security or Azure MFA. It is possible to use additional 3rd pary providers and encourage reviewing their abilities against the REFEDS MFA profile.
 
 ## How REFEDS MFA is enabled in AD FS with ADFSToolkit
-AD FS'  REFEDS MFA support requires the use of the AD FS extensions which require a Windows DLL to be installed. This DLL with additional ADFSToolkit elements add the ability to recognize, process, and configure the [REFEDS MFA](https://refeds.org/profile/mfa) SAML2 AuthenticationContext and allow  AD  FS to respond to sites requiring this context for MFA access.
+ADFSToolkit embraces the Microsoft AD FS capability of [Custom Authenticaiton Methods](https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/development/ad-fs-build-custom-auth-method) to enable the recognition and processing of REFEDS MFA AuthenticationContext sign-ons. ADFSToolkit provides a code signed Windows DLL as well as other configurations and Powershell cmd-lets to be installed to support the recognition, processing, and configuration of [REFEDS MFA](https://refeds.org/profile/mfa) SAML2 AuthenticationContext support.
 
-Key elements of the REFEDS MFA and ADFS+ADFSToolkit solution are:
+ADFSToolkit codebase is curated openly and to use the code-signed code we strongly recommend installing ADFSToolkit via PowershellGallery.com
+
+### Key elements of the REFEDS MFA and ADFS+ADFSToolkit solution are:
 
 -  ADFSToolkit accellerator PowerShell cmd-lets that assist deploying new DLL to add REFEDS MFA support
 -  AD FS Access Control Policies specific to REFEDS MFA are created by ADFSToolkit
@@ -16,7 +18,7 @@ Key elements of the REFEDS MFA and ADFS+ADFSToolkit solution are:
 -  AD FS must use the Paginated theme in order to be properly functioning.  (ships with Server 2019)
 
 
-## Important Considerations and Limitations
+## Important considerations and limitations
 
 ADFSToolkit works within the confines of various design decisions and supported features in AD FS. These limitations force certain techniques to be used to enable REFEDS MFA capability and like any other Identity Provider platform using external services, carry some risks.
 
@@ -30,15 +32,15 @@ AD FS configurations ADFSToolkit performs on your behalf to support REFEDS MFA a
 ### Review your  MFA provider policies to prevent 'weak' or other improper behaviour
 
 Equally noteworthy in the configuration space are your MFA provider configurations outside of ADFS and ADFSToolkit. 
-Review these configurations for alignment to REFEDS MFA best practices and for what you have enabled as interplay between what you have now and REFEDS MFA policies could be different.
-You may need to adjust your MFA provider policies to be in good alignment.
+Review these configurations for alignment to REFEDS MFA best practices mindfull of the interplay between what you have now and REFEDS MFA policies could be different.
+You may need to adjust your MFA provider policies to be in proper alignment to REFEDS MFA.
 
 For more depth on what REFEDS MFA means please review the [REFEDS MFA Profile FAQ](https://wiki.refeds.org/display/PRO/MFA+Profile+FAQ)
 
-## System Requirements
+## System requirements
 
-  - See [Installation Requirements](/docs/README.md) for ADFSToolkit base requirements
-  - Your ADFS MFA provider technology MUST be successfully installed and demonstrably working on it's own. 
+  - For base ADFSToolkit requirements see [Installation Requirements](/docs/README.md) 
+  - Your ADFS MFA provider technology MUST be successfully installed and demonstrably working on it's own with  AD FS.
 
   |:exclamation:  A test AD FS environment is strongly recommended prior to installing in production. |
   |---------------------------------------------------------------------------------------------------|
@@ -46,11 +48,13 @@ For more depth on what REFEDS MFA means please review the [REFEDS MFA Profile FA
 
 ## Installing
 
+### Before you start...
+
 All the steps below assume you have done a base installation of the [ADFSToolkit Module from PowerShellGallery](https://www.powershellgallery.com/packages/ADFSToolkit) and verified it as properly functioning.
 
 If you have no MFA provider, enable it first THEN return to these steps.
 
-### Step 1: install the adapter with a PowerShell command:**
+### Step 1: install the adapter with via PowerShell command:**
   - Open a PowerShell prompt or PowerShell ISE window as administrator  
   - Run the following to download and install the latest stable ADFSToolkit:
   ```PowerShell
@@ -74,27 +78,27 @@ If you have no MFA provider, enable it first THEN return to these steps.
 
 
 
-### Step 2: Test Configuration
+### Step 2: Test your configuration
 
 -  If you are in an R&E federation, inquire to see if your federation operator has a test or production entity to test against.
 -  If you have the ability to test your pre-production or production environment, the National Institute of Health (NIH) has a [Security Compliance Check Tool site](https://auth.nih.gov/CertAuthV3/forms/compliancecheck.aspx)
 
+#### Testing locally
  Alternatively, a local test can be performed if  you have a [Shibboleth Service Provider and enable REFEDS MFA](https://shibboleth.atlassian.net/wiki/spaces/SP3/pages/2114781453/Requiring+Multi-Factor+Authentication) with it and register it manually in your ADFS to test your configuration. 
 
- Regardless of the testing techniques,  the outcomes you want  are:
+
+ Regardless of the testing techniques, when  you sign in with the REFEDS MFA it must:
+ - not trigger an error
  - when an SAML Authentication Context of ``https://refeds.org/profile/mfa`` is requested of your ADFS installation the ADFS server:
    - does not trigger an error
    - force you to use the MFA authentication method  **AND** another option to sign in to qualify is multiple factors.
    -
 
 
-
-
-
 ### You're Done!
-
-ADFSToolkit will now be run by the Scheduled Task and make a full import/refresh each time. This first import will take some time due to all the new SP's. After that only the new/changed and removed SP's needs to be handled and that will be much faster.
+With the ADFSToolkit REFEDS MFA DLL and tools in place your ADFS instance will recognize REFEDS MFA sign-on requirements. 
 
 ## Logging
 
 Logging will occur in the Event Log, default under `Applications and Services log\ADFSToolkit`. 
+Individual logins will not be present however you can [increase ADFS logging](https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/troubleshooting/ad-fs-tshoot-logging) for more depth of diagnosis on events. 
