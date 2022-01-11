@@ -2,10 +2,19 @@
 ## Audience for this guide
 This installation guidance is geared toward the AD FS administrator who is responsible for the ADFSToolkit installation in AD FS and will require involvment and understanding on how to use your 3rd party MFA provider which may be DUO Security or Azure MFA. It is possible to use additional 3rd pary providers and encourage reviewing their abilities against the REFEDS MFA profile.
 
-## How REFEDS MFA is enabled in AD FS with ADFSToolkit
+## What happens when this feature is enabled
+
+Enabling support for REFEDS MFA means that when a Relying Party (RP) requests REFEDS MFA from your AD FS+ADFSToolkit enabled IdP it will recognize the request properly and honour the Multi-Factor Authentication (MFA) requirements [REFEDS MFA](https://refeds.org/profile/mfa) for that sign on.
+
+This only happens when it is requested and NOT on each sign-on. Details on how to test this are blow.  When this feature is enabled via ADFSToolkit, a specific REFEDS MFA Access Control Policy will be created as will a few other elements which are described below.
+
+ Sites may choose to shape their MFA end-user experiences via [AD FS's  Access Control Policies](https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/operations/access-control-policies-in-ad-fs) 
+
+## How REFEDS MFA works in AD FS with ADFSToolkit
 ADFSToolkit embraces the Microsoft AD FS capability of [Custom Authenticaiton Methods](https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/development/ad-fs-build-custom-auth-method) to enable the recognition and processing of REFEDS MFA AuthenticationContext sign-ons. ADFSToolkit provides a code signed Windows DLL as well as other configurations and Powershell cmd-lets to be installed to support the recognition, processing, and configuration of [REFEDS MFA](https://refeds.org/profile/mfa) SAML2 [AuthenticationContext](https://docs.oasis-open.org/security/saml/v2.0/saml-authn-context-2.0-os.pdf) support.
 
-ADFSToolkit codebase is curated openly. We strongly recommend installing ADFSToolkit as code-signed code via ADFSToolkit Module from PowerShellGallery](https://www.powershellgallery.com/packages/ADFSToolkit)
+ADFSToolkit codebase is curated openly here in GitHub and operationally handled in PowerShellGallery.com.
+We strongly recommend installing ADFSToolkit as code-signed code via ADFSToolkit Module from PowerShellGallery](https://www.powershellgallery.com/packages/ADFSToolkit)
 
 ### Important elements of the REFEDS MFA and ADFS+ADFSToolkit solution are:
 
