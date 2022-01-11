@@ -14,7 +14,7 @@ This only happens when it is requested and NOT on each sign-on. When this featur
 ADFSToolkit embraces the Microsoft AD FS capability of [Custom Authentication Methods](https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/development/ad-fs-build-custom-auth-method) to enable the recognition and processing of REFEDS MFA AuthenticationContext sign-ons. ADFSToolkit provides a code signed Windows DLL as well as other configurations and Powershell cmd-lets to be installed to support the recognition, processing, and configuration of [REFEDS MFA](https://refeds.org/profile/mfa) SAML2 [AuthenticationContext](https://docs.oasis-open.org/security/saml/v2.0/saml-authn-context-2.0-os.pdf) support.
 
 ADFSToolkit codebase is curated openly here in GitHub and operationally handled in PowerShellGallery.com.
-We strongly recommend installing ADFSToolkit as code-signed code via ADFSToolkit Module from PowerShellGallery](https://www.powershellgallery.com/packages/ADFSToolkit)
+We strongly recommend installing ADFSToolkit as code-signed code via [ADFSToolkit Module from PowerShellGallery](https://www.powershellgallery.com/packages/ADFSToolkit)
 
 ### Important elements of the REFEDS MFA and ADFS+ADFSToolkit solution are:
 
