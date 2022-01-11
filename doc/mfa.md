@@ -6,7 +6,7 @@ This installation guidance is geared toward the AD FS administrator who is respo
 
 Enabling support for REFEDS MFA means that when a Relying Party (RP) requests REFEDS MFA from your AD FS+ADFSToolkit enabled IdP it will recognize the request properly and honour the Multi-Factor Authentication (MFA) requirements [REFEDS MFA](https://refeds.org/profile/mfa) for that sign on.
 
-This only happens when it is requested and NOT on each sign-on. Details on how to test this are blow.  When this feature is enabled via ADFSToolkit, a specific REFEDS MFA Access Control Policy will be created as will a few other elements which are described below.
+This only happens when it is requested and NOT on each sign-on. When this feature is enabled via ADFSToolkit, a specific REFEDS MFA Access Control Policy will be created as will a few other elements which are described below.
 
  Sites may choose to shape their MFA end-user experiences via [AD FS's  Access Control Policies](https://docs.microsoft.com/en-us/windows-server/identity/ad-fs/operations/access-control-policies-in-ad-fs) 
 
