@@ -142,7 +142,7 @@ NOT EXISTS([Type == "urn:adfstk:mfalogon"])
 "@
         }
         else {
-            $null
+            $mfaRules = $null
         }
     }
 
