@@ -1,20 +1,17 @@
 ﻿function Get-ADFSTkStoreRule {
-param (
-    $Stores,
-    $AttributesFromStore,
-    $EntityId
-)
+    param (
+        $Stores,
+        $AttributesFromStore,
+        $EntityId
+    )
 
     $FirstRule = ""
 
-    foreach ($store in ($Stores | Sort order))
-    {
+    foreach ($store in ($Stores | Sort order)) {
         #region Active Directory Store
-        if ($store.storetype -eq "Active Directory")
-        {
+        if ($store.storetype -eq "Active Directory") {
             $currentStoreAttributes = $AttributesFromStore.Values | ? store -eq $store.name
-            if ($currentStoreAttributes -ne $null)
-            {
+            if ($currentStoreAttributes -ne $null) {
                 $FirstRule += @"
 
                 @RuleName = "Retrieve Attributes from AD"
@@ -29,20 +26,31 @@ param (
         #endregion
 
         #region SQL Store
-        if ($store.storetype -eq "SQL")
-        {
+        if ($store.storetype -eq "SQL") {
             $currentStoreAttributes = $AttributesFromStore.Values | ? store -eq $store.name
-            if ($currentStoreAttributes -ne $null)
-            {
-                $FirstRule += @"
+            if ($currentStoreAttributes -ne $null) {
+                if ($store.query.Trim().ToLower().StartsWith("select")) {
+                    $FirstRule += @"
 
             @RuleName = "Retrieve Attributes from $($store.name)"
             c:[Type == "$($store.type)", Issuer == "$($store.issuer)"]
                 => add(store = "$($store.name)", 
                 types = ("$($currentStoreAttributes.type -join '","')"), 
                 query = "$($store.query)", param = c.Value);
+                
+"@
+                }
+                else {
+                    $FirstRule += @"
+
+            @RuleName = "Retrieve Attributes from $($store.name)"
+            c:[Type == "$($store.type)", Issuer == "$($store.issuer)"]
+                => add(store = "$($store.name)", 
+                types = ("$($currentStoreAttributes.type -join '","')"), 
+                query = "SELECT $($currentStoreAttributes.name -join ',') $($store.query)", param = c.Value);
 
 "@
+                }
             }
         }
         #endregion
@@ -52,11 +60,9 @@ param (
         #endregion
 
         #region Custom Store
-        if ($store.storetype -eq "Custom Store")
-        {
+        if ($store.storetype -eq "Custom Store") {
             $currentStoreAttributes = $AttributesFromStore.Values | ? store -eq $store.name
-            if ($currentStoreAttributes -ne $null)
-            {
+            if ($currentStoreAttributes -ne $null) {
                 $FirstRule += @"
 
                 @RuleName = "Retrieve Attributes from Custom Store"
@@ -71,5 +77,5 @@ param (
         #endregion
     }
 
-    return $FirstRule.Replace("[ReplaceWithSPNameQualifier]",$EntityId) 
+    return $FirstRule.Replace("[ReplaceWithSPNameQualifier]", $EntityId) 
 }

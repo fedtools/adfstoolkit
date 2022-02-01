@@ -1,5 +1,5 @@
 ﻿@{
-    tableLanguage = "en-US"
+    tableLanguage = "en"
     tableVersion = "2.1"
     tableCreatedBy = "SWAMID"
     tableContactAddress = "operations@swamid.se"

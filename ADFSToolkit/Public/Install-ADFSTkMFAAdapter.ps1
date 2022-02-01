@@ -20,9 +20,20 @@ function Install-ADFSTkMFAAdapter {
     $possibleLanguageDirs = Get-ChildItem $languagePacks -Directory | ? { Test-Path (Join-Path $_.FullName ($languageFileName -f $_.Name)) }
 
     #Filter out the directories that doesn't have a correct name
-    $configFoundLanguages = (Compare-ADFSTkObject -FirstSet $possibleLanguageDirs.Name `
-            -SecondSet ([System.Globalization.CultureInfo]::GetCultures("SpecificCultures").Name) `
-            -CompareType Intersection).CompareSet
+    $configFoundLanguages = @()
+    foreach ($languageDirName in $possibleLanguageDirs.Name)
+    {
+        try {
+            $configFoundLanguages += [System.Globalization.CultureInfo]::GetCultureInfo($languageDirName).Name
+        }
+        catch {
+            #Well the language isn't supported or an incorrect culture :(
+        }
+    }
+
+    # $configFoundLanguages = (Compare-ADFSTkObject -FirstSet $possibleLanguageDirs.Name `
+    #         -SecondSet ([System.Globalization.CultureInfo]::GetCultures("SpecificCultures").Name) `
+    #         -CompareType Intersection).CompareSet
     #endregion
 
 
@@ -162,7 +173,7 @@ function Set-ADFSTkAdapterLanguageTexts {
                     Write-Host "Whould have written '$($languageData.$textID)' to the '$adapterName' adapter in '$language'"
                 }
                 else {
-                    Set-AdfsAuthenticationProviderWebContent -Name $adapterName -DisplayName ($languageData.$textID) -Locale $laguage -WhatIf
+                    Set-AdfsAuthenticationProviderWebContent -Name $adapterName -DisplayName ($languageData.$textID) -Locale $language -WhatIf
                 }
             }
         }
