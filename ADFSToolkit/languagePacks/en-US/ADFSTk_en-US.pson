@@ -30,6 +30,7 @@
     cCouldNotRemove = "Could not remove '{0}'! Error: {1}"
     cRestartADFSServiceQuestion = "The ADFS Service needs to be restarted. Do you want to do that now?"
     cFileNotFound = "File not found!"
+    cAlreadyPresent = "{0} already present!"
 
     #############################################
     ### Main configuration cmdlets [mainconf] ###
