@@ -173,7 +173,7 @@ function Set-ADFSTkAdapterLanguageTexts {
                     Write-Host "Whould have written '$($languageData.$textID)' to the '$adapterName' adapter in '$language'"
                 }
                 else {
-                    Set-AdfsAuthenticationProviderWebContent -Name $adapterName -DisplayName ($languageData.$textID) -Locale $language -WhatIf
+                    Set-AdfsAuthenticationProviderWebContent -Name $adapterName -DisplayName ($languageData.$textID) -Locale $language
                 }
             }
         }
