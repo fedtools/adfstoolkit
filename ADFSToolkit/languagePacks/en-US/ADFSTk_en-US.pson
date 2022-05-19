@@ -1,6 +1,6 @@
 ﻿@{
     tableLanguage = "en-US"
-    tableVersion = "1.0"
+    tableVersion = "2.1"
     tableCreatedBy = "SWAMID"
     tableContactAddress = "operations@swamid.se"
 
@@ -19,14 +19,20 @@
     cPleaseProvideValueFor = "Please provide a value for {0}"
     cYouHaveToProvideValue = "You have to provide a value."
     cDone = "Done!"
+    cCreating = "Creating '{0}'..."
     cCreated = "Created!"
     cAllDone = "All done!"
+    cInstallationDone = "Installation done!"
+    cUnInstallationDone = "UnInstallation done!"
     cPathExistsAtPath = "{0} exists at {1}"
     cPathNotExistCreatingHere = "{0} did not exist, creating it here: {1}"
     cWorkingWith = "Working with '{0}'..."
     cRemoving = "Removing '{0}'..."
     cCouldNotRemove = "Could not remove '{0}'! Error: {1}"
-    
+    cRestartADFSServiceQuestion = "The ADFS Service needs to be restarted. Do you want to do that now?"
+    cFileNotFound = "File not found!"
+    cAlreadyPresent = "{0} already present!"
+
     #############################################
     ### Main configuration cmdlets [mainconf] ###
     #############################################
@@ -66,6 +72,10 @@ find attributes in you environment.
 To create a Institution config file use the cmdlet:
 
 New-ADFSTkInstitutionConfiguration
+
+Before you do that, if your Federation Operators has provided a Federation Default file that will help you on the creation of the Institution Config file, first run the cmdlet:
+
+Get-ADFSTkFederationDefaults -URL [the URL provided from your Federation Operators]
 "@
 
     mainconfNoConfigFileFound = "No ADFSTk configuration file found!"
@@ -121,6 +131,16 @@ Do you want to create a scheduled task that executes this command every hour?
 The scheduled task will be disabled when created and you can change triggers as you like.
 "@
     confCreateScheduledTask = "Create ADFSToolkit scheduled task?"  
+    confCheckIfScheduledTaskIsPresent = "Checking if the cheduled task already is present..."
+    confRemoveScheduledTask = "Scheduled task found and will be removed due to -Force parameter."
+    confScheduledTaskInfo = @"
+
+The created Scheduled Task is disabled, but when enabled it will run every hour to update the ADFS with new/changed SP's.
+Before enabling it, change the task to run whether user is logged on or not and change the user to a service account with the right privileges.
+
+After enabeling the Scheduled Task, the Institution Config also needs to be enabled.
+Use Enable-ADFSTkInstitutionConfiguration to do that.
+"@
     confImportMetadata = "Import Federated Metadata with ADFSToolkit"
     confTHisSchedTaskWillDoTheImport = "This scheduled task imports the Federated Metadata with ADFSToolkit"
     confFederationDefaultConfigNotFoundQuestion = "Default config file for {0} could not be found! Do you want to use the ADFSToolkit default one?"
@@ -129,6 +149,12 @@ The scheduled task will be disabled when created and you can change triggers as 
     confDefaultConfigNotFound = "Default config file for {0} could not be found. Aborting!"
     confDefaultConfigIncorrectVersion = "The default configuration file '{0}' is of version {1}. Expected version: {2}. Aborting!"
     confCopyFederationDefaultFolderMessage = "If your federation operators provides a federation-specific default configuration file, make sure to copy the folder to '{0}' before proceeding."
+    confNotAValidVersionError = @"
+The version of the federation-specific default configuration file (v{0}) does not match the current ADFS Toolkit configuration file (v{1}).
+The update process is canceled to prevent en incorrect configuration. Please update (or remove) the federation-specific default configuration file.
+
+If your federation provides a URL to the files, use Get-ADFSTkFederationDefaults to get the latest version.
+"@
     confNeedMainConfigurationMessage = @"
 Before proceeding we need to create a configuration file that holds information about how ADFSToolkit runs.
 
@@ -257,6 +283,8 @@ Please open the file and configure how ADFSToolkit can get them (Active Director
     rulesFederationLocalTransformRulesAdd = "The Federation-specific Transform Rule '{0}' found and will be added."
     rulesFederationLocalTransformRulesFileNotFound = "Import-ADFSTkLocalTransformRules.ps1 file not found. Skipping import of local transform rules..."
 
+    rulesReplaceWithAttributeIsMissing = "You have a transform node for the attribute '{0}' with the attribute 'replacetext' in your Institution Config file but the attribute 'replacewith' is missing. Please add that in your Institution Configuration file."
+
     ###############################
     ### Manual SP Settings [ms] ###
     ###############################
@@ -307,6 +335,9 @@ Please open the file and configure how ADFSToolkit can get them (Active Director
     processRPDeletingRP = "Deleting '{0}'..."
     processRPDeletingRPDone = "Deleting '{0}' done!"
     processRPCouldNotDeleteRP = "Could not delete '{0}'... Error: {1}"
+    processRPAddingRP = "Adding '{0}'..."
+    processRPAddRPDone = "Adding '{0}' done!"
+    processRPCouldNotAddRP = "Could not add '{0}'... Error: {1}"
     processRPSkippingDueToAddRemoveOnlySwitch = "Skipping RP due to -AddRemoveOnly switch..."
     processRPEntityAlreadyExistsDoUpdate = "'{0}' already exists. Do you want to update it?"
     processRPEntityAddedManuallyStillUpdate = "'{0}' added manual in ADFS database, still forcing update?"
@@ -413,10 +444,12 @@ Please open the file and configure how ADFSToolkit can get them (Active Director
     ### ADFSTkHealth [health] ###
     #############################
     
+    healthFixed = "(Fixed)"
     healthIncompatibleInstitutionConfigVersion = @"
 The provided Institution Configuration File is incompatible with this version of ADFS Toolkit!
 The Institution Configuration File version is {0} and the minimum version needs to be {1}.
 "@
+    healthCheckSignatureName = "Signature check"
     healthCheckSignatureStartMessage = "Checking signature on module scipts..."
     healthCheckSignatureValidSignaturesResult = "{0} scripts found with valid signature(s)..."
     healthCheckSignatureInvalidSignaturesResult = "{0} scripts found with invalid signature(s)..."
@@ -447,8 +480,28 @@ If you don't know why this occurred, reinstallation of ADFS Toolkit is recommend
     healthCheckConfigVersionVerifyingVersionSucceeded = "Compatible version succeeded!"
     healthCheckConfigVersionPass = "Versioncheck PASSED!"
     healthCheckConfigVersionFail = "Versioncheck FAILED!"
-
-
+    healthMFAAccesControlPolicyInstalledACPMissing = "MFA Adapter installed but Access Control Policy is missing!"
+    healthMFAAccesControlPolicyInstalledACPPresent = "MFA Adapter installed and Access Control Policy present"
+    healthMFAAccesControlPolicyNotInstalled = "MFA Adapter not installed"
+    healthMFAAccesControlPolicyPass = "MFA Access Control Policy test PASSED!"
+    healthMFAAccesControlPolicyFail = "MFA Access Control Policy test FAILED!"
+    healthCheckRemovedSPsStillInSPHashSPHashCorrupt = "The SP Hash file '{0}' is corrupt!"
+    healthCheckRemovedSPsStillInSPHashMissingInMetadata = "{0} SP's found in the SP Hash file that are missing in the Federation metadata"
+    healthCheckRemovedSPsStillInSPHashNoSPsMissingInMetadata = "No SP's found in the SP Hash file that are missing in the Federation metadata"
+    healthCheckRemovedSPsStillInSPHashAllSPsWillBeImported = "SP Hash file '{0}' missing. All SP's will be imported from the Federation metadata"
+    healthMissingSPsInADFSSPsMissingInADFS = "{0} SP's found in the SP Hash file that are missing in ADFS"
+    healthMissingSPsInADFSNoSPsMissingInADFS = "No SP's found in the SP Hash file that are missing in ADFS"
+    healthScheduledTaskPresentScheduledTaskPresent = "Scheduled Task present"
+    healthScheduledTaskPresentScheduledTaskNotPresent = "Scheduled Task not present"
+    healthMFAAccesControlPolicyRegisterACP = "Do you want to create the missing Access Control Policy?"
+    healthRemoveSPsFromSPHashFileRemoveSPsNotInMetadata = "Do you want to remove the SP's from the SP Hash file '{0}' that doesn't exists in the Metadata?"
+    healthDeleteSPHashFileDeleteCorruptSPHashFile = "Do you want to delete the corrupt SP Hash file '{0}'?"
+    healthAddMissingSPsInADFSRemoveMissingSPs = "Do you want to remove SP's from the SP Hash file '{0}' that doesn't exists in ADFS?"
+    healthRegisterScheduledTaskCreateSchedTask = "Do you want to create the Scheduled Task?"
+    healthFailed = "ADFSTkHealth FAILED"
+    healthPassedWithWarnings = "ADFSTkHealth PASSED with warnings"
+    healthPassed =  "ADFSTkHealth PASSED" 
+    
     ##############################################
     ### ADFSTkFederationDefaults [feddefaults] ###
     ##############################################
@@ -498,4 +551,32 @@ If deleted all SP's will be re-imported again and this will take some time.
     toolNoTargetSelected = "No target EntityID selected. Aborting!"
     toolAreYouSure = "Are you sure you want to copy the rules from '{0}' to '{1}'?"
     toolRulesCopiedFromTo = "Rules copied to '{0}' from '{1}'`r`nOld rules:`r`n{2}`r`nNew rules:`r`n{3}"
+
+    ############################
+    ### MFA Adapter [mfa]    ###
+    ############################
+
+    mfaEnableAdditionalAuthenticationAsPrimaryQuestion = "You need to enable the Additional Authentication As Primary property on AdfsGlobalAuthenticationPolicy. Do you want ADFSToolkitMFA to do that now?"
+    mfaEnableAdditionalAuthenticationAsPrimaryNeeded = "You have to enable the Additional Authentication as Primary property on AdfsGlobalAuthenticationPolicy to continue!"
+    mfaGettingPathForDll = "Getting path for dll file..."
+    mfaDllFound = "Found dll file with the following path: {0}"
+    mfaLoadingAssembly = "Loading {0} Assembly..."
+    mfaExecutingGacInstall = "Executing GacInstall on dll file..."
+    mfaEnteringPath = "Entering {0} path..."
+    mfaAdapterAlreadyInstalled = "{0} Adapter already installed! Please uninstall first to continue (Uninstall-ADFSTkMFAAdapter -{0})."
+    mfaRetrievingTypeName = "Retrieving Type Name for RefedsMFAUsernamePasswordAdapter..."
+    mfaRegisteringAuthProvider = "Registering Authentication Provider..."
+    mfaRegisterAuthenticationProviderQuestion = "Do you want to register '{0}' as a primary Authentication Provider?"
+    mfaAdapterPresent = "{0} Adapter {1} present!"
+    mfaAdapterNotPresentAborting = "{0} Adapter not present. Aborting..."
+    mfaExecutingGacUnInstall = "Executing GacUnInstall on dll file..."
+    mfaExecutingGacRemove = "Executing GacRemove on dll file..."
+
+    #############################
+    ### SP Hash File [sphash] ###
+    #############################
+
+    sphashSPSuccessfullyRemoved = "{0} were successfully removed from the SPHash List."
+    sphashSPAlreadyRemoved = "{0} already removed from the SPHash List."
+    sphashListEmpty = "SPHash List empty. Cannot remove {0}"
 }

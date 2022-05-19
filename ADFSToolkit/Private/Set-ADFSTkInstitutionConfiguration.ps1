@@ -8,11 +8,6 @@ param(
     $Status
 )
 
-    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
-    {
-        $Global:ADFSTkPaths = Get-ADFSTKPaths
-    }
-        
     if (Test-Path $Global:ADFSTkPaths.mainConfigFile)
     {
         [xml]$config = Get-Content $Global:ADFSTkPaths.mainConfigFile

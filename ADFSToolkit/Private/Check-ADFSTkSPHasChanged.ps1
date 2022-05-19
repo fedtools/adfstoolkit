@@ -9,7 +9,7 @@ param (
     {
         if ($SPHashList.ContainsKey($SP.EntityID))
         {
-            $currentSPHash = Get-ADFSTkEntityHash $SP
+            $currentSPHash = New-ADFSTkEntityHash $SP
             return $currentSPHash -ne $SPHashList.($SP.EntityID)
         }
         else

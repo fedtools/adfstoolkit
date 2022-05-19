@@ -1,0 +1,53 @@
+{
+  "ConnectionStrings": {
+    "EduIDDbContext": "__ConnStr__"
+  },
+  "ClientCertificateSettings": {
+    "ValidSubjectIds": [
+      ""
+    ],
+    "ValidIssuer": "__ValidIssuer__"
+  },
+  "Serilog": {
+    "Using": [],
+    "MinimumLevel": {
+      "Default": "Debug",
+      "Override": {
+        "Microsoft": "Warning",
+        "System": "Warning"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Console"
+      },
+      {
+        "Name": "File",
+        "Args": {
+          "path": "__LogPath__\\log-.log",
+          "rollingInterval": "Day",
+          "outputTemplate": "{Timestamp} {Message}{NewLine:1}{Exception:1}"
+        }
+      }
+    ],
+    "Enrich": [
+      "FromLogContext",
+      "WithMachineName",
+      "WithProcessId",
+      "WithThreadId"
+    ],
+    "Properties": {
+      "ApplicationName": "EduIdApi"
+    }
+  },
+  "AllowedHosts": "*",
+  "AppSettings": {
+    "BaseUrl": "__BaseUrl__",
+    "SamlEndpoint": "__SamlEndpoint__",
+    "Subsite": "__Subsite__",
+    "Target": "__Target__"
+  },
+  "CryptoSettings": {
+    "EncryptionKey": "__EncryptionKey__"
+  }
+}
