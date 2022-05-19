@@ -19,6 +19,7 @@
     cPleaseProvideValueFor = "Please provide a value for {0}"
     cYouHaveToProvideValue = "You have to provide a value."
     cDone = "Done!"
+    cCreating = "Creating '{0}'..."
     cCreated = "Created!"
     cAllDone = "All done!"
     cInstallationDone = "Installation done!"
@@ -30,6 +31,7 @@
     cCouldNotRemove = "Could not remove '{0}'! Error: {1}"
     cRestartADFSServiceQuestion = "The ADFS Service needs to be restarted. Do you want to do that now?"
     cFileNotFound = "File not found!"
+    cAlreadyPresent = "{0} already present!"
 
     #############################################
     ### Main configuration cmdlets [mainconf] ###
@@ -129,6 +131,16 @@ Do you want to create a scheduled task that executes this command every hour?
 The scheduled task will be disabled when created and you can change triggers as you like.
 "@
     confCreateScheduledTask = "Create ADFSToolkit scheduled task?"  
+    confCheckIfScheduledTaskIsPresent = "Checking if the cheduled task already is present..."
+    confRemoveScheduledTask = "Scheduled task found and will be removed due to -Force parameter."
+    confScheduledTaskInfo = @"
+
+The created Scheduled Task is disabled, but when enabled it will run every hour to update the ADFS with new/changed SP's.
+Before enabling it, change the task to run whether user is logged on or not and change the user to a service account with the right privileges.
+
+After enabeling the Scheduled Task, the Institution Config also needs to be enabled.
+Use Enable-ADFSTkInstitutionConfiguration to do that.
+"@
     confImportMetadata = "Import Federated Metadata with ADFSToolkit"
     confTHisSchedTaskWillDoTheImport = "This scheduled task imports the Federated Metadata with ADFSToolkit"
     confFederationDefaultConfigNotFoundQuestion = "Default config file for {0} could not be found! Do you want to use the ADFSToolkit default one?"

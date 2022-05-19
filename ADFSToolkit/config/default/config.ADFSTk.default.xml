@@ -124,7 +124,7 @@
             -->
 
 		<!-- Attention! You might need to filter this attribute on SP level before releasing it. (Not needed for the European Student Identifier Entity Category) -->
-		<attribute type="urn:schac:personalUniqueCode" store="Active Directory" name="schacPersonalUniqueCode " />
+		<attribute type="urn:schac:personalUniqueCode" store="Active Directory" name="schacPersonalUniqueCode" />
 
 		<!-- Attention! You might need to filter this attribute on SP level before releasing it. -->
 		<attribute type="urn:mace:dir:attribute-def:eduPersonEntitlement" store="Active Directory" name="edupersonentitlement" />

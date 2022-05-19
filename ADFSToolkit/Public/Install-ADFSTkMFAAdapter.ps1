@@ -20,9 +20,19 @@ function Install-ADFSTkMFAAdapter {
     $possibleLanguageDirs = Get-ChildItem $languagePacks -Directory | ? { Test-Path (Join-Path $_.FullName ($languageFileName -f $_.Name)) }
 
     #Filter out the directories that doesn't have a correct name
-    $configFoundLanguages = (Compare-ADFSTkObject -FirstSet $possibleLanguageDirs.Name `
-            -SecondSet ([System.Globalization.CultureInfo]::GetCultures("SpecificCultures").Name) `
-            -CompareType Intersection).CompareSet
+    $configFoundLanguages = @()
+    foreach ($languageDirName in $possibleLanguageDirs.Name) {
+        try {
+            $configFoundLanguages += [System.Globalization.CultureInfo]::GetCultureInfo($languageDirName).Name
+        }
+        catch {
+            #Well the language isn't supported or an incorrect culture :(
+        }
+    }
+
+    # $configFoundLanguages = (Compare-ADFSTkObject -FirstSet $possibleLanguageDirs.Name `
+    #         -SecondSet ([System.Globalization.CultureInfo]::GetCultures("SpecificCultures").Name) `
+    #         -CompareType Intersection).CompareSet
     #endregion
 
 
@@ -79,8 +89,13 @@ function Install-ADFSTkMFAAdapter {
             Write-ADFSTkVerboseLog "TypeName: $typeNameMFA"
         
             Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText mfaRegisteringAuthProvider)
-            Register-AdfsAuthenticationProvider -TypeName $typeNameMFA -Name $nameMFA  | Out-Null
-            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cDone)
+            if ([string]::IsNullOrEmpty((Get-AdfsAuthenticationProvider -Name $typeNameMFA))) {
+                Register-AdfsAuthenticationProvider -TypeName $typeNameMFA -Name $nameMFA  | Out-Null
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cDone)
+            }
+            else {
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cAlreadyPresent -f $typeNameMFA)
+            }
         
             Write-ADFSTkHost cInstallationDone -Style Done
             if (Get-ADFSTkAnswer (Get-ADFSTkLanguageText mfaRegisterAuthenticationProviderQuestion -f "Forms Authentication (RefedsMFA)") -DefaultYes) {
@@ -113,11 +128,16 @@ function Install-ADFSTkMFAAdapter {
         else {
             Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText mfaRetrievingTypeName)
             $typeNameSFA = "ADFSTk.RefedsSFAUsernamePasswordAdapter, " + $fn.ToString() + ", processorArchitecture=MSIL"
-            Write-ADFSTkVerboseLog "TypeName: $typeNameMFA"
+            Write-ADFSTkVerboseLog "TypeName: $typeNameSFA"
 
             Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText mfaRegisteringAuthProvider)
-            Register-AdfsAuthenticationProvider -TypeName $typeNameSFA -Name $nameSFA | Out-Null
-            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cDone)
+            if ([string]::IsNullOrEmpty((Get-AdfsAuthenticationProvider -Name $typeNameSFA))) {
+                Register-AdfsAuthenticationProvider -TypeName $typeNameSFA -Name $nameSFA | Out-Null
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cDone)
+            }
+            else {
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cAlreadyPresent -f $typeNameSFA)
+            }
         
             Write-ADFSTkHost cInstallationDone -Style Done
             if (Get-ADFSTkAnswer (Get-ADFSTkLanguageText mfaRegisterAuthenticationProviderQuestion -f "Forms Authentication (RefedsSFA)") -DefaultYes) {
@@ -127,7 +147,7 @@ function Install-ADFSTkMFAAdapter {
                     -PrimaryIntranetAuthenticationProvider ($authPolicy.PrimaryIntranetAuthenticationProvider + $nameSFA) | Out-Null
 
                 # Add display names for the authentication provider for all languages
-                Set-ADFSTkAdapterLanguageTexts -adapterName $nameMFA -textID 'mfaSignInWithRefedsSFA'
+                Set-ADFSTkAdapterLanguageTexts -adapterName $nameSFA -textID 'mfaSignInWithRefedsSFA'
             }
             else {
                 $restart = $false
@@ -162,7 +182,7 @@ function Set-ADFSTkAdapterLanguageTexts {
                     Write-Host "Whould have written '$($languageData.$textID)' to the '$adapterName' adapter in '$language'"
                 }
                 else {
-                    Set-AdfsAuthenticationProviderWebContent -Name $adapterName -DisplayName ($languageData.$textID) -Locale $laguage -WhatIf
+                    Set-AdfsAuthenticationProviderWebContent -Name $adapterName -DisplayName ($languageData.$textID) -Locale $language
                 }
             }
         }
