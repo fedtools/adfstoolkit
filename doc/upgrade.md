@@ -92,8 +92,17 @@ Updating is _usually_ performed with an update-module command and then uninstall
     
 **Step 9:Resume Synchronization of Metadata**
    - To enable the upgraded version, run `Enable-ADFSTkInstitutionConfiguration` and select the proper configuration file(s) and click OK.
-   
-**Step 10: Observe System Post-upgrade**
+ 
+ **Step 10:Do a Health Check**
+ 
+ ADFSToolkit 2.x+ has a health check feature to determine if all things are in alignment. This can be run at any time and will identify any drift from regular expected use of ADFSToolkit. On upgrades we recommend doing a full healthcheck by invoking it this way:
+ ```Powershell
+  Get-ADFSTkHealth -HealthCheckMode Full 
+  ```
+  :exclamation: **Note well:** Health check relies on the configuration and if aggregates are disabled, it does not know about them. For a comprehensive health check ensure all aggregates are enabled to ensure they are reviewed.
+ 
+  
+**Step 11: Observe System Post-upgrade**
   - Your update is complete and should now be running with the new scheduled job.
   - Spot check your customized Relying Parties and review for consistent attribute release.
   - Review the Event-Log for any anomalies
