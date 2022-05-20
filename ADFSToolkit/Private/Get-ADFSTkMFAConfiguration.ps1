@@ -61,78 +61,91 @@ function Get-ADFSTkMFAConfiguration {
         }
     }
 
-    if ($ApplyMFAConfiguration -ne $null -and $ApplyMFAConfiguration.ContainsKey('azuremfa')) { 
+    if ($ApplyMFAConfiguration -ne $null) {
+        if ($ApplyMFAConfiguration.ContainsKey('azuremfa')) { 
     
-        $mfaRules = @()
-        $mfaRulesText = @()
+            $mfaRules = @()
+            $mfaRulesText = @()
         
-        if ($ApplyMFAConfiguration.AzureMFA.ContainsKey('otp') -and $ApplyMFAConfiguration.AzureMFA.otp -eq $true)
-        {
-            $mfaRulesText += "TOTP"
-            $mfaRules += @"
+            if ($ApplyMFAConfiguration.AzureMFA.ContainsKey('otp') -and $ApplyMFAConfiguration.AzureMFA.otp -eq $true) {
+                $mfaRulesText += "TOTP"
+                $mfaRules += @"
 @RuleName = "Check RefedsMFA context class after successful Azure MFA with TOTP"
 c:[Type == "http://schemas.microsoft.com/claims/authnmethodsreferences", Value == "http://schemas.microsoft.com/ws/2012/12/authmethod/otp"]
 => add(Type = "urn:adfstk:mfalogon", Value = "true");
 "@
-        }
+            }
 
-        if ($ApplyMFAConfiguration.AzureMFA.ContainsKey('smsotp') -and $ApplyMFAConfiguration.AzureMFA.smsotp -eq $true)
-        {
-            $mfaRulesText += "SMS"
-            $mfaRules += @"
+            if ($ApplyMFAConfiguration.AzureMFA.ContainsKey('smsotp') -and $ApplyMFAConfiguration.AzureMFA.smsotp -eq $true) {
+                $mfaRulesText += "SMS"
+                $mfaRules += @"
 @RuleName = "Check RefedsMFA context class after successful Azure MFA with SMS"
 c:[Type == "http://schemas.microsoft.com/claims/authnmethodsreferences", Value == "http://schemas.microsoft.com/ws/2012/12/authmethod/smsotp"]
 => add(Type = "urn:adfstk:mfalogon", Value = "true");
 "@
-        }
+            }
 
-        if ($ApplyMFAConfiguration.AzureMFA.ContainsKey('phoneappnotification') -and $ApplyMFAConfiguration.AzureMFA.phoneappnotification -eq $true)
-        {
-            $mfaRulesText += "Phone App Notification"
-            $mfaRules += @"
+            if ($ApplyMFAConfiguration.AzureMFA.ContainsKey('phoneappnotification') -and $ApplyMFAConfiguration.AzureMFA.phoneappnotification -eq $true) {
+                $mfaRulesText += "Phone App Notification"
+                $mfaRules += @"
 @RuleName = "Check RefedsMFA context class after successful Azure MFA with Phone App Notification"
 c:[Type == "http://schemas.microsoft.com/claims/authnmethodsreferences", Value == "http://schemas.microsoft.com/ws/2012/12/authmethod/phoneappnotification"]
 => add(Type = "urn:adfstk:mfalogon", Value = "true");
 "@
-        }
+            }
 
-        if ($ApplyMFAConfiguration.AzureMFA.ContainsKey('phoneconfirmation') -and $ApplyMFAConfiguration.AzureMFA.phoneconfirmation -eq $true)
-        {
-            $mfaRulesText += "Phone callback"
-            $mfaRules += @"
+            if ($ApplyMFAConfiguration.AzureMFA.ContainsKey('phoneconfirmation') -and $ApplyMFAConfiguration.AzureMFA.phoneconfirmation -eq $true) {
+                $mfaRulesText += "Phone callback"
+                $mfaRules += @"
 @RuleName = "Check RefedsMFA context class after successful Azure MFA with Phone callback"
 c:[Type == "http://schemas.microsoft.com/claims/authnmethodsreferences", Value == "http://schemas.microsoft.com/ws/2012/12/authmethod/phoneconfirmation"]
 => add(Type = "urn:adfstk:mfalogon", Value = "true");
 "@
-        }
+            }
 
-        if ($ApplyMFAConfiguration.AzureMFA.ContainsKey('phoneotp') -and $ApplyMFAConfiguration.AzureMFA.phoneotp -eq $true)
-        {
-            $mfaRulesText += "Phone OTP"
-            $mfaRules += @"
+            if ($ApplyMFAConfiguration.AzureMFA.ContainsKey('phoneotp') -and $ApplyMFAConfiguration.AzureMFA.phoneotp -eq $true) {
+                $mfaRulesText += "Phone OTP"
+                $mfaRules += @"
 @RuleName = "Check RefedsMFA context class after successful Azure MFA with Phone OTP"
 c:[Type == "http://schemas.microsoft.com/claims/authnmethodsreferences", Value == "http://schemas.microsoft.com/ws/2012/12/authmethod/phoneotp"]
 => add(Type = "urn:adfstk:mfalogon", Value = "true");
 "@
-        }
+            }
 
-        $mfaRules += @"
+            $mfaRules += @"
 @RuleName = "Exists RefedsMFA context class after successful Azure MFA with $($mfaRulesText -join '/')"
 NOT EXISTS([Type == "urn:adfstk:mfalogon"])
 => issue(Type = "http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod", Value = "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport");
 "@
         
+        }
+        
+        if ($ApplyMFAConfiguration.ContainsKey('custommfaconfiguration')) {
+            foreach ($CustomMFAConfig in $ApplyMFAConfiguration.CustomMFAConfiguration.Keys) {
+            
+                $mfaRulesText += $CustomMFAConfig
+                $mfaRules += @"
+@RuleName = "Check if $CustomMFAConfig were used as MFA factor"
+c:[Type == "http://schemas.microsoft.com/claims/authnmethodsproviders", Value == "$($ApplyMFAConfiguration.CustomMFAConfiguration.$CustomMFAConfig)"]
+=> add(Type = "urn:adfstk:mfalogon", Value = "true");
+"@
+            }
+
+            $mfaRules += @"
+@RuleName = "Exists RefedsMFA context class after successful MFA with $($mfaRulesText -join '/')"
+NOT EXISTS([Type == "urn:adfstk:mfalogon"])
+=> issue(Type = "http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod", Value = "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport");
+"@
+        }
     }
     else {
         # Check if the ADFSTK MFA Adapter is installed and add rules if so
-        if ([string]::IsNullOrEmpty($Global:ADFSTKRefedsMFAUsernamePasswordAdapterInstalled))
-        {
+        if ([string]::IsNullOrEmpty($Global:ADFSTKRefedsMFAUsernamePasswordAdapterInstalled)) {
             $Global:ADFSTKRefedsMFAUsernamePasswordAdapterInstalled = ![string]::IsNullOrEmpty((Get-AdfsAuthenticationProvider -Name RefedsMFAUsernamePasswordAdapter -WarningAction Ignore))
         }
 
-        if ($Global:ADFSTKRefedsMFAUsernamePasswordAdapterInstalled)
-        {
-            $mfaRules += @"
+        if ($Global:ADFSTKRefedsMFAUsernamePasswordAdapterInstalled) {
+            $mfaRules += @" 
             @RuleName = "Assert Refeds MFA is compliant with"
             COUNT([Type == "http://schemas.microsoft.com/claims/authnmethodsproviders"]) == 1
             && EXISTS([Type == "http://schemas.microsoft.com/claims/authnmethodsreferences", 
