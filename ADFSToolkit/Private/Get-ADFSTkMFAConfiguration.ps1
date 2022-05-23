@@ -62,11 +62,10 @@ function Get-ADFSTkMFAConfiguration {
     }
 
     if ($ApplyMFAConfiguration -ne $null) {
+        $mfaRules = @()
+        $mfaRulesText = @()
+
         if ($ApplyMFAConfiguration.ContainsKey('azuremfa')) { 
-    
-            $mfaRules = @()
-            $mfaRulesText = @()
-        
             if ($ApplyMFAConfiguration.AzureMFA.ContainsKey('otp') -and $ApplyMFAConfiguration.AzureMFA.otp -eq $true) {
                 $mfaRulesText += "TOTP"
                 $mfaRules += @"
@@ -111,13 +110,6 @@ c:[Type == "http://schemas.microsoft.com/claims/authnmethodsreferences", Value =
 => add(Type = "urn:adfstk:mfalogon", Value = "true");
 "@
             }
-
-            $mfaRules += @"
-@RuleName = "Exists RefedsMFA context class after successful Azure MFA with $($mfaRulesText -join '/')"
-NOT EXISTS([Type == "urn:adfstk:mfalogon"])
-=> issue(Type = "http://schemas.microsoft.com/ws/2008/06/identity/claims/authenticationmethod", Value = "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport");
-"@
-        
         }
         
         if ($ApplyMFAConfiguration.ContainsKey('custommfaconfiguration')) {
@@ -130,7 +122,9 @@ c:[Type == "http://schemas.microsoft.com/claims/authnmethodsproviders", Value ==
 => add(Type = "urn:adfstk:mfalogon", Value = "true");
 "@
             }
+        }
 
+        if ($mfaRules.Count -gt 0) {
             $mfaRules += @"
 @RuleName = "Exists RefedsMFA context class after successful MFA with $($mfaRulesText -join '/')"
 NOT EXISTS([Type == "urn:adfstk:mfalogon"])
