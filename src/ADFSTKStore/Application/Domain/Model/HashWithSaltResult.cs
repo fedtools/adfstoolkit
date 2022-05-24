@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Urn.Adfstk.Application.Domain.Model
+namespace ADFSTk.Domain.Model
 {
     public class HashWithSaltResult
     {

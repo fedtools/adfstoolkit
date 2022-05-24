@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Urn.Adfstk.Application.domain.model
+namespace ADFSTk.Dto
 {
     public class ClaimDto
     {

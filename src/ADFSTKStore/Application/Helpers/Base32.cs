@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-namespace Urn.Adfstk.Application.Helpers
+namespace ADFSTk.Helpers
 {
     public static class Base32
     {

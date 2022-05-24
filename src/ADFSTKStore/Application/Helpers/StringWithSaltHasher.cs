@@ -1,12 +1,11 @@
-﻿using System;
+﻿using ADFSTk.Domain.Model;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
-using Urn.Adfstk.Application.Domain.Model;
 
-namespace Urn.Adfstk.Application.Helpers
+
+namespace ADFSTk.Helpers
 {
     public class StringWithSaltHasher
     {

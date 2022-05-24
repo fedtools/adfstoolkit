@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Urn.Adfstk.Application.Helpers;
+using ADFSTk.Helpers;
 using System.Text;
 using System.Text.RegularExpressions;
 

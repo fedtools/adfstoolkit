@@ -7,7 +7,7 @@
     <ProjectGuid>{D2D387EE-ECAF-4300-BFB3-31B73BDB19D4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Urn.Adfstk.Application</RootNamespace>
+    <RootNamespace>ADFSTk</RootNamespace>
     <AssemblyName>ADFSTkStore</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -35,7 +35,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>ADFSTKToolStore.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>ADFSTkStore.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.IdentityServer.ClaimsPolicy, Version=10.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -84,7 +84,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ADFSTkToolStore.cs" />
+    <Compile Include="ADFSTkStore.cs" />
     <Compile Include="Domain\Model\HashWithSaltResult.cs" />
     <Compile Include="Dto\ClaimDto.cs" />
     <Compile Include="Helpers\Base32.cs" />
@@ -97,12 +97,11 @@
   <ItemGroup>
     <Content Include="lib\2016\Microsoft.IdentityServer.ClaimsPolicy.dll" />
     <Content Include="lib\2019\Microsoft.IdentityServer.ClaimsPolicy.dll" />
-    <None Include="ADFSTKToolStore.snk" />
-    <None Include="Scripts\Install-AdfsTkToolAttributeStore.ps1" />
-    <None Include="Scripts\Uninstall-AdfsTkToolAttributeStore.ps1" />
+    <None Include="ADFSTkStore.snk" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Exceptions\" />
+    <Folder Include="Scripts\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

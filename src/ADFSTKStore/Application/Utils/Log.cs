@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Urn.Adfstk.Application.Utils
+namespace ADFSTk.Utils
 {
     #region Log
     /// <summary>
@@ -14,7 +14,7 @@ namespace Urn.Adfstk.Application.Utils
     public static class Log
     {
         private const string EventLogSource = "ADFSTkTool";
-        private const string EventLogGroup = "Application";
+        private const string EventLogGroup = "ADFSToolkit";
 
         /// <summary>
         /// Log constructor
