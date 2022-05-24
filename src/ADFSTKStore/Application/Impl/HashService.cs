@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Urn.Adfstk.Application.Domain.Model;
-using Urn.Adfstk.Application.Helpers;
-using Urn.Adfstk.Application.Interfaces;
+﻿using ADFSTk.Domain.Model;
+using ADFSTk.Helpers;
+using ADFSTk.Interfaces;
 
-namespace Urn.Adfstk.Application.Impl
+namespace ADFSTk.Impl
 {
     public class HashService : IHashService
     {
@@ -17,5 +12,7 @@ namespace Urn.Adfstk.Application.Impl
             var hasher = new StringWithSaltHasher();
             return hasher.HashWithSalt(input, salt);
         }
+
+
     }
 }

@@ -4,16 +4,17 @@ using System.Linq;
 using Microsoft.IdentityServer.ClaimsPolicy.Engine.AttributeStore;
 using System.IdentityModel;
 using System.Text;
-using Urn.Adfstk.Application.domain.model;
-using Urn.Adfstk.Application.Interfaces;
-using Urn.Adfstk.Application.Impl;
-using Urn.Adfstk.Application.Helpers;
+using ADFSTk.Dto;
+using ADFSTk.Interfaces;
+using ADFSTk.Impl;
+using ADFSTk.Helpers;
+using ADFSTk.Utils;
 using System.Diagnostics;
-using Urn.Adfstk.Application.Utils;
+
 
 namespace Urn.Adfstk.Application
 {
-    public class ADFSTkToolStore : IAttributeStore
+    public class ADFSTkStore : IAttributeStore
     {
         //private const string EventSource = "ADFSTkTool";
         private const string IDPSALT = "IDPSALT";

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Urn.Adfstk.Application.Domain.Model;
+﻿
 
-namespace Urn.Adfstk.Application.Interfaces
+using ADFSTk.Domain.Model;
+
+namespace ADFSTk.Interfaces
 {
     public interface IHashService
     {

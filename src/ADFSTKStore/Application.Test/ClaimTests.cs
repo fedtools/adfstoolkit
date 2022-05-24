@@ -10,7 +10,7 @@ namespace Urn.Adfstk.Application.Test
         [TestMethod]
         public void SchacDateOfBirthTest()
         {
-            var cs = new ADFSTkToolStore();
+            var cs = new ADFSTkStore();
             cs.Initialize(this.InitParams);
             var issue = new string[] { "urn:oid:1.3.6.1.4.1.25178.1.2.3" };
             IAsyncResult asyncRes =
@@ -33,7 +33,7 @@ namespace Urn.Adfstk.Application.Test
         [TestMethod]
         public void EduPersonUniqueIDTest()
         {
-            var cs = new ADFSTkToolStore();
+            var cs = new ADFSTkStore();
             cs.Initialize(this.InitParams);
             var issue = new string[] { "urn:oid:1.3.6.1.4.1.5923.1.1.1.13" };
             IAsyncResult asyncRes =
@@ -56,7 +56,7 @@ namespace Urn.Adfstk.Application.Test
         [TestMethod]
         public void SubjectidTest()
         {
-            var cs = new ADFSTkToolStore();
+            var cs = new ADFSTkStore();
             cs.Initialize(this.InitParams);
             var issue = new string[] { "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier" };
             IAsyncResult asyncRes =
@@ -79,7 +79,7 @@ namespace Urn.Adfstk.Application.Test
         [TestMethod]
         public void PairWiseIdTest()
         {
-            var cs = new ADFSTkToolStore();
+            var cs = new ADFSTkStore();
             cs.Initialize(this.InitParams);
             var issue = new string[] { "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier" };
             IAsyncResult asyncRes =
@@ -104,7 +104,7 @@ namespace Urn.Adfstk.Application.Test
         public void ToLowerTest()
         {
             var input = "Firstname";
-            var cs = new ADFSTkToolStore();
+            var cs = new ADFSTkStore();
             cs.Initialize(this.InitParams);
             var issue = new string[] { "urn:oid:2.5.4.42" };
             IAsyncResult asyncRes =
@@ -129,7 +129,7 @@ namespace Urn.Adfstk.Application.Test
         public void ToUpperTest()
         {
             var input = "Firstname";
-            var cs = new ADFSTkToolStore();
+            var cs = new ADFSTkStore();
             cs.Initialize(this.InitParams);
             var issue = new string[] { "urn:oid:2.5.4.42" };
             IAsyncResult asyncRes =
