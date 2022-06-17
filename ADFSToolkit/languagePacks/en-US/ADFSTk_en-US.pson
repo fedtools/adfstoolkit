@@ -588,7 +588,7 @@ If deleted all SP's will be re-imported again and this will take some time.
     storeSaltInfo = @"
 To be able to hash attributes ADFSTkStore needs a Salt.
     
-The Salt should be 16 characters long and with the following character set [a-z][A-Z][0-9]
+The Salt should be ~40 characters long.
 "@
     storeIDPSalt = "IdP Salt"
     storeSaltQuestion = "Do you want to Generate or Provide an IDP Salt?"

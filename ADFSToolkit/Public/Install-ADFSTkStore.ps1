@@ -32,14 +32,14 @@
             switch ($result) {
                 0 {
                     #Generate IDP Salt
-                    $IdpSalt = New-ADFSTkSalt -Length 16
+                    $IdpSalt = New-ADFSTkSalt
                 }
                 1 {
                     #Provide IDP Salt
-                    $characters = ""
-                    0x30..0x39 | % { $characters += ([char]$_) }
-                    0x41..0x5A | % { $characters += ([char]$_) }
-                    0x61..0x7A | % { $characters += ([char]$_) }
+                    # $characters = ""
+                    # 0x30..0x39 | % { $characters += ([char]$_) }
+                    # 0x41..0x5A | % { $characters += ([char]$_) }
+                    # 0x61..0x7A | % { $characters += ([char]$_) }
     
                     [string]$IdpSalt = Read-Host "Enter IdP Salt"
 
@@ -47,16 +47,16 @@
                         Write-ADFSTkLog (Get-ADFSTkLanguageText storeInvalidSaltLength) -MajorFault
                     }
 
-                    $valid = $true
-                    foreach ($char in $IdpSalt) {
-                        if (!$characters.Contains($char)) {
-                            $valid = $false
-                        }
-                    }
+                    # $valid = $true
+                    # foreach ($char in $IdpSalt) {
+                    #     if (!$characters.Contains($char)) {
+                    #         $valid = $false
+                    #     }
+                    # }
 
-                    if (!$valid) {
-                        Write-ADFSTkLog (Get-ADFSTkLanguageText storeInvalidSaltCharacters) -MajorFault
-                    }
+                    # if (!$valid) {
+                    #     Write-ADFSTkLog (Get-ADFSTkLanguageText storeInvalidSaltCharacters) -MajorFault
+                    # }
                 }
             }
 
