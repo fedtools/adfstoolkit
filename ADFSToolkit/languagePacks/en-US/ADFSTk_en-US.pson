@@ -32,6 +32,7 @@
     cRestartADFSServiceQuestion = "The ADFS Service needs to be restarted. Do you want to do that now?"
     cFileNotFound = "File not found!"
     cAlreadyPresent = "{0} already present!"
+    cRunOnAllServers = "Attention! {0} needs to be run on all ADFS servers."
 
     #############################################
     ### Main configuration cmdlets [mainconf] ###
@@ -579,4 +580,25 @@ If deleted all SP's will be re-imported again and this will take some time.
     sphashSPSuccessfullyRemoved = "{0} were successfully removed from the SPHash List."
     sphashSPAlreadyRemoved = "{0} already removed from the SPHash List."
     sphashListEmpty = "SPHash List empty. Cannot remove {0}"
+
+    ############################
+    ### ADFSTkStore [store]  ###
+    ############################
+
+    storeSaltInfo = @"
+To be able to hash attributes ADFSTkStore needs a Salt.
+    
+The Salt should be ~40 characters long.
+"@
+    storeIDPSalt = "IdP Salt"
+    storeSaltQuestion = "Do you want to Generate or Provide an IDP Salt?"
+    storeInvalidSaltLength = "The provided IdP Salt is not 16 characters. Aborting Installation"
+    storeInvalidSaltCharacters = @"
+The provided IdP Salt contains invalid characters.
+Valid character set: [a-z][A-Z][0-9]
+"@
+    storeDllNotFound = "Could not find ADFSTkStore.dll, aborting..."
+    storeSuccessfullyInstalled = "ADFSTkStore was succesfully installed!"
+    storeSuccessfullyUnInstalled = "ADFSTkStore was succesfully uninstalled!"
+
 }
