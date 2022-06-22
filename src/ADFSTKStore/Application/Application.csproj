@@ -98,10 +98,11 @@
     <Content Include="lib\2016\Microsoft.IdentityServer.ClaimsPolicy.dll" />
     <Content Include="lib\2019\Microsoft.IdentityServer.ClaimsPolicy.dll" />
     <None Include="ADFSTkStore.snk" />
+    <None Include="Scripts\Install-AdfsTkToolAttributeStore.ps1" />
+    <None Include="Scripts\Uninstall-AdfsTkToolAttributeStore.ps1" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Exceptions\" />
-    <Folder Include="Scripts\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

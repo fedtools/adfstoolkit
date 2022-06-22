@@ -12,7 +12,7 @@ using ADFSTk.Utils;
 using System.Diagnostics;
 
 
-namespace Urn.Adfstk.Application
+namespace ADFSTk
 {
     public class ADFSTkStore : IAttributeStore
     {
@@ -26,14 +26,17 @@ namespace Urn.Adfstk.Application
         
         public IAsyncResult BeginExecuteQuery(string query, string[] parameters, AsyncCallback callback, object state)
         {
+            CheckDependencies();
             Log.WriteEntry("Start ExecuteQuery",EventLogEntryType.Information,335);
             if (String.IsNullOrEmpty(query))
             {
+                Log.WriteEntry("No query string.", EventLogEntryType.Error, 335);
                 throw new AttributeStoreQueryFormatException("No query string.");
             }
 
             if (null == parameters)
             {
+                Log.WriteEntry("No query parameter.", EventLogEntryType.Error, 335);
                 throw new AttributeStoreQueryFormatException("No query parameter.");
             }
 
@@ -48,13 +51,10 @@ namespace Urn.Adfstk.Application
             {
                 outputValues = new List<ClaimDto>();
                 string[] queryParams = GetQueryParams(query);
+                Log.WriteEntry("GotQuery" + query, EventLogEntryType.Information, 335);
                 string rp = parameters[0];
-                string idp = "";
-                string inputValue = parameters[1];
-                if (parameters.Length == 3)
-                {
-                    idp = parameters[2];
-                }
+                string upn = GetUserId(parameters[1]);
+                string shacHome = parameters[2];
                 
                 ClaimDto c = null;
                 foreach (var param in queryParams)
@@ -65,11 +65,11 @@ namespace Urn.Adfstk.Application
                             outputValues.Add(c = new ClaimDto()
                             {
                                 Name = param,
-                                Values = new List<string> { Base32.ToBase32String(Encoding.Default.GetBytes(inputValue)) }
+                                Values = new List<string> { Base32.ToBase32String(Encoding.Default.GetBytes(upn)) }
                             });
                             break;
                         case "hash":
-                            var h = _hashService.HashString(inputValue, salt);
+                            var h = _hashService.HashString(upn, salt);
                             outputValues.Add(c = new ClaimDto()
                             {
                                 Name = param,
@@ -80,23 +80,23 @@ namespace Urn.Adfstk.Application
                             outputValues.Add(c = new ClaimDto()
                             {
                                 Name = param,
-                                Values = new List<string> { string.Join("@", inputValue,idp.ToLower()) }
+                                Values = new List<string> { string.Join("@", upn, shacHome.ToLower()) }
                             });
                             break;
                         case "pairwiseid":
                             // first concatenate values
-                            var str = string.Join("!", inputValue, rp);
+                            var str = string.Join("!", upn, rp);
                             //hash with salt
                             var strHashed = _hashService.HashString(str, salt);
                             //base32 encode
                             var strBase32 = Base32.ToBase32String(Encoding.Default.GetBytes(strHashed.DigestHex));
                             outputValues.Add(c = new ClaimDto() {
-                                Name = param, Values = new List<string> {string.Join("@", strBase32,idp.ToLower() )} });
+                                Name = param, Values = new List<string> {string.Join("@", strBase32,shacHome.ToLower() )} });
                             break;
                         case "edupersonuniqueid":
                         case "urn:mace:dir:attribute-def:edupersonuniqueid":
                             Log.WriteEntry("Transforming eduPersonUniqueID", EventLogEntryType.Information, 335);
-                            var hashed = _hashService.HashString(inputValue, salt);
+                            var hashed = _hashService.HashString(upn, salt);
                             outputValues.Add(c = new ClaimDto()
                             {
                                 Name = param,
@@ -105,12 +105,12 @@ namespace Urn.Adfstk.Application
                             break;
                         case "tolower":
                             Log.WriteEntry("Transforming ToLower", EventLogEntryType.Information, 335);
-                            outputValues.Add(c = new ClaimDto() { Name = param, Values = new List<string>() { string.IsNullOrEmpty(inputValue) ? null : inputValue.ToLower() } });
+                            outputValues.Add(c = new ClaimDto() { Name = param, Values = new List<string>() { string.IsNullOrEmpty(upn) ? null : upn.ToLower() } });
                             Log.WriteEntry("Transforming ToLower (output=" + outputValues[0].Values.First() + ")", EventLogEntryType.Information, 335);
                             break;
                         case "toupper":
                             Log.WriteEntry("Transforming ToUpper", EventLogEntryType.Information, 335);
-                            outputValues.Add(c = new ClaimDto() { Name = param, Values = new List<string>() { string.IsNullOrEmpty(inputValue) ? null : inputValue.ToUpper() } });
+                            outputValues.Add(c = new ClaimDto() { Name = param, Values = new List<string>() { string.IsNullOrEmpty(upn) ? null : upn.ToUpper() } });
                             Log.WriteEntry("Transforming ToUpper (output=" + outputValues[0].Values.First() + ")" , EventLogEntryType.Information, 335);
                             break;
                         default:
@@ -145,6 +145,7 @@ namespace Urn.Adfstk.Application
             //check idpSalt
             if (config.ContainsKey(IDPSALT))
             {
+                //Log.WriteEntry("idp salt provided: "+ config[IDPSALT], EventLogEntryType.Information, 335);
                 salt = config[IDPSALT];
             }            
             else
@@ -251,6 +252,10 @@ namespace Urn.Adfstk.Application
                     }
                 }
             }
+        }
+        private void CheckDependencies()
+        {
+            if (_hashService == null) { _hashService = new HashService(); }
         }
         #endregion
     }

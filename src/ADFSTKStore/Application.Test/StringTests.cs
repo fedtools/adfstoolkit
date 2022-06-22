@@ -5,6 +5,7 @@ using ADFSTk.Helpers;
 using System.Text;
 using System.Text.RegularExpressions;
 
+
 namespace Urn.Adfstk.Application.Test
 {
     [TestClass]
@@ -39,10 +40,10 @@ namespace Urn.Adfstk.Application.Test
         public void StringWithSaltHasherTest()
         {
             var h = new StringWithSaltHasher();
-            //var output = h.HashWithSalt("student1!https://inacademia.org/metadata/inacademia-simple-validation.xml", idp_persistentId_salt);
-            var output = h.HashWithSalt("student1", IDPSALT);
+            var output = h.HashWithSalt(@"student1!https://inacademia.org/metadata/inacademia-simple-validation.xml", IDPSALT);
+            //var output = h.HashWithSalt("student1", IDPSALT);
             Assert.AreEqual(IDPSALT, output.Salt);
-            Assert.AreEqual("6cf4670648fc1d54a1b6c3c64508d8fb0ce147a8724827ad8bd69954862a2d92", output.DigestHex);
+            Assert.AreEqual("75a212240fb4649dcdf42de771ab7b63c8bd30e18fa1edcdeffbbab5dfe0f90a", output.DigestHex);
         }
 
         [TestMethod]

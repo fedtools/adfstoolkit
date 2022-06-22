@@ -1,6 +1,4 @@
-﻿
-
-using ADFSTk.Domain.Model;
+﻿using ADFSTk.Domain.Model;
 
 namespace ADFSTk.Interfaces
 {
