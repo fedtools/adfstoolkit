@@ -61,7 +61,7 @@
             }
 
             try {
-                Add-AdfsAttributeStore -Name "ADFSTkStore" -TypeQualifiedName "ADFSTk.ADFSTkStore, ADFSTk" -Configuration @{"IDPSALT" = $IdpSalt }
+                Add-AdfsAttributeStore -Name "ADFSTkStore" -TypeQualifiedName "ADFSTk.ADFSTkStore, ADFSTkStore" -Configuration @{"IDPSALT" = $IdpSalt }
                 Write-ADFSTkLog (Get-ADFSTkLanguageText storeSuccessfullyInstalled)
             }
             catch {
