@@ -114,19 +114,19 @@ param (
     $TransformRules.schacHomeOrganizationType = $Global:ADFSTkAllTransformRules.schacHomeOrganizationType
     
     $TransformRules.eduPersonEntitlement = $Global:ADFSTkAllTransformRules.eduPersonEntitlement
-    $TransformRules.samlPairwiseID = $Global:ADFSTkAllTransformRules.samlPairwiseID #new unique per SP and anonymous https://docs.oasis-open.org/security/saml-subject-id-attr/v1.0/cs01/saml-subject-id-attr-v1.0-cs01.html 3.4
+    $TransformRules.pairwiseID = $Global:ADFSTkAllTransformRules.pairwiseID #new unique per SP and anonymous https://docs.oasis-open.org/security/saml-subject-id-attr/v1.0/cs01/saml-subject-id-attr-v1.0-cs01.html 3.4
     $IssuanceTransformRuleCategories.Add("http://refeds.org/category/pseudonymous",$TransformRules)
     
     #Personalized Authorization – REFEDS
     $TransformRules = [Ordered]@{}
     $TransformRules.schacHomeOrganizationType = $Global:ADFSTkAllTransformRules.schacHomeOrganizationType
-    $TransformRules.'subject-id' = $Global:ADFSTkAllTransformRules.'subject-id' #new same as eppn if unique
+    $TransformRules.subjectID = $Global:ADFSTkAllTransformRules.subjectID #new same as eppn if unique
     $TransformRules.displayName = $Global:ADFSTkAllTransformRules.displayName 
     $TransformRules.givenName = $Global:ADFSTkAllTransformRules.givenName 
     $TransformRules.sn = $Global:ADFSTkAllTransformRules.sn
     $TransformRules.mail = $Global:ADFSTkAllTransformRules.mail
     $TransformRules.eduPersonScopedAffiliation = $Global:ADFSTkAllTransformRules.eduPersonScopedAffiliation
-    $IssuanceTransformRuleCategories.Add("http://refeds.org/category/pseudonymous",$TransformRules)
+    $IssuanceTransformRuleCategories.Add("http://refeds.org/category/personalized",$TransformRules)
     
     #European Student Identifier Entity Category
     $TransformRules = [Ordered]@{}

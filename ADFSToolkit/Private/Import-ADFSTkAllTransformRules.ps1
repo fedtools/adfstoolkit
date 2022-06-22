@@ -248,11 +248,16 @@ $TransformRules."transient-id" = [PSCustomObject]@{
                                            -AttributeName schacPersonalUniqueCode `
                                            -AttributeGroup "ID's"
 
-    $TransformRules.samlPairwiseID = Get-ADFSTkTransformRule -Type "urn:mace:dir:attribute-def:samlPairwiseID" `
-                                           -Oid "urn:oid:1.3.6.1.4.1.25178.1.2.14" `
-                                           -AttributeName samlPairwiseID `
+    $TransformRules.pairwiseID = Get-ADFSTkTransformRule -Type "urn:oasis:names:tc:SAML:attribute:pairwise-id" `
+                                           -Oid "urn:oasis:names:tc:SAML:attribute:pairwise-id" `
+                                           -AttributeName pairwiseID `
                                            -AttributeGroup "ID's"
-                                           
+
+    $TransformRules.subjectID = Get-ADFSTkTransformRule -Type "urn:oasis:names:tc:SAML:attribute:subject-id" `
+                                           -Oid "urn:oasis:names:tc:SAML:attribute:subject-id" `
+                                           -AttributeName subjectID `
+                                           -AttributeGroup "ID's"
+
     #endregion
     #region Personal attributes
     $TransformRules.givenName = Get-ADFSTkTransformRule -Type "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" `

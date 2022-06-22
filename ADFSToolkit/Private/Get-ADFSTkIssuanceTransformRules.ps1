@@ -20,7 +20,11 @@ function Get-ADFSTkIssuanceTransformRules {
         [Parameter(Mandatory = $false,
             ValueFromPipelineByPropertyName = $true,
             Position = 4)]
-        $NameIDFormat
+        $NameIDFormat,
+        [Parameter(Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 5)]
+        $SubjectIDReq
     )
 
     if ([string]::IsNullOrEmpty($Global:ADFSTkAllAttributes) -or $Global:ADFSTkAllAttributes.Count -eq 0) {
@@ -162,6 +166,29 @@ function Get-ADFSTkIssuanceTransformRules {
                 }
             }
         }
+    }
+    #endregion
+
+    #region Add subject-id/pairwise-id
+    if ($SubjectIDReq -eq 'any') {
+        $SubjectIDReq = 'pairwise-id'
+    }    
+
+    switch ($SubjectIDReq) {
+        'pairwise-id' { 
+            $IssuanceTransformRules.pairwiseID = Get-ADFSTkEnhancedRule -Rule $Global:ADFSTkAllTransformRules.pairwiseID -EntityId $EntityId 
+            foreach ($Attribute in $Global:ADFSTkAllTransformRules.pairwiseID.Attribute) { 
+                $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
+            }
+        }
+        'subject-id' { 
+            $IssuanceTransformRules.subjectID = Get-ADFSTkEnhancedRule -Rule $Global:ADFSTkAllTransformRules.subjectID -EntityId $EntityId 
+            foreach ($Attribute in $Global:ADFSTkAllTransformRules.subjectID.Attribute) { 
+                $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
+            }
+        }
+        'none' {  }
+        Default {}
     }
     #endregion
 
