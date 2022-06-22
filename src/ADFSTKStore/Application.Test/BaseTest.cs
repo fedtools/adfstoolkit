@@ -13,7 +13,8 @@ namespace Urn.Adfstk.Application.Test
         
         public Dictionary<string, string> Attributes { get; set; }
         public Dictionary<string,string> InitParams { get; set; }
-        public const string IDPSALT = "f1nd1ngn3m0";
+        //public const string IDPSALT = "f1nd1ngn3m0";
+        public const string IDPSALT = "BoelEXUb2qNGNbP7KHy4/q9gHh6ZRc4wvW0lg0Xd";
         public BaseTest()
         {
             LoadAttributes();

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IdentityModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Urn.Adfstk.Application;
+using ADFSTk;
 namespace Urn.Adfstk.Application.Test
 {
     [TestClass]
@@ -69,7 +69,7 @@ namespace Urn.Adfstk.Application.Test
             {
                 var xx = (TypedAsyncResult<string[][]>)asyncRes;
                 PrintResult(issue, xx);
-                Assert.AreEqual("G44TQZDFGBRGMMRVGU4DEODGHFQWMN3BGYZWMYRXHEYTENRTGAYTQYRWGI3GENTEMQ2DKNBVGRSTKOJRGJSTOODFGY2DAMLEHEYDEZA@umu.se", x[0][0]);
+                Assert.AreEqual("student1@umu.se", x[0][0]);
             }
             else
             {
@@ -84,7 +84,7 @@ namespace Urn.Adfstk.Application.Test
             var issue = new string[] { "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier" };
             IAsyncResult asyncRes =
                 cs.BeginExecuteQuery(";pairwiseid;{0}",
-              new string[] { "https://inacademia.org/metadata/inacademia-simple-validation.xml", "student1","umu.se" }, null, null); 
+              new string[] { "https://release-check.swamid.se/shibboleth", "student1", "umu.se" }, null, null); 
 
               var x = (string[][])cs.EndExecuteQuery(asyncRes);
 
@@ -92,7 +92,7 @@ namespace Urn.Adfstk.Application.Test
             {
                 var xx = (TypedAsyncResult<string[][]>)asyncRes;
                 PrintResult(issue, xx);
-                Assert.AreEqual("G44TQZDFGBRGMMRVGU4DEODGHFQWMN3BGYZWMYRXHEYTENRTGAYTQYRWGI3GENTEMQ2DKNBVGRSTKOJRGJSTOODFGY2DAMLEHEYDEZA@umu.se", x[0][0]);
+                Assert.AreEqual("MM3GMOJQGVTDIN3EGBRDIZRRG4ZTKNTBGNQTSM3EGZSDQOLEGUZTSN3EGEYWENDBGFTGKZDCG4ZDCOJQMFTGMYRTMJQTGNZVGJQTMOI@umu.se", x[0][0]);
             }
             else
             {
