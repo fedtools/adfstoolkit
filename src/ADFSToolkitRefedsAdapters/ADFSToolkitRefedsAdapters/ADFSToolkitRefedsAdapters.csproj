@@ -71,11 +71,6 @@
     <Compile Include="RefedsSFAUsernamePasswordAdapter.cs" />
     <Compile Include="RefedsSFAUsernamePasswordMetadata.cs" />
     <Compile Include="ResourceHandler.cs" />
-    <Compile Include="Resources\StringResources.sv.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>StringResources.sv.resx</DependentUpon>
-    </Compile>
     <Compile Include="Resources\StringResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -91,14 +86,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>PresentationResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.en.resx" />
     <EmbeddedResource Include="Resources\StringResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>StringResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\StringResources.sv.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>StringResources.sv.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\StringResources.sv.resx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />

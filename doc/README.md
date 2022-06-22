@@ -13,6 +13,10 @@ Optional but strongly suggested: A test AD FS environment to perform the install
 | :heavy_check_mark: Expect a few thousand Relying Party trusts in the AD FS Console after your first run|
 |-----------------------------------------------------------------------------|
 
+## Enabling optional REFEDS MFA support for AD FS
+
+After doing your base installation of ADFSToolkit, we recommend you enable [REFEDS MFA support](/doc/mfa.md) for your site.
+
 ## System Preparation
 
 ADFSToolkit relies on [PowerShellGallery.com](https://www.powershellgallery.com/packages/ADFSToolkit/). Many systems may be able to use PowerShellGalllery out of the box however be sure your system is operating properly reviewing both: 

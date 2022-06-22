@@ -6,11 +6,6 @@ param (
     [switch]$SelectAttributes
 )
 
-    if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
-    {
-        $Global:ADFSTkPaths = Get-ADFSTKPaths
-    }
-
     $configFiles = Get-ADFSTkConfiguration -ConfigFilesOnly
 
     if ([string]::IsNullOrEmpty($configFiles))
@@ -28,7 +23,8 @@ param (
 
     [xml]$settings = Get-Content $configFile.ConfigFile
     
-    
+    $rpParams = @{}
+
     if ($PSBoundParameters.ContainsKey('SelectAttributes') -and $SelectAttributes -ne $false)
     {
         $AllAttributes = Import-ADFSTkAllAttributes
@@ -92,17 +88,16 @@ param (
             }
         }
 
+        $IssuanceTransformRuleObject = @{
+            Stores   = $null
+            MFARules = $null
+            Rules    = $IssuanceTransformRules.Values
+        }
         if ($AttributesFromStore.Count -ne $null)
         {
-            $FirstRule = Get-ADFSTkStoreRule -Stores $Settings.configuration.storeConfig.stores.store `
+            $IssuanceTransformRuleObject.Stores = Get-ADFSTkStoreRule -Stores $Settings.configuration.storeConfig.stores.store `
                                              -AttributesFromStore $AttributesFromStore `
                                              -EntityId $EntityId 
-
-            return  $FirstRule + $IssuanceTransformRules.Values
-        }
-        else
-        {
-            return $IssuanceTransformRules.Values
         }
     }
     else
@@ -137,9 +132,22 @@ param (
                 }
             }
     
-        return Get-ADFSTkIssuanceTransformRules $EntityCategories -EntityId $entityID `
+        $IssuanceTransformRuleObject =  Get-ADFSTkIssuanceTransformRules $EntityCategories -EntityId $entityID `
                                                            -RequestedAttribute $sp.SPSSODescriptor.AttributeConsumingService.RequestedAttribute `
                                                            -RegistrationAuthority $sp.Extensions.RegistrationInfo.registrationAuthority `
                                                            -NameIdFormat $sp.SPSSODescriptor.NameIDFormat
     }
+
+    $IssuanceTransformRuleObject.MFARules = Get-ADFSTkMFAConfiguration -EntityId $entityID
+
+    if ([string]::IsNullOrEmpty($IssuanceTransformRuleObject.MFARules)) {
+        $rpParams.IssuanceAuthorizationRules = Get-ADFSTkIssuanceAuthorizationRules -EntityId $entityID
+        $rpParams.IssuanceTransformRules = $IssuanceTransformRuleObject.Stores + $IssuanceTransformRuleObject.Rules
+    }
+    else {
+        $rpParams.AccessControlPolicyName = 'ADFSTk:Permit everyone and force MFA'
+        $rpParams.IssuanceTransformRules = $IssuanceTransformRuleObject.Stores + $IssuanceTransformRuleObject.MFARules + $IssuanceTransformRuleObject.Rules
+    }
+
+    return $rpParams
 }

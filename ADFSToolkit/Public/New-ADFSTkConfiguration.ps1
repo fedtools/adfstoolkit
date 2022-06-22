@@ -5,13 +5,6 @@ param(
     [switch]$Passthru
 )
 
-   #Get All paths  and assert they exist  
-   if ([string]::IsNullOrEmpty($Global:ADFSTkPaths))
-    {  
-        $Global:ADFSTkPaths = Get-ADFSTKPaths
-    
-    }
-    
     Write-ADFSTkHost mainconfStartMessage -Style Info -AddLinesOverAndUnder
     
     if (Test-Path $Global:ADFSTKPaths.mainConfigFile)
@@ -93,7 +86,7 @@ param(
     $configurationNode = $config.CreateNode("element","Configuration",$null)
         
     $configVersionNode = $config.CreateNode("element","ConfigVersion",$null)
-    $configVersionNode.InnerText = "1.0"
+    $configVersionNode.InnerText = $Global:ADFSTkCompatibleADFSTkConfigVersion
 
     $configurationNode.AppendChild($configVersionNode) | Out-Null
 

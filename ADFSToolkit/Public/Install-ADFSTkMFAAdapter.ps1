@@ -12,6 +12,30 @@ function Install-ADFSTkMFAAdapter {
         [switch]$RefedsSFA
     )
 
+    #region Get all locales from the toolkit
+    $languageFileName = "ADFSTk_EndUserTexts_{0}.pson"
+    $languagePacks = Join-Path $Global:ADFSTKPaths.modulePath "languagePacks" 
+
+    #Get all directories that contains a language file with the right name
+    $possibleLanguageDirs = Get-ChildItem $languagePacks -Directory | ? { Test-Path (Join-Path $_.FullName ($languageFileName -f $_.Name)) }
+
+    #Filter out the directories that doesn't have a correct name
+    $configFoundLanguages = @()
+    foreach ($languageDirName in $possibleLanguageDirs.Name) {
+        try {
+            $configFoundLanguages += [System.Globalization.CultureInfo]::GetCultureInfo($languageDirName).Name
+        }
+        catch {
+            #Well the language isn't supported or an incorrect culture :(
+        }
+    }
+
+    # $configFoundLanguages = (Compare-ADFSTkObject -FirstSet $possibleLanguageDirs.Name `
+    #         -SecondSet ([System.Globalization.CultureInfo]::GetCultures("SpecificCultures").Name) `
+    #         -CompareType Intersection).CompareSet
+    #endregion
+
+
     $authProviders = Get-AdfsAuthenticationProvider
     $restart = $true
     
@@ -27,25 +51,7 @@ function Install-ADFSTkMFAAdapter {
 
     #region Add Access Control Policy if needed
     if ((Get-AdfsAccessControlPolicy -Identifier ADFSToolkitPermitEveryoneAndRequireMFA) -eq $null) {
-        $ACPMetadata = @"
-        <PolicyMetadata xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2012/04/ADFS">
-        <RequireFreshAuthentication>false</RequireFreshAuthentication>
-        <IssuanceAuthorizationRules>
-        <Rule>
-            <Conditions>
-            <Condition i:type="MultiFactorAuthenticationCondition">
-                <Operator>IsPresent</Operator>
-                <Values />
-            </Condition>
-            </Conditions>
-        </Rule>
-        </IssuanceAuthorizationRules>
-    </PolicyMetadata>  
-"@
-        New-AdfsAccessControlPolicy -Name "ADFSTk:Permit everyone and force MFA" `
-            -Identifier ADFSToolkitPermitEveryoneAndRequireMFA `
-            -Description "Grant access to everyone and require MFA for everyone." `
-            -PolicyMetadata $ACPMetadata | Out-Null
+        New-ADFSTKAccessControlPolicy
     }
     #endregion
 
@@ -83,8 +89,13 @@ function Install-ADFSTkMFAAdapter {
             Write-ADFSTkVerboseLog "TypeName: $typeNameMFA"
         
             Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText mfaRegisteringAuthProvider)
-            Register-AdfsAuthenticationProvider -TypeName $typeNameMFA -Name $nameMFA  | Out-Null
-            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cDone)
+            if ([string]::IsNullOrEmpty((Get-AdfsAuthenticationProvider -Name $typeNameMFA))) {
+                Register-AdfsAuthenticationProvider -TypeName $typeNameMFA -Name $nameMFA  | Out-Null
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cDone)
+            }
+            else {
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cAlreadyPresent -f $typeNameMFA)
+            }
         
             Write-ADFSTkHost cInstallationDone -Style Done
             if (Get-ADFSTkAnswer (Get-ADFSTkLanguageText mfaRegisterAuthenticationProviderQuestion -f "Forms Authentication (RefedsMFA)") -DefaultYes) {
@@ -92,6 +103,14 @@ function Install-ADFSTkMFAAdapter {
                 $authPolicy = Get-AdfsGlobalAuthenticationPolicy
                 Set-AdfsGlobalAuthenticationPolicy -PrimaryExtranetAuthenticationProvider ($authPolicy.PrimaryExtranetAuthenticationProvider + $nameMFA) `
                     -PrimaryIntranetAuthenticationProvider ($authPolicy.PrimaryIntranetAuthenticationProvider + $nameMFA) | Out-Null
+
+                # Add display names for the authentication provider for all languages
+                Set-ADFSTkAdapterLanguageTexts -adapterName $nameMFA -textID 'mfaSignInWithTwoStepVerification'
+                
+                $Global:ADFSTKRefedsMFAUsernamePasswordAdapterInstalled = $true
+
+                ### Remove all SP Hash Files to re-load all SP's!
+                Remove-ADFSTkCache -SPHashFileForALLConfigurations -Force
             }
             else {
                 $restart = $false
@@ -109,11 +128,16 @@ function Install-ADFSTkMFAAdapter {
         else {
             Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText mfaRetrievingTypeName)
             $typeNameSFA = "ADFSTk.RefedsSFAUsernamePasswordAdapter, " + $fn.ToString() + ", processorArchitecture=MSIL"
-            Write-ADFSTkVerboseLog "TypeName: $typeNameMFA"
+            Write-ADFSTkVerboseLog "TypeName: $typeNameSFA"
 
             Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText mfaRegisteringAuthProvider)
-            Register-AdfsAuthenticationProvider -TypeName $typeNameSFA -Name $nameSFA | Out-Null
-            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cDone)
+            if ([string]::IsNullOrEmpty((Get-AdfsAuthenticationProvider -Name $typeNameSFA))) {
+                Register-AdfsAuthenticationProvider -TypeName $typeNameSFA -Name $nameSFA | Out-Null
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cDone)
+            }
+            else {
+                Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText cAlreadyPresent -f $typeNameSFA)
+            }
         
             Write-ADFSTkHost cInstallationDone -Style Done
             if (Get-ADFSTkAnswer (Get-ADFSTkLanguageText mfaRegisterAuthenticationProviderQuestion -f "Forms Authentication (RefedsSFA)") -DefaultYes) {
@@ -121,6 +145,9 @@ function Install-ADFSTkMFAAdapter {
                 $authPolicy = Get-AdfsGlobalAuthenticationPolicy
                 Set-AdfsGlobalAuthenticationPolicy -PrimaryExtranetAuthenticationProvider ($authPolicy.PrimaryExtranetAuthenticationProvider + $nameSFA) `
                     -PrimaryIntranetAuthenticationProvider ($authPolicy.PrimaryIntranetAuthenticationProvider + $nameSFA) | Out-Null
+
+                # Add display names for the authentication provider for all languages
+                Set-ADFSTkAdapterLanguageTexts -adapterName $nameSFA -textID 'mfaSignInWithRefedsSFA'
             }
             else {
                 $restart = $false
@@ -131,5 +158,36 @@ function Install-ADFSTkMFAAdapter {
     if ($restart -and (Get-ADFSTkAnswer (Get-ADFSTkLanguageText cRestartADFSServiceQuestion) -DefaultYes)) {
         net stop adfssrv
         net start adfssrv
+    }
+}
+
+# If we need end user text in more places this should be incoperated in Get-ADFSTkLanguageText
+function Set-ADFSTkAdapterLanguageTexts {
+    param (
+        $adapterName,
+        $textID,
+        [switch]$WhatIf
+    )
+
+    foreach ($language in $configFoundLanguages) {
+        $languagePackDir = Join-Path $languagePacks $language
+        $languageFile = Join-Path $languagePackDir $languageFileName
+
+        try {
+            $languageContent = Get-Content ($languageFile -f $language) | Out-String
+            $languageData = Invoke-Expression $languageContent
+        
+            if ($languageData.ContainsKey('mfaSignInWithTwoStepVerification')) {
+                if ($PSBoundParameters.ContainsKey('WhatIf') -and $PSBoundParameters.WhatIf -eq $true) {
+                    Write-Host "Whould have written '$($languageData.$textID)' to the '$adapterName' adapter in '$language'"
+                }
+                else {
+                    Set-AdfsAuthenticationProviderWebContent -Name $adapterName -DisplayName ($languageData.$textID) -Locale $language
+                }
+            }
+        }
+        catch {
+            # Not to big concern...
+        }
     }
 }

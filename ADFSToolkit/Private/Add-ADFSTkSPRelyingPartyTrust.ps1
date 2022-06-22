@@ -177,7 +177,7 @@ function Add-ADFSTkSPRelyingPartyTrust {
         Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPAddedForcedEC -f ($ForcedEntityCategories -join ','))
     }
 
-    $rpParams.IssuanceTransformRules = Get-ADFSTkIssuanceTransformRules $EntityCategories -EntityId $entityID `
+    $IssuanceTransformRuleObject = Get-ADFSTkIssuanceTransformRules $EntityCategories -EntityId $entityID `
         -RequestedAttribute $sp.SPSSODescriptor.AttributeConsumingService.RequestedAttribute `
         -RegistrationAuthority $sp.Extensions.RegistrationInfo.registrationAuthority `
         -NameIdFormat $sp.SPSSODescriptor.NameIDFormat
@@ -185,15 +185,15 @@ function Add-ADFSTkSPRelyingPartyTrust {
 
     #region Add MFA Access Policy and extra rules if needed
 
-    $mfaRules = Get-ADFSTkMFAConfiguration -EntityId $entityID
+    $IssuanceTransformRuleObject.MFARules = Get-ADFSTkMFAConfiguration -EntityId $entityID
 
-    if ([string]::IsNullOrEmpty($mfaRules)) {
+    if ([string]::IsNullOrEmpty($IssuanceTransformRuleObject.MFARules)) {
         $rpParams.IssuanceAuthorizationRules = Get-ADFSTkIssuanceAuthorizationRules -EntityId $entityID
+        $rpParams.IssuanceTransformRules = $IssuanceTransformRuleObject.Stores + $IssuanceTransformRuleObject.Rules
     }
     else {
-        #Should we use Identity and get the name from Get-AdfsAccessControlPolicy -Identifier ADFSToolkitPermitEveryoneAndRequireMFA?
         $rpParams.AccessControlPolicyName = 'ADFSTk:Permit everyone and force MFA'
-        $rpParams.IssuanceTransformRules += $mfaRules
+        $rpParams.IssuanceTransformRules = $IssuanceTransformRuleObject.Stores + $IssuanceTransformRuleObject.MFARules + $IssuanceTransformRuleObject.Rules
     }
     #endregion
 

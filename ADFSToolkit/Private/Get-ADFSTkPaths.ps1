@@ -25,19 +25,6 @@
     $paths.defaultConfigFile = Join-Path $paths.moduleConfigDefaultDir 'config.ADFSTk.default.xml'
     $paths.defaultInstitutionLocalSPFile = Join-Path $paths.moduleConfigDefaultDir 'get-ADFSTkLocalManualSPSettings-dist.ps1'
     $paths.defaultInstitutionLocalTransformRulesFile = Join-Path $paths.moduleConfigDefaultDir 'Get-ADFSTkLocalTransformRules-dist.ps1'
-    #$paths.defaultConfigFile = Join-Path $paths.modulePath 'config\default\config.ADFSTk.default.xml' #Next version with language support
-
-
-
-    #Create main dirs
-    ADFSTk-TestAndCreateDir -Path $paths.mainDir               -PathName "ADFSTk install directory" #C:\ADFSToolkit
-    ADFSTk-TestAndCreateDir -Path $paths.mainConfigDir         -PathName "Main configuration" #C:\ADFSToolkit\config
-    ADFSTk-TestAndCreateDir -Path $paths.mainBackupDir         -PathName "Main backup" #C:\ADFSToolkit\config\backup
-    ADFSTk-TestAndCreateDir -Path $paths.cacheDir              -PathName "Cache directory" #C:\ADFSToolkit\cache
-    ADFSTk-TestAndCreateDir -Path $paths.institutionDir        -PathName "Institution config directory" #C:\ADFSToolkit\config\institution
-    ADFSTk-TestAndCreateDir -Path $paths.institutionBackupDir  -PathName "Institution backup directory" #C:\ADFSToolkit\config\institution\backup
-    ADFSTk-TestAndCreateDir -Path $paths.federationDir         -PathName "Federation config directory" #C:\ADFSToolkit\config\federation
-    ADFSTk-TestAndCreateDir -Path $paths.federationBackupDir    -PathName "Federation backup directory" #C:\ADFSToolkit\config\federation\backup
 
     return $paths
 }
