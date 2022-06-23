@@ -50,7 +50,7 @@ function Get-ADFSTkIssuanceTransformRules {
         Write-ADFSTkLog (Get-ADFSTkLanguageText rulesNoRequestedAttributesDetected)
     }
 
-    $IssuanceTransformRuleCategories = Import-ADFSTkIssuanceTransformRuleCategories -RequestedAttributes $RequestedAttributes
+    $IssuanceTransformRuleCategories = Import-ADFSTkIssuanceTransformRuleCategories -RequestedAttributes $RequestedAttributes -SubjectIDReq $SubjectIDReq
 
     $adfstkConfig = Get-ADFSTkConfiguration
 
@@ -63,7 +63,7 @@ function Get-ADFSTkIssuanceTransformRules {
             . $fedEntityCategoryFileName
 
             if (Test-Path function:Import-ADFSTkIssuanceTransformRuleCategoriesFromFederation) {
-                $IssuanceTransformRuleCategoriesFromFederation = Import-ADFSTkIssuanceTransformRuleCategoriesFromFederation -RequestedAttributes $RequestedAttributes
+                $IssuanceTransformRuleCategoriesFromFederation = Import-ADFSTkIssuanceTransformRuleCategoriesFromFederation -RequestedAttributes $RequestedAttributes -SubjectIDReq $SubjectIDReq
                 Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationEntityCategoriesFound -f $IssuanceTransformRuleCategoriesFromFederation.Count)
 
                 foreach ($entityCategory in $IssuanceTransformRuleCategoriesFromFederation.Keys) {
@@ -166,29 +166,6 @@ function Get-ADFSTkIssuanceTransformRules {
                 }
             }
         }
-    }
-    #endregion
-
-    #region Add subject-id/pairwise-id
-    if ($SubjectIDReq -eq 'any') {
-        $SubjectIDReq = 'pairwise-id'
-    }    
-
-    switch ($SubjectIDReq) {
-        'pairwise-id' { 
-            $IssuanceTransformRules.pairwiseID = Get-ADFSTkEnhancedRule -Rule $Global:ADFSTkAllTransformRules.pairwiseID -EntityId $EntityId 
-            foreach ($Attribute in $Global:ADFSTkAllTransformRules.pairwiseID.Attribute) { 
-                $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
-            }
-        }
-        'subject-id' { 
-            $IssuanceTransformRules.subjectID = Get-ADFSTkEnhancedRule -Rule $Global:ADFSTkAllTransformRules.subjectID -EntityId $EntityId 
-            foreach ($Attribute in $Global:ADFSTkAllTransformRules.subjectID.Attribute) { 
-                $AttributesFromStore[$Attribute] = $Global:ADFSTkAllAttributes[$Attribute]
-            }
-        }
-        'none' {  }
-        Default {}
     }
     #endregion
 
