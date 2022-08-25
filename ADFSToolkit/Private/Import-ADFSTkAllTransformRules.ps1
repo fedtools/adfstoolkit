@@ -324,15 +324,15 @@ $TransformRules."transient-id" = [PSCustomObject]@{
         Rule=@'
 
         @RuleName = "Compose schacDateOfBirth start"
-        c:[Type == "urn:mace:dir:attribute-def:schacDateOfBirth", Value =~ "^(18|19|20)?[0-9]{2}((0[0-9])|(10|11|12))((([0-2][0-9])|(3[0-1]))|((6[1-9])|([7-8][0-9])|(9[0-1])))[0-9]{4}$"]
+        c:[Type == "urn:mace:dir:attribute-def:schacDateOfBirth", Value =~ "^(18|19|20)?[0-9]{2}((0[0-9])|(10|11|12))((([0-2][0-9])|(3[0-1]))|((6[1-9])|([7-8][0-9])|(9[0-1])))([A-Z0-9]{1}[0-9]{3}){0,1}$"]
          => add(Type = "urn:adfstk:schackdateofbirth:start", Value = regexReplace(c.Value, "(?<start>^.{6}).+$", "${start}"));
         
         @RuleName = "Compose schacDateOfBirth middle"
-        c:[Type == "urn:mace:dir:attribute-def:schacDateOfBirth", Value =~ "^(18|19|20)?[0-9]{2}((0[0-9])|(10|11|12))((([0-2][0-9])|(3[0-1]))|((6[1-9])|([7-8][0-9])|(9[0-1])))[0-9]{4}$"]
+        c:[Type == "urn:mace:dir:attribute-def:schacDateOfBirth", Value =~ "^(18|19|20)?[0-9]{2}((0[0-9])|(10|11|12))((([0-2][0-9])|(3[0-1]))|((6[1-9])|([7-8][0-9])|(9[0-1])))([A-Z0-9]{1}[0-9]{3}){0,1}$"]
          => add(Type = "urn:adfstk:schackdateofbirth:middle", Value = regexReplace(c.Value, "^.{6}(?<middle>\d{1}).+$", "${middle}"));
         
         @RuleName = "Compose schacDateOfBirth end"
-        c:[Type == "urn:mace:dir:attribute-def:schacDateOfBirth", Value =~ "^(18|19|20)?[0-9]{2}((0[0-9])|(10|11|12))((([0-2][0-9])|(3[0-1]))|((6[1-9])|([7-8][0-9])|(9[0-1])))[0-9]{4}$"]
+        c:[Type == "urn:mace:dir:attribute-def:schacDateOfBirth", Value =~ "^(18|19|20)?[0-9]{2}((0[0-9])|(10|11|12))((([0-2][0-9])|(3[0-1]))|((6[1-9])|([7-8][0-9])|(9[0-1])))([A-Z0-9]{1}[0-9]{3}){0,1}$"]
          => add(Type = "urn:adfstk:schackdateofbirth:end", Value = regexReplace(c.Value, "^.{7}(?<end>\d{1}).+$", "${end}"));
         
         @RuleName = "Transform schacDateOfBirth 6x->0x"
