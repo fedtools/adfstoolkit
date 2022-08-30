@@ -147,6 +147,7 @@ function Get-ADFSTkIssuanceTransformRules {
 
         if ($TransformedEntityCategories.Count -eq 0) {
             $TransformedEntityCategories += "NoEntityCategory"
+            Write-ADFSTkVerboseLog -Message (Get-ADFSTkLanguageText rulesNoMatchingEntityCategoryFound)
         }
 
         ###
