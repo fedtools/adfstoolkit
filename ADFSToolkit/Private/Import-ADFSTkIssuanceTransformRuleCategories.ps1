@@ -124,7 +124,7 @@ function Import-ADFSTkIssuanceTransformRuleCategories {
     $TransformRules.schacHomeOrganizationType = $Global:ADFSTkAllTransformRules.schacHomeOrganizationType
     
     $TransformRules.eduPersonEntitlement = $Global:ADFSTkAllTransformRules.eduPersonEntitlement
-    $IssuanceTransformRuleCategories.Add("https://refeds.org/category/anonymous/", $TransformRules)
+    $IssuanceTransformRuleCategories.Add("https://refeds.org/category/anonymous", $TransformRules)
     
     #Pseudonymous Authorization – REFEDS
     $TransformRules = [Ordered]@{}
