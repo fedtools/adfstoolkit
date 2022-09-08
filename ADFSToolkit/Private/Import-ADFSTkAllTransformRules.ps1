@@ -113,7 +113,7 @@ $TransformRules."transient-id" = [PSCustomObject]@{
             param = c1.Value, 
             param = c1.OriginalIssuer, 
             param = "", 
-            param = c2.Value);
+            param = regexreplace(c2.Value, "(?<start>^.{1,20}).+$", "${start}")+".000Z");
             
     @RuleName = "issue transient-id"
     c:[Type == "urn:adfstk:transientid"]
