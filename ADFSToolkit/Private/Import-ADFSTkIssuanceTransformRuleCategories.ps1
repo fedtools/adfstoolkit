@@ -117,37 +117,41 @@ function Import-ADFSTkIssuanceTransformRuleCategories {
 
     $IssuanceTransformRuleCategories.Add("http://www.geant.net/uri/dataprotection-code-of-conduct/v1", $TransformRules)
 
-    #Anonumous Authorization – REFEDS
+    #region Anonumous Authorization – REFEDS
     $TransformRules = [Ordered]@{}
     $TransformRules.eduPersonScopedAffiliation = $Global:ADFSTkAllTransformRules.eduPersonScopedAffiliation
     $TransformRules.eduPersonOrgDN = $Global:ADFSTkAllTransformRules.eduPersonOrgDN
     $TransformRules.schacHomeOrganization = $Global:ADFSTkAllTransformRules.schacHomeOrganization
-    
     $TransformRules.eduPersonEntitlement = $Global:ADFSTkAllTransformRules.eduPersonEntitlement
+
     $IssuanceTransformRuleCategories.Add("https://refeds.org/category/anonymous", $TransformRules)
+    #endregion
     
-    #Pseudonymous Authorization – REFEDS
+    #region Pseudonymous Authorization – REFEDS
     $TransformRules = [Ordered]@{}
     $TransformRules.eduPersonScopedAffiliation = $Global:ADFSTkAllTransformRules.eduPersonScopedAffiliation
     $TransformRules.eduPersonOrgDN = $Global:ADFSTkAllTransformRules.eduPersonOrgDN 
     $TransformRules.schacHomeOrganization = $Global:ADFSTkAllTransformRules.schacHomeOrganization
     $TransformRules.eduPersonAssurance = $Global:ADFSTkAllTransformRules.eduPersonAssurance
     $TransformRules.eduPersonEntitlement = $Global:ADFSTkAllTransformRules.eduPersonEntitlement
-    $TransformRules.pairwiseID = $Global:ADFSTkAllTransformRules.pairwiseID #new unique per SP and anonymous https://docs.oasis-open.org/security/saml-subject-id-attr/v1.0/cs01/saml-subject-id-attr-v1.0-cs01.html 3.4
+    $TransformRules.pairwiseID = $Global:ADFSTkAllTransformRules.pairwiseID
+
     $IssuanceTransformRuleCategories.Add("https://refeds.org/category/pseudonymous", $TransformRules)
+    #endregion
     
-    #Personalized Authorization – REFEDS
+    #region Personalized Authorization – REFEDS
     $TransformRules = [Ordered]@{}
     $TransformRules.eduPersonAssurance = $Global:ADFSTkAllTransformRules.eduPersonAssurance
     $TransformRules.schacHomeOrganization = $Global:ADFSTkAllTransformRules.schacHomeOrganization
-    $TransformRules.subjectID = $Global:ADFSTkAllTransformRules.subjectID #new same as eppn if unique
+    $TransformRules.subjectID = $Global:ADFSTkAllTransformRules.subjectID 
     $TransformRules.displayName = $Global:ADFSTkAllTransformRules.displayName 
     $TransformRules.givenName = $Global:ADFSTkAllTransformRules.givenName 
     $TransformRules.sn = $Global:ADFSTkAllTransformRules.sn
     $TransformRules.mail = $Global:ADFSTkAllTransformRules.mail
     $TransformRules.eduPersonScopedAffiliation = $Global:ADFSTkAllTransformRules.eduPersonScopedAffiliation
+
     $IssuanceTransformRuleCategories.Add("https://refeds.org/category/personalized", $TransformRules)
-    
+    #endregion   
     ###
     
     return $IssuanceTransformRuleCategories
