@@ -132,8 +132,8 @@ function Import-ADFSTkIssuanceTransformRuleCategories {
     $TransformRules.eduPersonScopedAffiliation = $Global:ADFSTkAllTransformRules.eduPersonScopedAffiliation
     $TransformRules.eduPersonOrgDN = $Global:ADFSTkAllTransformRules.eduPersonOrgDN 
     $TransformRules.schacHomeOrganization = $Global:ADFSTkAllTransformRules.schacHomeOrganization
-    $TransformRules.eduPersonAssurance = $Global:ADFSTkAllTransformRules.eduPersonAssurance
     $TransformRules.eduPersonEntitlement = $Global:ADFSTkAllTransformRules.eduPersonEntitlement
+    $TransformRules.eduPersonAssurance = $Global:ADFSTkAllTransformRules.eduPersonAssurance
     $TransformRules.pairwiseID = $Global:ADFSTkAllTransformRules.pairwiseID
 
     $IssuanceTransformRuleCategories.Add("https://refeds.org/category/pseudonymous", $TransformRules)
@@ -141,14 +141,14 @@ function Import-ADFSTkIssuanceTransformRuleCategories {
     
     #region Personalized Authorization – REFEDS
     $TransformRules = [Ordered]@{}
+    $TransformRules.eduPersonScopedAffiliation = $Global:ADFSTkAllTransformRules.eduPersonScopedAffiliation
     $TransformRules.eduPersonAssurance = $Global:ADFSTkAllTransformRules.eduPersonAssurance
     $TransformRules.schacHomeOrganization = $Global:ADFSTkAllTransformRules.schacHomeOrganization
-    $TransformRules.subjectID = $Global:ADFSTkAllTransformRules.subjectID 
     $TransformRules.displayName = $Global:ADFSTkAllTransformRules.displayName 
     $TransformRules.givenName = $Global:ADFSTkAllTransformRules.givenName 
     $TransformRules.sn = $Global:ADFSTkAllTransformRules.sn
     $TransformRules.mail = $Global:ADFSTkAllTransformRules.mail
-    $TransformRules.eduPersonScopedAffiliation = $Global:ADFSTkAllTransformRules.eduPersonScopedAffiliation
+    $TransformRules.subjectID = $Global:ADFSTkAllTransformRules.subjectID 
 
     $IssuanceTransformRuleCategories.Add("https://refeds.org/category/personalized", $TransformRules)
     #endregion   
