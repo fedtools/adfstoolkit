@@ -170,12 +170,36 @@ function Add-ADFSTkSPRelyingPartyTrust {
         }
     }
     
+    # Filter Entity Categories that shouldn't be released together
+    $filteredEntityCategories = @()
+    $filteredEntityCategories += foreach ($entityCategory in $EntityCategories)
+    {
+        if ($entityCategory -eq 'https://refeds.org/category/personalized') {
+            if (-not ($EntityCategories.Contains('https://refeds.org/category/pseudonymous') -or `
+                 $EntityCategories.Contains('https://refeds.org/category/anonymous'))) {
+                 $entityCategory
+            }
+        }
+        elseif ($entityCategory -eq 'https://refeds.org/category/pseudonymous') {
+        if (-not $EntityCategories.Contains('https://refeds.org/category/anonymous')) {
+                 $entityCategory
+            }
+        }
+        else {
+            $entityCategory
+        }
+    }
+
+    $EntityCategories = $filteredEntityCategories
+
     Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPFollowingECFound -f ($EntityCategories -join ','))
 
     if ($ForcedEntityCategories) {
         $EntityCategories += $ForcedEntityCategories
         Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPAddedForcedEC -f ($ForcedEntityCategories -join ','))
     }
+
+
 
     $subjectIDReq = $sp.Extensions.EntityAttributes.Attribute | ? Name -eq "urn:oasis:names:tc:SAML:profiles:subject-id:req" | Select -First 1 -ExpandProperty AttributeValue
 
