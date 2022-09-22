@@ -92,12 +92,12 @@ function get-ADFSTkLocalManualSPSettings {
     $ManualSPSettings.TransformRules.schacPersonalUniqueCode = [PSCustomObject]@{
         Rule=@"
         @RuleName = "compose schacPersonalUniqueCode for [entityID]"
-        c:[Type == "urn:schac:personalUniqueCode", Value ~= "^only_release_values_starting_with_this_string"] 
+        c:[Type == "urn:mace:dir:attribute-def:schacPersonalUniqueCode", Value ~= "^only_release_values_starting_with_this_string"] 
          => issue(Type = "urn:oid:1.3.6.1.4.1.25178.1.2.14", 
          Value = c.Value, 
          Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
 "@
-        Attribute="urn:schac:personalUniqueCode"
+        Attribute="urn:mace:dir:attribute-def:schacPersonalUniqueCode"
         AttributeGroup="ID's"
     }
 

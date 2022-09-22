@@ -128,14 +128,17 @@ param (
                 }
                 elseif ($_ -is [System.Xml.XmlElement])
                 {
-                    $_."#text"
+                    $_.Extensions.EntityAttributes.Attribute
                 }
             }
     
+        $subjectIDReq = $sp.Extensions.EntityAttributes.Attribute | ? Name -eq "urn:oasis:names:tc:SAML:profiles:subject-id:req" | Select -First 1 -ExpandProperty AttributeValue
+
         $IssuanceTransformRuleObject =  Get-ADFSTkIssuanceTransformRules $EntityCategories -EntityId $entityID `
                                                            -RequestedAttribute $sp.SPSSODescriptor.AttributeConsumingService.RequestedAttribute `
                                                            -RegistrationAuthority $sp.Extensions.RegistrationInfo.registrationAuthority `
-                                                           -NameIdFormat $sp.SPSSODescriptor.NameIDFormat
+                                                           -NameIdFormat $sp.SPSSODescriptor.NameIDFormat `
+                                                           -SubjectIDReq $subjectIDReq.ToLower()
     }
 
     $IssuanceTransformRuleObject.MFARules = Get-ADFSTkMFAConfiguration -EntityId $entityID

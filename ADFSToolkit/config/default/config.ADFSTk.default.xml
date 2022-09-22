@@ -123,9 +123,13 @@
              Presence of allowedRegistrationAuthorities - attribute filters to be present in only said RA (one or more)
             -->
 
-		<!-- Attention! You might need to filter this attribute on SP level before releasing it. (Not needed for the European Student Identifier Entity Category) -->
-		<attribute type="urn:schac:personalUniqueCode" store="Active Directory" name="schacPersonalUniqueCode" />
+		<attribute type="urn:mace:dir:attribute-def:eduPersonOrgDN" store="Static">
+			<value>o=Hogwarts,dc=hsww,dc=wiz</value>
+		</attribute>
 
+		<!-- Attention! You might need to filter this attribute on SP level before releasing it. (Not needed for the European Student Identifier Entity Category) -->
+		<attribute type="urn:mace:dir:attribute-def:schacPersonalUniqueCode " store="Active Directory" name="schacPersonalUniqueCode " />
+		
 		<!-- Attention! You might need to filter this attribute on SP level before releasing it. -->
 		<attribute type="urn:mace:dir:attribute-def:eduPersonEntitlement" store="Active Directory" name="edupersonentitlement" />
 

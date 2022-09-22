@@ -113,7 +113,7 @@ $TransformRules."transient-id" = [PSCustomObject]@{
             param = c1.Value, 
             param = c1.OriginalIssuer, 
             param = "", 
-            param = c2.Value);
+            param = regexreplace(c2.Value, "(?<start>^.{1,20}).+$", "${start}")+".000Z");
             
     @RuleName = "issue transient-id"
     c:[Type == "urn:adfstk:transientid"]
@@ -246,6 +246,16 @@ $TransformRules."transient-id" = [PSCustomObject]@{
     $TransformRules.schacPersonalUniqueCode = Get-ADFSTkTransformRule -Type "urn:schac:personalUniqueCode" `
                                            -Oid "urn:oid:1.3.6.1.4.1.25178.1.2.14" `
                                            -AttributeName schacPersonalUniqueCode `
+                                           -AttributeGroup "ID's"
+
+    $TransformRules.pairwiseID = Get-ADFSTkTransformRule -Type "urn:oasis:names:tc:SAML:attribute:pairwise-id" `
+                                           -Oid "urn:oasis:names:tc:SAML:attribute:pairwise-id" `
+                                           -AttributeName pairwiseID `
+                                           -AttributeGroup "ID's"
+
+    $TransformRules.subjectID = Get-ADFSTkTransformRule -Type "urn:oasis:names:tc:SAML:attribute:subject-id" `
+                                           -Oid "urn:oasis:names:tc:SAML:attribute:subject-id" `
+                                           -AttributeName subjectID `
                                            -AttributeGroup "ID's"
 
     #endregion
@@ -424,6 +434,12 @@ $TransformRules."transient-id" = [PSCustomObject]@{
                                                   -Oid "urn:oid:1.3.6.1.4.1.5923.1.1.1.16" `
                                                   -AttributeName eduPersonOrcid `
                                                   -AttributeGroup "norEduPerson attributes"
+
+    $TransformRules.eduPersonOrgDN = Get-ADFSTkTransformRule -Type "urn:mace:dir:attribute-def:eduPersonOrgDN" `
+                                                  -Oid "urn:oid:1.3.6.1.4.1.5923.1.1.1.3" `
+                                                  -AttributeName eduPersonOrgDN `
+                                                  -AttributeGroup "eduPerson attributes"
+                                                  
 
     #endregion
 

@@ -20,7 +20,11 @@ function Get-ADFSTkIssuanceTransformRules {
         [Parameter(Mandatory = $false,
             ValueFromPipelineByPropertyName = $true,
             Position = 4)]
-        $NameIDFormat
+        $NameIDFormat,
+        [Parameter(Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 5)]
+        $SubjectIDReq
     )
 
     if ([string]::IsNullOrEmpty($Global:ADFSTkAllAttributes) -or $Global:ADFSTkAllAttributes.Count -eq 0) {
@@ -46,7 +50,7 @@ function Get-ADFSTkIssuanceTransformRules {
         Write-ADFSTkLog (Get-ADFSTkLanguageText rulesNoRequestedAttributesDetected)
     }
 
-    $IssuanceTransformRuleCategories = Import-ADFSTkIssuanceTransformRuleCategories -RequestedAttributes $RequestedAttributes
+    $IssuanceTransformRuleCategories = Import-ADFSTkIssuanceTransformRuleCategories -RequestedAttributes $RequestedAttributes -SubjectIDReq $SubjectIDReq
 
     $adfstkConfig = Get-ADFSTkConfiguration
 
@@ -59,7 +63,7 @@ function Get-ADFSTkIssuanceTransformRules {
             . $fedEntityCategoryFileName
 
             if (Test-Path function:Import-ADFSTkIssuanceTransformRuleCategoriesFromFederation) {
-                $IssuanceTransformRuleCategoriesFromFederation = Import-ADFSTkIssuanceTransformRuleCategoriesFromFederation -RequestedAttributes $RequestedAttributes
+                $IssuanceTransformRuleCategoriesFromFederation = Import-ADFSTkIssuanceTransformRuleCategoriesFromFederation -RequestedAttributes $RequestedAttributes -SubjectIDReq $SubjectIDReq
                 Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText rulesFederationEntityCategoriesFound -f $IssuanceTransformRuleCategoriesFromFederation.Count)
 
                 foreach ($entityCategory in $IssuanceTransformRuleCategoriesFromFederation.Keys) {
@@ -143,6 +147,7 @@ function Get-ADFSTkIssuanceTransformRules {
 
         if ($TransformedEntityCategories.Count -eq 0) {
             $TransformedEntityCategories += "NoEntityCategory"
+            Write-ADFSTkVerboseLog -Message (Get-ADFSTkLanguageText rulesNoMatchingEntityCategoryFound)
         }
 
         ###
