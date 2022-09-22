@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-	<ConfigVersion>1.3</ConfigVersion>
+	<ConfigVersion>1.4</ConfigVersion>
 	<SPHashFile>SPHash.xml</SPHashFile>
 	<MetadataCacheFile>metadata.cached.xml</MetadataCacheFile>
 	<LocalRelyingPartyFile>get-ADFSTkLocalManualSPSettings.ps1</LocalRelyingPartyFile>
@@ -129,7 +129,7 @@
 
 		<!-- Attention! You might need to filter this attribute on SP level before releasing it. (Not needed for the European Student Identifier Entity Category) -->
 		<attribute type="urn:mace:dir:attribute-def:schacPersonalUniqueCode " store="Active Directory" name="schacPersonalUniqueCode " />
-		
+
 		<!-- Attention! You might need to filter this attribute on SP level before releasing it. -->
 		<attribute type="urn:mace:dir:attribute-def:eduPersonEntitlement" store="Active Directory" name="edupersonentitlement" />
 
@@ -147,6 +147,15 @@
 		</attribute>
 
 		<attribute type="urn:mace:dir:attribute-def:eduPersonUniqueID" store="Active Directory" name="objectGUID" />
+
+		<attribute type="urn:oasis:names:tc:SAML:attribute:pairwise-id" store="Active Directory" name="samaccountname">
+			<transformvalue adfstkstorefunction="pairwiseid" />
+		</attribute>
+
+		<attribute type="urn:oasis:names:tc:SAML:attribute:subject-id" store="Active Directory" name="samaccountname">
+			<transformvalue adfstkstorefunction="subjectid" />
+		</attribute>
+
 		<attribute type="http://schemas.xmlsoap.org/claims/samaccountname" store="Active Directory" name="samaccountname" />
 		<attribute type="http://schemas.xmlsoap.org/claims/Group" store="Active Directory" name="tokenGroups" />
 	</attributes>
