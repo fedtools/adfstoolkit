@@ -347,6 +347,19 @@
                     $config.Save($configFile.configFile);
                 }
 
+                #v1.3 --> v1.4
+                $currentVersion = '1.3'
+                $newVersion = '1.4'
+                if ($config.configuration.ConfigVersion -eq $currentVersion) {
+                    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText confUpdatingInstConfigFromTo -f $currentVersion, $newVersion)
+
+                    #Two attributes are added from Defaul Config below
+                    #Nothing else is needed
+                    
+                    $config.configuration.ConfigVersion = $newVersion
+                    $config.Save($configFile.configFile);
+                }
+
                 Write-ADFSTkLog (Get-ADFSTkLanguageText confUpdatedInstConfigDone -f $configFile.configFile, $oldConfigVersion, $Global:ADFSTkCompatibleInstitutionConfigVersion) -EntryType Information
             }
 

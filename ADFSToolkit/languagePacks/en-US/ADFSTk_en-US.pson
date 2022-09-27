@@ -32,6 +32,7 @@
     cRestartADFSServiceQuestion = "The ADFS Service needs to be restarted. Do you want to do that now?"
     cFileNotFound = "File not found!"
     cAlreadyPresent = "{0} already present!"
+    cRunOnAllServers = "Attention! {0} needs to be run on all ADFS servers."
 
     #############################################
     ### Main configuration cmdlets [mainconf] ###
@@ -284,6 +285,7 @@ Please open the file and configure how ADFSToolkit can get them (Active Director
     rulesFederationLocalTransformRulesFileNotFound = "Import-ADFSTkLocalTransformRules.ps1 file not found. Skipping import of local transform rules..."
 
     rulesReplaceWithAttributeIsMissing = "You have a transform node for the attribute '{0}' with the attribute 'replacetext' in your Institution Config file but the attribute 'replacewith' is missing. Please add that in your Institution Configuration file."
+    rulesNoMatchingEntityCategoryFound = "WARNING: Could not find any matching entity category..."
 
     ###############################
     ### Manual SP Settings [ms] ###
@@ -579,4 +581,25 @@ If deleted all SP's will be re-imported again and this will take some time.
     sphashSPSuccessfullyRemoved = "{0} were successfully removed from the SPHash List."
     sphashSPAlreadyRemoved = "{0} already removed from the SPHash List."
     sphashListEmpty = "SPHash List empty. Cannot remove {0}"
+
+    ############################
+    ### ADFSTkStore [store]  ###
+    ############################
+
+    storeSaltInfo = @"
+To be able to hash attributes ADFSTkStore needs a Salt.
+    
+The Salt should be ~40 characters long.
+"@
+    storeIDPSalt = "IdP Salt"
+    storeSaltQuestion = "Do you want to Generate or Provide an IDP Salt?"
+    storeInvalidSaltLength = "The provided IdP Salt is not 16 characters. Aborting Installation"
+    storeInvalidSaltCharacters = @"
+The provided IdP Salt contains invalid characters.
+Valid character set: [a-z][A-Z][0-9]
+"@
+    storeDllNotFound = "Could not find ADFSTkStore.dll, aborting..."
+    storeSuccessfullyInstalled = "ADFSTkStore was succesfully installed!"
+    storeSuccessfullyUnInstalled = "ADFSTkStore was succesfully uninstalled!"
+
 }

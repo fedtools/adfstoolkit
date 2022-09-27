@@ -12,6 +12,7 @@
 # v2.1.0-RC3  : 02/01/2022
 # v2.1.0-RC4  : 03/31/2022
 # v2.1.0      : 05/18/2022
+# v2.2.0-RC1  : 09/27/2022
 
 @{
 
@@ -19,7 +20,7 @@
 RootModule = 'ADFSToolkit.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.1.0'
+ModuleVersion = '2.2.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -76,7 +77,7 @@ PowerShellVersion = '5.0'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Import-ADFSTkMetadata', 'New-ADFSTkConfiguration', 'Unpublish-ADFSTkAggregate', 'Get-ADFSTkTransformRuleObjects', 'Update-ADFSTkInstitutionConfiguration', 'Sync-ADFSTkAggregates', 'New-ADFSTkInstitutionConfiguration', 'Enable-ADFSTkInstitutionConfiguration', 'Disable-ADFSTkInstitutionConfiguration', 'Get-ADFSTkToolsIssuanceTransformRules', 'Get-ADFSTkHealth', 'Get-ADFSTkPaths', 'Get-ADFSTkFederationDefaults', 'Remove-ADFSTkCache', 'Copy-ADFSTkToolRules', 'Get-ADFSTkToolEntityId', 'Install-ADFSTkMFAAdapter','Uninstall-ADFSTkMFAAdapter','Get-ADFSTkMFAAdapter','Get-ADFSTkEntityHash','Remove-ADFSTkEntityHash','Get-ADFSTkMetadata', 'Get-ADFSTkHealth', 'Register-ADFSTkScheduledTask', 'Get-ADFSTkToolSpInfoFromMetadata'
+FunctionsToExport = 'Import-ADFSTkMetadata', 'New-ADFSTkConfiguration', 'Unpublish-ADFSTkAggregate', 'Get-ADFSTkTransformRuleObjects', 'Update-ADFSTkInstitutionConfiguration', 'Sync-ADFSTkAggregates', 'New-ADFSTkInstitutionConfiguration', 'Enable-ADFSTkInstitutionConfiguration', 'Disable-ADFSTkInstitutionConfiguration', 'Get-ADFSTkToolsIssuanceTransformRules', 'Get-ADFSTkHealth', 'Get-ADFSTkPaths', 'Get-ADFSTkFederationDefaults', 'Remove-ADFSTkCache', 'Copy-ADFSTkToolRules', 'Get-ADFSTkToolEntityId', 'Install-ADFSTkMFAAdapter','Uninstall-ADFSTkMFAAdapter','Get-ADFSTkMFAAdapter','Get-ADFSTkEntityHash','Remove-ADFSTkEntityHash','Get-ADFSTkMetadata', 'Get-ADFSTkHealth', 'Register-ADFSTkScheduledTask', 'Get-ADFSTkToolSpInfoFromMetadata', 'Install-ADFSTkStore', 'Uninstall-ADFSTkStore'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 #CmdletsToExport = @(Import-Metadata)
@@ -117,7 +118,7 @@ PrivateData = @{
         # ReleaseNotes = ''
 
         # Prerelease string of this module
-        Prerelease = ''
+        Prerelease = 'RC1'
 
     } # End of PSData hashtable
 

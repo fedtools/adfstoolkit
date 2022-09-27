@@ -1,6 +1,6 @@
 function Initialize-ADFSTk {
     $Global:ADFSTkPaths = Get-ADFSTKPaths
-    $Global:ADFSTkCompatibleInstitutionConfigVersion = "1.3"
+    $Global:ADFSTkCompatibleInstitutionConfigVersion = "1.4"
     $Global:ADFSTkCompatibleADFSTkConfigVersion = "1.0"
     $Global:ADFSTkCompatibleLanguageTableConfigVersion = "2.1"
 
