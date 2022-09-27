@@ -12,6 +12,7 @@
 # v2.1.0-RC3  : 02/01/2022
 # v2.1.0-RC4  : 03/31/2022
 # v2.1.0      : 05/18/2022
+# v2.2.0-RC1  : 09/27/2022
 
 @{
 
@@ -19,7 +20,7 @@
 RootModule = 'ADFSToolkit.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.1.0'
+ModuleVersion = '2.2.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -117,7 +118,7 @@ PrivateData = @{
         # ReleaseNotes = ''
 
         # Prerelease string of this module
-        Prerelease = ''
+        Prerelease = 'RC1'
 
     } # End of PSData hashtable
 
