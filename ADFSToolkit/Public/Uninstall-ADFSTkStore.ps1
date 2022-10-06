@@ -8,25 +8,54 @@ function Uninstall-ADFSTkStore {
     Write-ADFSTkLog -SetEventLogName $LogName -SetEventLogSource $LogSource
 
     ## ADFS 
-    $Name = "ADFSTkStore"
+    $ADFSTkStoreObject = Get-ADFSTkStore -ReturnAsObject
+    # $dllName = "ADFSTkStore.dll"
+    # $Name = "ADFSTkStore"
+    # $dllDestination = Join-Path "C:\Windows\adfs" $dllName
+    
+    # $ADFSTkStore = Get-AdfsAttributeStore -Name $Name
+    # $ADFSTkStoreIsInstalled = ![string]::IsNullOrEmpty($ADFSTkStore)
+    # $ADFSTkStoreDllIsInstalled = Test-Path $dllDestination
+    
+    if ($ADFSTkStoreObject.ADFSTkStoreIsInstalled -or $ADFSTkStoreObject.ADFSTkStoreDllIsInstalled) {
+        try {
+            if ($ADFSTkStoreObject.ADFSTkStoreIsInstalled -and $ADFSTkStoreObject.ADFSTkStore.Configuration.ContainsKey('IDPSALT')) {
+                if (Get-ADFSTkAnswer (Get-ADFSTkLanguageText storeShowSaltQuestion) -DefaultYes) {    
+                    Write-Host $ADFSTkStoreObject.ADFSTkStore.Configuration.IDPSALT -ForegroundColor Yellow
+                }
+            }
 
-    try {
-        Remove-ADFSAttributeStore -TargetName $Name
-        
-        $dll = Join-Path "C:\Windows\adfs" "ADFSTkStore.dll"
+            if (Get-ADFSTkAnswer (Get-ADFSTkLanguageText cStopADFSServiceQuestion)) {
+                if ($ADFSTkStoreObject.ADFSTkStoreIsInstalled) {
+                    Remove-ADFSAttributeStore -TargetName $ADFSTkStoreObject.Name
+                }
 
-        if (Test-Path $dll) {
-            Remove-Item $dll
+                if ($ADFSTkStoreObject.ADFSTkStoreDllIsInstalled) {
+                    Stop-Service adfssrv
+                    do
+                    {
+                        Start-Sleep -Seconds 4
+                    } 
+                    until((Get-Service adfssrv).Status -eq [System.ServiceProcess.ServiceControllerStatus]::Stopped)
+                    
+                    Remove-Item $ADFSTkStoreObject.dllDestination
+                    Start-Service adfssrv 
+                }
+                
+                Write-ADFSTkHost cADFSServiceStarted
+            
+                Write-ADFSTkLog (Get-ADFSTkLanguageText storeSuccessfullyUnInstalled)
+                Write-ADFSTkHost cRunOnAllServers -f "Uninstall-ADFSTkStore"
+            }
+            else {
+                Write-ADFSTkLog (Get-ADFSTkLanguageText cUnInstallationAborted)
+            }
         }
-        Write-ADFSTkLog (Get-ADFSTkLanguageText storeSuccessfullyUnInstalled)
-
-        if (Get-ADFSTkAnswer (Get-ADFSTkLanguageText cRestartADFSServiceQuestion)) {
-            Restart-Service adfssrv 
+        catch {
+            Write-ADFSTkLog $_ -MajorFault
         }
-
-        Write-ADFSTkHost cRunOnAllServers -f "Uninstall-ADFSTkStore"
     }
-    catch {
-        Write-ADFSTkLog $_ -MajorFault
+    else {
+        Write-ADFSTkHost storeNotInstalled
     }
 }
