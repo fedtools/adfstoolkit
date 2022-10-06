@@ -24,12 +24,15 @@
     cAllDone = "All done!"
     cInstallationDone = "Installation done!"
     cUnInstallationDone = "UnInstallation done!"
+    cUnInstallationAborted = "UnInstallation aborted!"
     cPathExistsAtPath = "{0} exists at {1}"
     cPathNotExistCreatingHere = "{0} did not exist, creating it here: {1}"
     cWorkingWith = "Working with '{0}'..."
     cRemoving = "Removing '{0}'..."
     cCouldNotRemove = "Could not remove '{0}'! Error: {1}"
     cRestartADFSServiceQuestion = "The ADFS Service needs to be restarted. Do you want to do that now?"
+    cStopADFSServiceQuestion = "The ADFS Service needs to be temporarily stopped. Do you want to do that now?"
+    cADFSServiceStarted = "The ADFS Service has been started again."
     cFileNotFound = "File not found!"
     cAlreadyPresent = "{0} already present!"
     cRunOnAllServers = "Attention! {0} needs to be run on all ADFS servers."
@@ -593,13 +596,20 @@ The Salt should be ~40 characters long.
 "@
     storeIDPSalt = "IdP Salt"
     storeSaltQuestion = "Do you want to Generate or Provide an IDP Salt?"
-    storeInvalidSaltLength = "The provided IdP Salt is not 16 characters. Aborting Installation"
-    storeInvalidSaltCharacters = @"
-The provided IdP Salt contains invalid characters.
-Valid character set: [a-z][A-Z][0-9]
-"@
-    storeDllNotFound = "Could not find ADFSTkStore.dll, aborting..."
+    storeShowSaltQuestion = "Do you want to show the IDP Salt? It will be deleted after uninstallation!"
+    storeInvalidSaltLength = "The provided IdP Salt is null or empty. Aborting Installation"
+    storeDllNotFound = "Could not find source ADFSTkStore.dll, aborting..."
     storeSuccessfullyInstalled = "ADFSTkStore was succesfully installed!"
     storeSuccessfullyUnInstalled = "ADFSTkStore was succesfully uninstalled!"
+    storeNotInstalled = "ADFSTkStore not present on this server, uninstall aborted."
+    storeAlreadyInstalled = @"
+ADFSTkStore is already installed!
+Run Uninstall-ADFSTkStore to uninstall current version before installing again.
 
+Run Get-ADFSTkStore to check installed version vs version included in ADFSToolkit.
+"@
+    storeIsInstalled = "ADFSTkStore IS installed!"
+    storeIsNotInstalled = "ADFSTkStore is NOT installed!"
+    storeInstalledDllVersion = "Installed Dll version is: {0}"
+    storeSourceDllVersion = "Dll version included in ADFSToolkit is: {0}"
 }
