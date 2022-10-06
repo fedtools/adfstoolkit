@@ -454,7 +454,8 @@ Please open the file and configure how ADFSToolkit can get them (Active Director
 The provided Institution Configuration File is incompatible with this version of ADFS Toolkit!
 The Institution Configuration File version is {0} and the minimum version needs to be {1}.
 "@
-    healthCheckSignatureName = "Signature check"
+    healthCheckMissingSignaturesName = "Check missing signatures"
+    healthCheckIncorectSignaturesName = "Check incorrect signatures"
     healthCheckSignatureStartMessage = "Checking signature on module scipts..."
     healthCheckSignatureValidSignaturesResult = "{0} scripts found with valid signature(s)..."
     healthCheckSignatureInvalidSignaturesResult = "{0} scripts found with invalid signature(s)..."

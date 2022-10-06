@@ -56,53 +56,57 @@
         Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckSignatureMissingSignaturesResult -f $missingSignatures.Count)
 
         #Signature(s) missing...
+        $resultObject = [PSCustomObject]@{
+            CheckID       = "CheckSignature"
+            CheckName     = Get-ADFSTkLanguageText healthCheckMissingSignaturesName
+            ResultValue   = [Result]::Pass
+            ResultText    = "No files with missing signatures!"
+            ResultData    = @()
+            ReferenceFile = ""
+            FixID         = ""
+        }
         if ($missingSignatures.Count -gt 0) {
             if ($Global:ADFSTkSkipNotSignedHealthCheck -eq $true) {
-                $resultObject = [PSCustomObject]@{
-                    CheckID       = "CheckSignature"
-                    CheckName     = "Signature check"
-                    ResultValue   = [Result]::Pass
-                    ResultText    = Get-ADFSTkLanguageText healthCheckSignatureSkipNotSignedMessage
-                    ResultData    = @()
-                    ReferenceFile = ""
-                    FixID         = ""
-                }
+                $resultObject.ResultText = Get-ADFSTkLanguageText healthCheckSignatureSkipNotSignedMessage
 
                 Write-ADFSTkVerboseLog $resultObject.ResultText
 
                 $healthResults += $resultObject
             }
             else {
-                $resultObject = [PSCustomObject]@{
-                    CheckID       = "CheckSignature"
-                    CheckName     = "Signature check"
-                    ResultValue   = [Result]::Fail
-                    ResultText    = Get-ADFSTkLanguageText healthCheckSignatureMissingSignaturesResult -f $missingSignatures.Count
-                    ResultData    = $missingSignatures
-                    ReferenceFile = ""
-                    FixID         = ""
-                }
-
+                $resultObject.ResultValue = [Result]::Fail
+                $resultObject.ResultText    = Get-ADFSTkLanguageText healthCheckSignatureMissingSignaturesResult -f $missingSignatures.Count
+                $resultObject.ResultData    = $missingSignatures
+                
                 Write-ADFSTkLog (Get-ADFSTkLanguageText healthCheckSignatureMissingSignaturesMessage -f ($missingSignatures | Out-String)) -EntryType Warning
 
                 $healthResults += $resultObject
             }
         }
+        else {
+            $healthResults += $resultObject
+        }
 
         #Invalid signature(s)...
+        $resultObject = [PSCustomObject]@{
+            CheckID       = "CheckSignature"
+            CheckName     = Get-ADFSTkLanguageText healthCheckIncorectSignaturesName
+            ResultValue   = [Result]::Pass
+            ResultText    = "No files with incorrect signature!"
+            ResultData    = @()
+            ReferenceFile = ""
+            FixID         = ""
+        }
         if ($invalidSignatures.Count -gt 0) {
-            $resultObject = [PSCustomObject]@{
-                CheckID       = "CheckSignature"
-                CheckName     = Get-ADFSTkLanguageText healthCheckSignatureName
-                ResultValue   = [Result]::Fail
-                ResultText    = Get-ADFSTkLanguageText healthCheckSignatureInvalidSignaturesMessage -f ($invalidSignatures | Out-String)
-                ResultData    = $invalidSignatures
-                ReferenceFile = ""
-                FixID         = ""
-            }
+            $resultObject.ResultValue   = [Result]::Fail
+            $resultObject.ResultText    = Get-ADFSTkLanguageText healthCheckSignatureInvalidSignaturesMessage -f ($invalidSignatures | Out-String)
+            $resultObject.ResultData    = $invalidSignatures
 
             Write-ADFSTkVerboseLog $resultObject.ResultText -EntryType Warning
 
+            $healthResults += $resultObject
+        }
+        else {
             $healthResults += $resultObject
         }
 
