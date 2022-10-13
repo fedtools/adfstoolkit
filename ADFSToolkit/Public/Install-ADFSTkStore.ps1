@@ -6,16 +6,25 @@
 
     Write-ADFSTkLog -SetEventLogName $LogName -SetEventLogSource $LogSource
 
-    $binPath = Join-Path $global:ADFSTkPaths.modulePath Bin
-    $dllFile = Join-Path $binPath 'ADFSTkStore.dll'
+    $ADFSTkStoreObject = Get-ADFSTkStore -ReturnAsObject
 
-    if (Test-Path $dllFile) {
-        ## Copy binary to ADFS
-        Copy-Item -Path $dllFile -Destination "C:\Windows\adfs"
+    # $dllName = "ADFSTkStore.dll"
+    # $binPath = Join-Path $global:ADFSTkPaths.modulePath Bin
+    # $dllSourceLocation = Join-Path $binPath $dllName
+    # $dllDestination = Join-Path "C:\Windows\adfs" $dllName
+    # $Name = "ADFSTkStore"
+    
+    # $ADFSTkStore = Get-AdfsAttributeStore -Name $Name
+    # $ADFSTkStoreIsInstalled = ![string]::IsNullOrEmpty($ADFSTkStore)
+    # $ADFSTkStoreDllSourceExists = Test-Path $dllSourceLocation
+    # $ADFSTkStoreDllIsInstalled = Test-Path $dllDestination
 
-        if ((Get-AdfsAttributeStore -Name ADFSTkStore) -eq $null) {
-            
 
+
+        
+
+    if (!$ADFSTkStoreObject.ADFSTkStoreIsInstalled) {
+        if (Test-Path $ADFSTkStoreObject.dllSourceLocation) {
             ## ADFS 
             Write-ADFSTkHost storeSaltInfo
 
@@ -36,50 +45,58 @@
                 }
                 1 {
                     #Provide IDP Salt
-                    # $characters = ""
-                    # 0x30..0x39 | % { $characters += ([char]$_) }
-                    # 0x41..0x5A | % { $characters += ([char]$_) }
-                    # 0x61..0x7A | % { $characters += ([char]$_) }
-    
                     [string]$IdpSalt = Read-Host "Enter IdP Salt"
 
-                    if ($IdpSalt.Length -ne 16) {
+                    if ([string]::IsNullOrEmpty($IdpSalt)) {
                         Write-ADFSTkLog (Get-ADFSTkLanguageText storeInvalidSaltLength) -MajorFault
                     }
-
-                    # $valid = $true
-                    # foreach ($char in $IdpSalt) {
-                    #     if (!$characters.Contains($char)) {
-                    #         $valid = $false
-                    #     }
-                    # }
-
-                    # if (!$valid) {
-                    #     Write-ADFSTkLog (Get-ADFSTkLanguageText storeInvalidSaltCharacters) -MajorFault
-                    # }
                 }
             }
 
             try {
                 Add-AdfsAttributeStore -Name "ADFSTkStore" -TypeQualifiedName "ADFSTk.ADFSTkStore, ADFSTkStore" -Configuration @{"IDPSALT" = $IdpSalt }
-                Write-ADFSTkLog (Get-ADFSTkLanguageText storeSuccessfullyInstalled)
+
+                Copy-ADFSTkDll
             }
             catch {
                 Write-ADFSTkLog $_ -MajorFault
             }
-
         }
         else {
-            Write-ADFSTkLog (Get-ADFSTkLanguageText storeSuccessfullyInstalled)
+            Write-ADFSTkLog (Get-ADFSTkLanguageText storeDllNotFound) -MajorFault
+        }
+    }
+    else {
+        if (!(Test-Path $ADFSTkStoreObject.dllDestination) -or $ADFSTkStoreObject.SourceDllVersion -ne $ADFSTkStoreObject.InstalledDllVersion) {
+            #Handle other servers
+            Copy-ADFSTkDll
+        }
+        else {
+            Write-ADFSTkHost storeAlreadyInstalled
         }
         
-        if (Get-ADFSTkAnswer (Get-ADFSTkLanguageText cRestartADFSServiceQuestion)) {
-            Restart-Service adfssrv 
-        }
+    }
+}
+
+function Copy-ADFSTkDll {
+    if (Get-ADFSTkAnswer (Get-ADFSTkLanguageText cStopADFSServiceQuestion)) {
+        Stop-Service adfssrv
+        do {
+            Start-Sleep -Seconds 1
+        } 
+        until((Get-Service adfssrv).Status -eq [System.ServiceProcess.ServiceControllerStatus]::Stopped)
+            
+        ## Copy binary to ADFS
+        Copy-Item -Path $ADFSTkStoreObject.dllSourceLocation -Destination $ADFSTkStoreObject.dllDestination -Force
+        
+        Start-Service adfssrv
+        
+        Write-ADFSTkHost cADFSServiceStarted
+        Write-ADFSTkLog (Get-ADFSTkLanguageText storeSuccessfullyInstalled)
 
         Write-ADFSTkHost cRunOnAllServers -f "Install-ADFSTkStore"
     }
     else {
-        Write-ADFSTkHost storeDllNotFound
+        Write-ADFSTkLog (Get-ADFSTkLanguageText cUnInstallationAborted)
     }
 }
