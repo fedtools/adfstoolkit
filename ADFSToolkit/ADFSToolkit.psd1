@@ -13,6 +13,7 @@
 # v2.1.0-RC4  : 03/31/2022
 # v2.1.0      : 05/18/2022
 # v2.2.0-RC1  : 09/27/2022
+# v2.2.0-RC2  : 10/13/2022
 
 @{
 
@@ -118,7 +119,7 @@ PrivateData = @{
         # ReleaseNotes = ''
 
         # Prerelease string of this module
-        Prerelease = 'RC1'
+        Prerelease = 'RC2'
 
     } # End of PSData hashtable
 
