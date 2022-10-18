@@ -2,6 +2,8 @@ function Get-ADFSTkToolSpInfoFromMetadata {
     param (
         [ValidateSet('List', 'Object', 'XML')]
         $OutputType = 'List',
+        [Parameter(Mandatory=$true,
+                   Position=0)]
         $EntityID
     )
 
@@ -70,6 +72,7 @@ function Get-ADFSTkToolSpInfoFromMetadata {
                 SigningCertificates   = $SigningCertificates
                 EncryptionCertificate = $EncryptionCertificate
                 SamlEndpoints         = $SamlEndpoints
+                SubjectIDReq          = $eid.Extensions.EntityAttributes.Attribute | ? Name -eq "urn:oasis:names:tc:SAML:profiles:subject-id:req" | Select -First 1 -ExpandProperty AttributeValue
             }
 
             if ($OutputType -eq 'Object') {
@@ -84,7 +87,8 @@ function Get-ADFSTkToolSpInfoFromMetadata {
                     NameIdFormat, `
                 @{Name = 'SigningCertificates'; Expression = { $_.SigningCertificates.NotAfter -join ',' } }, `
                 @{Name = 'EncryptionCertificate'; Expression = { $_.EncryptionCertificate.NotAfter } }, `
-                @{Name = 'SamlEndpoints'; Expression = { $_.SamlEndpoints } }
+                @{Name = 'SamlEndpoints'; Expression = { $_.SamlEndpoints }},
+                @{Name = 'SubjectIDReq'; Expression = { $_.SubjectIDReq }}
             }
         }
     }
