@@ -1,18 +1,27 @@
 function Import-ADFSTkIssuanceTransformRuleCategories {
-param (
+    param (
     
-[Parameter(Mandatory=$false,
-                   ValueFromPipelineByPropertyName=$true,
-                   Position=0)]
-    $RequestedAttributes
-)
+        [Parameter(Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 0)]
+        $RequestedAttributes,
+        [Parameter(Mandatory = $false,
+            ValueFromPipelineByPropertyName = $true,
+            Position = 1)]
+        $SubjectIDReq
+    )
+
+    if ($SubjectIDReq -eq 'any') {
+        $SubjectIDReq = 'pairwise-id'
+    } 
+
     ### Create AttributeStore variables
     $IssuanceTransformRuleCategories = @{}
     
     ### Released to SP:s without Entity Category
     $TransformRules = [Ordered]@{}
     #We don't want to send anything to SP's without entity categories at this time
-    $IssuanceTransformRuleCategories.Add("NoEntityCategory",$TransformRules)
+    $IssuanceTransformRuleCategories.Add("NoEntityCategory", $TransformRules)
     
     ### research-and-scholarship ###
 
@@ -24,24 +33,22 @@ param (
     $TransformRules.eduPersonScopedAffiliation = $Global:ADFSTkAllTransformRules.eduPersonScopedAffiliation
     
     #eduPersonTargetedID should only be released if eduPersonPrincipalName i ressignable
-    if (![string]::IsNullOrEmpty($Settings.configuration.eduPersonPrincipalNameRessignable) -and $Settings.configuration.eduPersonPrincipalNameRessignable.ToLower() -eq "true")
-    {
+    if (![string]::IsNullOrEmpty($Settings.configuration.eduPersonPrincipalNameRessignable) -and $Settings.configuration.eduPersonPrincipalNameRessignable.ToLower() -eq "true") {
         $TransformRules.eduPersonTargetedID = $Global:ADFSTkAllTransformRules.eduPersonTargetedID
     }
 
-    $TransformRules.eduPersonUniqueID = $Global:ADFSTkAllTransformRules.eduPersonUniqueID
+    # $TransformRules.eduPersonUniqueID = $Global:ADFSTkAllTransformRules.eduPersonUniqueID
     $TransformRules.givenName = $Global:ADFSTkAllTransformRules.givenName
     $TransformRules.mail = $Global:ADFSTkAllTransformRules.mail
     $TransformRules.sn = $Global:ADFSTkAllTransformRules.sn
 
-    $IssuanceTransformRuleCategories.Add("http://refeds.org/category/research-and-scholarship",$TransformRules)
+    $IssuanceTransformRuleCategories.Add("http://refeds.org/category/research-and-scholarship", $TransformRules)
 
     ### GEANT Dataprotection Code of Conduct
     
     $TransformRules = [Ordered]@{}
 
-    if ($RequestedAttributes.Count -gt 0)
-    {
+    if ($RequestedAttributes.Count -gt 0) {
         if ($RequestedAttributes.ContainsKey("urn:oid:2.5.4.3")) {
             $TransformRules.cn = $Global:ADFSTkAllTransformRules.cn
         }
@@ -65,10 +72,9 @@ param (
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.10")) { 
             #eduPersonTargetedID should only be released if eduPersonPrincipalName i ressignable
-            if (![string]::IsNullOrEmpty($Settings.configuration.eduPersonPrincipalNameRessignable) -and $Settings.configuration.eduPersonPrincipalNameRessignable.ToLower() -eq "true")
-            {
-                $TransformRules.eduPersonTargetedID = $Global:ADFSTkAllTransformRules.eduPersonTargetedID
-            }
+            # if (![string]::IsNullOrEmpty($Settings.configuration.eduPersonPrincipalNameRessignable) -and $Settings.configuration.eduPersonPrincipalNameRessignable.ToLower() -eq "true") {
+            $TransformRules.eduPersonTargetedID = $Global:ADFSTkAllTransformRules.eduPersonTargetedID
+            # }
         }
         if ($RequestedAttributes.ContainsKey("urn:oid:1.3.6.1.4.1.5923.1.1.1.13")) { 
             $TransformRules.eduPersonUniqueID = $Global:ADFSTkAllTransformRules.eduPersonUniqueID
@@ -96,24 +102,57 @@ param (
         }
     }
 
-    $IssuanceTransformRuleCategories.Add("http://www.geant.net/uri/dataprotection-code-of-conduct/v1",$TransformRules)
-
-    #European Student Identifier Entity Category
-    $TransformRules = [Ordered]@{}
-    $TransformRules.schacPersonalUniqueCode = [PSCustomObject]@{
-        Rule=@"
-        @RuleName = "compose schacPersonalUniqueCode for ESI"
-        c:[Type == "urn:schac:personalUniqueCode", Value =~ "^urn:schac:personalUniqueCode:int:esi:"] 
-         => issue(Type = "urn:oid:1.3.6.1.4.1.25178.1.2.14", 
-         Value = c.Value, 
-         Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
-"@
-        Attribute="urn:schac:personalUniqueCode"
-        AttributeGroup="ID's"
+    #region Add subject-id/pairwise-id
+    switch ($SubjectIDReq) {
+        'pairwise-id' { 
+            $TransformRules.pairwiseID = $Global:ADFSTkAllTransformRules.pairwiseID 
+        }
+        'subject-id' { 
+            $TransformRules.subjectID = $Global:ADFSTkAllTransformRules.subjectID 
+        }
+        'none' {  }
+        Default {}
     }
-    $IssuanceTransformRuleCategories.Add("https://myacademicid.org/entity-categories/esi",$TransformRules)
+    #endregion
 
+    $IssuanceTransformRuleCategories.Add("http://www.geant.net/uri/dataprotection-code-of-conduct/v1", $TransformRules)
+
+    #region Anonumous Authorization – REFEDS
+    $TransformRules = [Ordered]@{}
+    $TransformRules.eduPersonScopedAffiliation = $Global:ADFSTkAllTransformRules.eduPersonScopedAffiliation
+    $TransformRules.eduPersonOrgDN = $Global:ADFSTkAllTransformRules.eduPersonOrgDN
+    $TransformRules.schacHomeOrganization = $Global:ADFSTkAllTransformRules.schacHomeOrganization
+    $TransformRules.eduPersonEntitlement = $Global:ADFSTkAllTransformRules.eduPersonEntitlement
+
+    $IssuanceTransformRuleCategories.Add("https://refeds.org/category/anonymous", $TransformRules)
+    #endregion
+    
+    #region Pseudonymous Authorization – REFEDS
+    $TransformRules = [Ordered]@{}
+    $TransformRules.eduPersonScopedAffiliation = $Global:ADFSTkAllTransformRules.eduPersonScopedAffiliation
+    $TransformRules.eduPersonOrgDN = $Global:ADFSTkAllTransformRules.eduPersonOrgDN 
+    $TransformRules.schacHomeOrganization = $Global:ADFSTkAllTransformRules.schacHomeOrganization
+    $TransformRules.eduPersonEntitlement = $Global:ADFSTkAllTransformRules.eduPersonEntitlement
+    $TransformRules.eduPersonAssurance = $Global:ADFSTkAllTransformRules.eduPersonAssurance
+    $TransformRules.pairwiseID = $Global:ADFSTkAllTransformRules.pairwiseID
+
+    $IssuanceTransformRuleCategories.Add("https://refeds.org/category/pseudonymous", $TransformRules)
+    #endregion
+    
+    #region Personalized Authorization – REFEDS
+    $TransformRules = [Ordered]@{}
+    $TransformRules.eduPersonScopedAffiliation = $Global:ADFSTkAllTransformRules.eduPersonScopedAffiliation
+    $TransformRules.eduPersonAssurance = $Global:ADFSTkAllTransformRules.eduPersonAssurance
+    $TransformRules.schacHomeOrganization = $Global:ADFSTkAllTransformRules.schacHomeOrganization
+    $TransformRules.displayName = $Global:ADFSTkAllTransformRules.displayName 
+    $TransformRules.givenName = $Global:ADFSTkAllTransformRules.givenName 
+    $TransformRules.sn = $Global:ADFSTkAllTransformRules.sn
+    $TransformRules.mail = $Global:ADFSTkAllTransformRules.mail
+    $TransformRules.subjectID = $Global:ADFSTkAllTransformRules.subjectID 
+
+    $IssuanceTransformRuleCategories.Add("https://refeds.org/category/personalized", $TransformRules)
+    #endregion   
     ###
-
+    
     return $IssuanceTransformRuleCategories
 }
