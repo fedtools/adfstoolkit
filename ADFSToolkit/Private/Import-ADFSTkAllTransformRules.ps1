@@ -301,6 +301,11 @@ $TransformRules."transient-id" = [PSCustomObject]@{
                                              -AttributeName mail `
                                              -AttributeGroup "Personal attributes"
 
+    $TransformRules.mailLocalAddress = Get-ADFSTkTransformRule -Type "mailLocalAddress" `
+                                             -Oid "urn:oid:2.16.840.1.113730.3.1.13" `
+                                             -AttributeName mailLocalAddress `
+                                             -AttributeGroup "Personal attributes"
+
     $TransformRules.personalIdentityNumber = [PSCustomObject]@{
         Rule=@"
 

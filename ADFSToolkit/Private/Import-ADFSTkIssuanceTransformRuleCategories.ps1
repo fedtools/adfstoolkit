@@ -116,8 +116,9 @@ function Import-ADFSTkIssuanceTransformRuleCategories {
     #endregion
 
     $IssuanceTransformRuleCategories.Add("http://www.geant.net/uri/dataprotection-code-of-conduct/v1", $TransformRules)
+    $IssuanceTransformRuleCategories.Add("https://refeds.org/category/code-of-conduct/v2", $TransformRules)
 
-    #region Anonumous Authorization – REFEDS
+    #region Anonymous Authorization – REFEDS
     $TransformRules = [Ordered]@{}
     $TransformRules.eduPersonScopedAffiliation = $Global:ADFSTkAllTransformRules.eduPersonScopedAffiliation
     $TransformRules.eduPersonOrgDN = $Global:ADFSTkAllTransformRules.eduPersonOrgDN

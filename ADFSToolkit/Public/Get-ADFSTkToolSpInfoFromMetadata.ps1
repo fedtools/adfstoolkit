@@ -1,10 +1,10 @@
 function Get-ADFSTkToolSpInfoFromMetadata {
     param (
+        [Parameter(Mandatory = $true,
+            Position = 0)]    
+        $EntityID,    
         [ValidateSet('List', 'Object', 'XML')]
-        $OutputType = 'List',
-        [Parameter(Mandatory=$true,
-                   Position=0)]
-        $EntityID
+        $OutputType = 'List'
     )
 
     $MetadataXML = Get-ADFSTkMetadata -CacheTime 60
@@ -87,8 +87,8 @@ function Get-ADFSTkToolSpInfoFromMetadata {
                     NameIdFormat, `
                 @{Name = 'SigningCertificates'; Expression = { $_.SigningCertificates.NotAfter -join ',' } }, `
                 @{Name = 'EncryptionCertificate'; Expression = { $_.EncryptionCertificate.NotAfter } }, `
-                @{Name = 'SamlEndpoints'; Expression = { $_.SamlEndpoints }},
-                @{Name = 'SubjectIDReq'; Expression = { $_.SubjectIDReq }}
+                @{Name = 'SamlEndpoints'; Expression = { $_.SamlEndpoints } },
+                @{Name = 'SubjectIDReq'; Expression = { $_.SubjectIDReq } }
             }
         }
     }
