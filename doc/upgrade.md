@@ -54,6 +54,11 @@ Updating is _usually_ performed with an update-module command and then uninstall
     - The upgrade process will upgrade the configuration in version steps, so it's possible to jump several versions at the same time.
     - If the new version needs to re-process all SP's a message will show to inform that the cache files needs to be deleted.
       - :exclamation: **If you choose not to do this we cannot guarantee that the correct attributes are released from the Toolkit!**
+
+  - Ensure the DLL for ADFSTkStore is installed (on all servers in the farm):
+    ```PowerShell
+    Install-ADFSTkStore
+    ```
       
 **Step 5: Remove Older Folders to Avoid Confusion**
    - :exclamation: If the upgrade is from v1.0.0.0 or earlier we recommended older folders and files in the ADFSToolkit folder `C:\ADFSToolkit` be removed
