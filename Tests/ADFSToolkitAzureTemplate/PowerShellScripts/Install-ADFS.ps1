@@ -96,6 +96,13 @@ try {
     $Certificate = Get-ChildItem -DnsName $certSubject -Path cert:\LocalMachine\My
     if ($Certificate -eq $null) {
         $SSLCert = New-SelfSignedCertificate -NotAfter (Get-Date).AddYears(10) -Subject $certSubject -CertStoreLocation cert:\LocalMachine\My -KeyExportPolicy Exportable -Provider "Microsoft Enhanced RSA and AES Cryptographic Provider" -KeyLength 4096 -HashAlgorithm SHA256 -DnsName @("certauth.fs.$DomainDNS", "fs.$DomainDNS")
+        
+        #Add the Certificate to the Trusted Root Store
+        $TrustedRootStore = New-Object System.Security.Cryptography.X509Certificates.X509Store "Root", "LocalMachine"
+        $TrustedRootStore.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::ReadWrite)
+        $TrustedRootStore.Add($SSLCert)
+        $TrustedRootStore.Close()
+
         Add-Content -Path $MainLogFile -Value "$((Get-Date).ToString()): $certSubject - Done!"
     }
     elseif ($Certificate -is [Object[]]) {
@@ -111,6 +118,12 @@ catch {
     Add-Content -Path $MainLogFile -Value "$((Get-Date).ToString()): Error!"
     Add-Content -Path $MainLogFile -Value "$((Get-Date).ToString()): $_"
 }
+
+#endregion
+
+#region Add localhost as A Record to DNS
+
+Add-DnsServerResourceRecordA -Name "fs" -ZoneName "adfstoolkit.local" -IPv4Address "127.0.0.1"
 
 #endregion
 
