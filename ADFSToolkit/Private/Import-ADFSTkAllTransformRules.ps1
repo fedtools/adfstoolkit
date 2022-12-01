@@ -113,8 +113,8 @@ $TransformRules."transient-id" = [PSCustomObject]@{
             param = c1.Value, 
             param = c1.OriginalIssuer, 
             param = "", 
-            param = c2.Value);
-
+            param = regexreplace(c2.Value, "(?<start>^.{1,20}).+$", "${start}")+".000Z");
+            
     @RuleName = "issue transient-id"
     c:[Type == "urn:adfstk:transientid"]
     => issue(
@@ -176,18 +176,46 @@ $TransformRules."transient-id" = [PSCustomObject]@{
     AttributeGroup="ID's"
     }
 
+#     $TransformRules.eduPersonTargetedID = [PSCustomObject]@{
+#     Rule=@"
+#     @RuleName = "compose eduPersonTargetedID"
+#     c:[Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", 
+#     Value !~ "^.+\\"]
+#      => issue(Type = "urn:oid:1.3.6.1.4.1.5923.1.1.1.10", 
+#      Value = c.Value, 
+#      Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
+# "@
+#     Attribute="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+#     AttributeGroup="ID's"
+#     }
+
     $TransformRules.eduPersonTargetedID = [PSCustomObject]@{
-    Rule=@"
-    @RuleName = "compose eduPersonTargetedID"
-    c:[Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name", 
-    Value !~ "^.+\\"]
-     => issue(Type = "urn:oid:1.3.6.1.4.1.5923.1.1.1.10", 
-     Value = c.Value, 
-     Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/attributename"] = "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
+        Rule=@"
+        @RuleName = "synthesize eduPersonTargetedID"
+        c:[Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/primarysid"]
+        => add(
+                store = "_OpaqueIdStore", 
+                types = ("urn:adfstk:edupersontargetedid"), 
+                query = "{0};{1};{2}", 
+                param = "ppid", 
+                param = c.Value, 
+                param = c.OriginalIssuer);
+    
+        @RuleName = "issue eduPersonTargetedID"
+        c:[Type == "urn:adfstk:edupersontargetedid"]
+        => issue(
+                Type = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", 
+                Issuer = c.Issuer, 
+                OriginalIssuer = c.OriginalIssuer, 
+                Value = c.Value, 
+                ValueType = c.ValueType, 
+                Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/format"] = "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent", 
+                Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/spnamequalifier"] = "[ReplaceWithSPNameQualifier]", 
+                Properties["http://schemas.xmlsoap.org/ws/2005/05/identity/claimproperties/namequalifier"] = "http://$($Settings.configuration.StaticValues.ADFSExternalDNS)");
 "@
-    Attribute="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
-    AttributeGroup="ID's"
-    }
+        Attribute=""
+        AttributeGroup="ID's"
+        }
 
     $TransformRules.eduPersonUniqueID = [PSCustomObject]@{
     Rule=@"
@@ -215,12 +243,27 @@ $TransformRules."transient-id" = [PSCustomObject]@{
     AttributeGroup="ID's"
     }
 
+    $TransformRules.schacPersonalUniqueCode = Get-ADFSTkTransformRule -Type "urn:schac:personalUniqueCode" `
+                                           -Oid "urn:oid:1.3.6.1.4.1.25178.1.2.14" `
+                                           -AttributeName schacPersonalUniqueCode `
+                                           -AttributeGroup "ID's"
+
+    $TransformRules.pairwiseID = Get-ADFSTkTransformRule -Type "urn:oasis:names:tc:SAML:attribute:pairwise-id" `
+                                           -Oid "urn:oasis:names:tc:SAML:attribute:pairwise-id" `
+                                           -AttributeName pairwiseID `
+                                           -AttributeGroup "ID's"
+
+    $TransformRules.subjectID = Get-ADFSTkTransformRule -Type "urn:oasis:names:tc:SAML:attribute:subject-id" `
+                                           -Oid "urn:oasis:names:tc:SAML:attribute:subject-id" `
+                                           -AttributeName subjectID `
+                                           -AttributeGroup "ID's"
+
     #endregion
     #region Personal attributes
     $TransformRules.givenName = Get-ADFSTkTransformRule -Type "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" `
-                                                  -Oid "urn:oid:2.5.4.42" `
-                                                  -AttributeName givenName `
-                                                  -AttributeGroup "Personal attributes"
+                                           -Oid "urn:oid:2.5.4.42" `
+                                           -AttributeName givenName `
+                                           -AttributeGroup "Personal attributes"
 
     $TransformRules.sn = Get-ADFSTkTransformRule -Type "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname" `
                                            -Oid "urn:oid:2.5.4.4" `
@@ -258,6 +301,11 @@ $TransformRules."transient-id" = [PSCustomObject]@{
                                              -AttributeName mail `
                                              -AttributeGroup "Personal attributes"
 
+    $TransformRules.mailLocalAddress = Get-ADFSTkTransformRule -Type "mailLocalAddress" `
+                                             -Oid "urn:oid:2.16.840.1.113730.3.1.13" `
+                                             -AttributeName mailLocalAddress `
+                                             -AttributeGroup "Personal attributes"
+
     $TransformRules.personalIdentityNumber = [PSCustomObject]@{
         Rule=@"
 
@@ -291,15 +339,15 @@ $TransformRules."transient-id" = [PSCustomObject]@{
         Rule=@'
 
         @RuleName = "Compose schacDateOfBirth start"
-        c:[Type == "urn:mace:dir:attribute-def:schacDateOfBirth", Value =~ "^(18|19|20)?[0-9]{2}((0[0-9])|(10|11|12))((([0-2][0-9])|(3[0-1]))|((6[1-9])|([7-8][0-9])|(9[0-1])))[0-9]{4}$"]
+        c:[Type == "urn:mace:dir:attribute-def:schacDateOfBirth", Value =~ "^(18|19|20)?[0-9]{2}((0[0-9])|(10|11|12))((([0-2][0-9])|(3[0-1]))|((6[1-9])|([7-8][0-9])|(9[0-1])))([A-Z0-9]{1}[0-9]{3}){0,1}$"]
          => add(Type = "urn:adfstk:schackdateofbirth:start", Value = regexReplace(c.Value, "(?<start>^.{6}).+$", "${start}"));
         
         @RuleName = "Compose schacDateOfBirth middle"
-        c:[Type == "urn:mace:dir:attribute-def:schacDateOfBirth", Value =~ "^(18|19|20)?[0-9]{2}((0[0-9])|(10|11|12))((([0-2][0-9])|(3[0-1]))|((6[1-9])|([7-8][0-9])|(9[0-1])))[0-9]{4}$"]
+        c:[Type == "urn:mace:dir:attribute-def:schacDateOfBirth", Value =~ "^(18|19|20)?[0-9]{2}((0[0-9])|(10|11|12))((([0-2][0-9])|(3[0-1]))|((6[1-9])|([7-8][0-9])|(9[0-1])))([A-Z0-9]{1}[0-9]{3}){0,1}$"]
          => add(Type = "urn:adfstk:schackdateofbirth:middle", Value = regexReplace(c.Value, "^.{6}(?<middle>\d{1}).+$", "${middle}"));
         
         @RuleName = "Compose schacDateOfBirth end"
-        c:[Type == "urn:mace:dir:attribute-def:schacDateOfBirth", Value =~ "^(18|19|20)?[0-9]{2}((0[0-9])|(10|11|12))((([0-2][0-9])|(3[0-1]))|((6[1-9])|([7-8][0-9])|(9[0-1])))[0-9]{4}$"]
+        c:[Type == "urn:mace:dir:attribute-def:schacDateOfBirth", Value =~ "^(18|19|20)?[0-9]{2}((0[0-9])|(10|11|12))((([0-2][0-9])|(3[0-1]))|((6[1-9])|([7-8][0-9])|(9[0-1])))([A-Z0-9]{1}[0-9]{3}){0,1}$"]
          => add(Type = "urn:adfstk:schackdateofbirth:end", Value = regexReplace(c.Value, "^.{7}(?<end>\d{1}).+$", "${end}"));
         
         @RuleName = "Transform schacDateOfBirth 6x->0x"
@@ -391,6 +439,12 @@ $TransformRules."transient-id" = [PSCustomObject]@{
                                                   -Oid "urn:oid:1.3.6.1.4.1.5923.1.1.1.16" `
                                                   -AttributeName eduPersonOrcid `
                                                   -AttributeGroup "norEduPerson attributes"
+
+    $TransformRules.eduPersonOrgDN = Get-ADFSTkTransformRule -Type "urn:mace:dir:attribute-def:eduPersonOrgDN" `
+                                                  -Oid "urn:oid:1.3.6.1.4.1.5923.1.1.1.3" `
+                                                  -AttributeName eduPersonOrgDN `
+                                                  -AttributeGroup "eduPerson attributes"
+                                                  
 
     #endregion
 

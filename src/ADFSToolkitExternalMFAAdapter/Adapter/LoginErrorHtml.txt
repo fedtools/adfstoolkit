@@ -1,0 +1,5 @@
+﻿<div id="loginArea">
+    <div id="error" class="fieldMargin error smallText">
+        <label id="errorText" for="%LoginPageErrorCause%">%PageIntroductionText%</label>
+    </div>
+</div>

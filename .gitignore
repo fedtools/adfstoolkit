@@ -1,3 +1,4 @@
 
-ADFSToolkit/
-Tests/
+ADFSToolkit/.vscode
+Tests/ADFSToolkit.Tests.ps1
+

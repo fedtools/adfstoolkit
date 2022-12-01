@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!DOCTYPE html 
+	PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+	"DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <link rel="stylesheet" type="text/css" href="<shibmlp styleSheet/>" />
+  <title>Session Error</title>
+</head>
+<body>
+ 
+<h1>Ett fel uppstod i sessionen</h1>
+
+<!--
+<shibmlpifnot errorURL>
+<p>Kontakta din inloggningstjänst för felsökning.</p>
+</shibmlpifnot>
+-->
+ 
+<!--<shibmlpif errorURL>-->
+<script>
+    var eventtype = '<shibmlp eventType/>';
+    var statuscode2 = '<shibmlp statusCode2/>';
+	statuscode2 = statuscode2.replace(/&#58;/g,":");
+    var errorurl = "<shibmlp errorURL/>";
+    var now = "<shibmlp now/>";
+    now = now.replace(/:/g, ":");	
+    var ts = Date.parse(now)/1000;
+	if(errorurl!==''||errorurl!==null){
+		if (eventtype === "Login"  && (
+			statuscode2 === "urn:oasis:names:tc:SAML:2.0:status:AuthnFailed" ||
+			statuscode2 === "urn:oasis:names:tc:SAML:2.0:status:NoPassive" ||
+			statuscode2 === "urn:oasis:names:tc:SAML:2.0:status:NoAuthnContext" ||
+			statuscode2 === "urn:oasis:names:tc:SAML:2.0:status:RequestDenied")) 
+			{
+				errorurl = errorurl.replace(/ERRORURL_CODE/, "AUTHENTICATION_FAILURE");
+				errorurl = errorurl.replace(/ERRORURL_TS/, ts);
+				errorurl = errorurl.replace(/ERRORURL_RP/, "<shibmlp target/>");
+				errorurl = errorurl.replace(/ERRORURL_CTX/, "https://refeds.org/profile/mfa");
+		 
+				var errorurl_short = errorurl.replace(/\?.*/, "");
+		 
+				document.write('<p>Er inloggningstjänst tillhandahåller en informationssida som ni uppmanas använda för att lösa detta problem: \
+					<a href="' + errorurl + '">' + errorurl_short + '</a>.');
+		}
+	}
+	else {
+        document.write('<p>Kontakta din inloggningstjänst för felsökning.</p>');
+    }
+</script>
+<!--</shibmlpif>-->
+ 
+<p>
+Teknisk information:
+<p><font size="-1"><pre>
+<shibmlp errorType/> at (<shibmlp requestURL/>)
+<shibmlp errorText/>
+<shibmlpif statusCode>
+Error from identity provider:
+Status: <shibmlp statusCode/>
+<shibmlpif statusCode2>
+Sub-Status: <shibmlp statusCode2/>
+</shibmlpif>
+<shibmlpif statusMessage>
+Message: <shibmlp statusMessage/>
+</shibmlpif>
+</shibmlpif>
+</pre>
+</body>
+</html>

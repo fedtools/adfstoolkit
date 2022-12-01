@@ -17,7 +17,6 @@ function Add-ADFSTkSPRelyingPartyTrust {
         ClaimsProviderName                   = @("Active Directory")
         ErrorAction                          = 'Stop'
         SignatureAlgorithm                   = Get-ADFSTkSecureHashAlgorithm -EntityId $entityID -CertificateSignatureAlgorithm $SigningCertificate.SignatureAlgorithm.Value
-        IssuanceAuthorizationRules           = Get-ADFSTkIssuanceAuthorizationRules -EntityId $entityID
         SamlResponseSignature                = Get-ADFSTkSamlResponseSignature -EntityId $entityID
     }
 
@@ -62,7 +61,8 @@ function Add-ADFSTkSPRelyingPartyTrust {
                 Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPConvertionEncryptionCertDone)
             }
 
-            if ($CertificateString -is [Object[]]) { #Just for logging!
+            if ($CertificateString -is [Object[]]) {
+                #Just for logging!
                 Write-ADFSTkLog (Get-ADFSTkLanguageText addRPMultipleEncryptionCertsFound -f $EncryptionCertificate.Thumbprint)  -EntryType Warning -EventID 30
             }
         }
@@ -86,7 +86,8 @@ function Add-ADFSTkSPRelyingPartyTrust {
         $CertificateString = ($sp.SPSSODescriptor.KeyDescriptor | ? use -ne "encryption"  | select -ExpandProperty KeyInfo).X509Data.X509Certificate #or shoud 'use' not be present?
     }
     
-    if ($CertificateString -ne $null) { #foreach insted create $SigningCertificates array
+    if ($CertificateString -ne $null) {
+        #foreach insted create $SigningCertificates array
         try {
             $rpParams.RequestSigningCertificate = @()
 
@@ -169,6 +170,28 @@ function Add-ADFSTkSPRelyingPartyTrust {
         }
     }
     
+    # Filter Entity Categories that shouldn't be released together
+    $filteredEntityCategories = @()
+    $filteredEntityCategories += foreach ($entityCategory in $EntityCategories)
+    {
+        if ($entityCategory -eq 'https://refeds.org/category/personalized') {
+            if (-not ($EntityCategories.Contains('https://refeds.org/category/pseudonymous') -or `
+                 $EntityCategories.Contains('https://refeds.org/category/anonymous'))) {
+                 $entityCategory
+            }
+        }
+        elseif ($entityCategory -eq 'https://refeds.org/category/pseudonymous') {
+        if (-not $EntityCategories.Contains('https://refeds.org/category/anonymous')) {
+                 $entityCategory
+            }
+        }
+        else {
+            $entityCategory
+        }
+    }
+
+    $EntityCategories = $filteredEntityCategories
+
     Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPFollowingECFound -f ($EntityCategories -join ','))
 
     if ($ForcedEntityCategories) {
@@ -176,10 +199,29 @@ function Add-ADFSTkSPRelyingPartyTrust {
         Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText addRPAddedForcedEC -f ($ForcedEntityCategories -join ','))
     }
 
-    $rpParams.IssuanceTransformRules = Get-ADFSTkIssuanceTransformRules $EntityCategories -EntityId $entityID `
+
+
+    $subjectIDReq = $sp.Extensions.EntityAttributes.Attribute | ? Name -eq "urn:oasis:names:tc:SAML:profiles:subject-id:req" | Select -First 1 -ExpandProperty AttributeValue
+
+    $IssuanceTransformRuleObject = Get-ADFSTkIssuanceTransformRules $EntityCategories -EntityId $entityID `
         -RequestedAttribute $sp.SPSSODescriptor.AttributeConsumingService.RequestedAttribute `
         -RegistrationAuthority $sp.Extensions.RegistrationInfo.registrationAuthority `
-        -NameIdFormat $sp.SPSSODescriptor.NameIDFormat
+        -NameIdFormat $sp.SPSSODescriptor.NameIDFormat `
+        -SubjectIDReq $subjectIDReq
+    #endregion
+
+    #region Add MFA Access Policy and extra rules if needed
+
+    $IssuanceTransformRuleObject.MFARules = Get-ADFSTkMFAConfiguration -EntityId $entityID
+
+    if ([string]::IsNullOrEmpty($IssuanceTransformRuleObject.MFARules)) {
+        $rpParams.IssuanceAuthorizationRules = Get-ADFSTkIssuanceAuthorizationRules -EntityId $entityID
+        $rpParams.IssuanceTransformRules = $IssuanceTransformRuleObject.Stores + $IssuanceTransformRuleObject.Rules
+    }
+    else {
+        $rpParams.AccessControlPolicyName = 'ADFSTk:Permit everyone and force MFA'
+        $rpParams.IssuanceTransformRules = $IssuanceTransformRuleObject.Stores + $IssuanceTransformRuleObject.MFARules + $IssuanceTransformRuleObject.Rules
+    }
     #endregion
 
     if ((Get-ADFSRelyingPartyTrust -Identifier $entityID) -eq $null) {

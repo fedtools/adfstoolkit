@@ -1,0 +1,13 @@
+﻿@{
+    tableLanguage = "sv"
+    tableVersion = "2.1"
+    tableCreatedBy = "SWAMID"
+    tableContactAddress = "operations@swamid.se"
+
+    #########################
+    ### MFA Adapter [mfa] ###
+    #########################
+
+    mfaSignInWithTwoStepVerification = "Logga in med tvåstegsverifiering"
+    mfaSignInWithRefedsSFA = " "
+}
