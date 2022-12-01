@@ -5,6 +5,10 @@ This may only take a few moments however propagating the changes completely may 
 ## Steps
 |:exclamation: When updating from versions prior to v2.0.0.0 be sure to disable/suspend the scheduled job |
    |-----------------------------------------------------------------------------|
+    
+   |:exclamation: Upgrading to v2.2.0 requires a restart of ADFS for new features to be recognized, plan the update accordingly |
+   |-----------------------------------------------------------------------------|
+   
 
 **Step 1: Create a Known Recovery Point**
   - Back up the  C:\ADFSToolkit directory
@@ -37,25 +41,34 @@ Updating is _usually_ performed with an update-module command and then uninstall
 **How to Move Older Versions Out Of The Way**
   - ADFSToolkit might not run properly with more than one version available on disk
   - The Remedy is to move the older version out of the PowerShell path so that only the latest version is available. 
-  - Use the following cmdlet to uninstall v1.0.0.0. Substitute the version # for your previous one. 
+  - Use the following cmdlet to uninstall previous versions. Substitute the version # with the one you are migrating from. 
   -
     ```PowerShell
-      Uninstall-Module ADFSToolkit -RequiredVersion 1.0.0.0
+      Uninstall-Module ADFSToolkit -RequiredVersion 2.1.0
     ```
    - :exclamation: **Close your existing PowerShell window and re-open (with Administrator level privileges) to ensure old settings are removed from memory**
 
 **Step 4: Upgrade Existing Configuration File(s)**
+  - Clear the language cache to use newest language settings:
+    ```PowerShell
+    Remove-ADFSTkCache -LanguageTables
+    ```
+  - Refresh the ADFSTk Federation defaults to latest versions:
+    ```PowerShell
+    get-ADFSTkFederationDefaults -URL https://github.com/fedtools/federation-settings/archive/refs/heads/main.zip -InstallDefaults
+    ```
   - Run the upgrade cmdlet:
     ```PowerShell
     Update-ADFSTkInstitutionConfiguration
     ```
     - This will search for existing institution configuration files and present them in a Grid View. 
-      - Select one or more configuration file(s) to start the upgrade.
+      - Select a single configuration file to start the upgrade for a given aggregate
+      - Pair you choice of default with your choice of existing file (e.g. test default set to existing test config, prod to prod etc)
     - The upgrade process will upgrade the configuration in version steps, so it's possible to jump several versions at the same time.
     - If the new version needs to re-process all SP's a message will show to inform that the cache files needs to be deleted.
       - :exclamation: **If you choose not to do this we cannot guarantee that the correct attributes are released from the Toolkit!**
 
-  - Ensure the DLL for ADFSTkStore is installed (on all servers in the farm):
+  - Ensure the DLL for ADFSTkStore is installed (on all servers in the farm and will require ADFS service restart):
     ```PowerShell
     Install-ADFSTkStore
     ```
