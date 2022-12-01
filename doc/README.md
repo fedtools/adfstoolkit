@@ -73,6 +73,14 @@ ADFSToolkit V2 now two main steps to configure: one stepfor your federation and 
    |-----------------------------------------------------------------------------|
    - The Scheduled Task will be created and needs to be configured to run with an account with ADFS privileges. 
    - A time is not set on the task and should be set to trigger to run hourly via the Windows Scheduler
+ 
+ - Install ADFSTkStore to permit subject-id and pairwise-id generation capabilites by issuing this PowerShell command:
+
+   |:exclamation: This will require ADFS to be restarted to recognize the DLL and needs to be done on each ADFS Farm server |
+   |-----------------------------------------------------------------------------|
+ ```Powershell
+ Install-ADFSTkStore
+ ```
 - **Base ADFSToolkit configuration is complete.**
 ###  Step 3: Apply Site Specific Settings and Mappings
 
