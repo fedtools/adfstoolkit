@@ -21,6 +21,17 @@ Install-Module PowerShellGet -Force
 #Install-Module ADFSToolkit
 #Install-Module ADFSToolkit -RequiredVersion 2.1.0-RC3 -AllowPrerelease
 
+#Install Claims X-Ray
+$authzRules = "=>issue(Type = `"http://schemas.microsoft.com/authorization/claims/permit`", Value = `"true`"); "
+$issuanceRules = "@RuleName = `"Issue all claims`"`nx:[]=>issue(claim = x); "
+$redirectUrl = "https://adfshelp.microsoft.com/ClaimsXray/TokenResponse"
+$samlEndpoint = New-AdfsSamlEndpoint -Binding POST -Protocol SAMLAssertionConsumer -Uri $redirectUrl
+
+While ((Get-Service adfssrv).Status -ne [System.ServiceProcess.ServiceControllerStatus]::Running) {
+    Start-Sleep -Seconds 10
+}
+Add-ADFSRelyingPartyTrust -Name "ClaimsXray" -Identifier "urn:microsoft:adfs:claimsxray" -IssuanceAuthorizationRules $authzRules -IssuanceTransformRules $issuanceRules -WSFedEndpoint $redirectUrl -SamlEndpoint $samlEndpoint
+
 #Remove Scheduled Task to Install ADFS Toolkit
 $TaskName = "Install ADFS Toolkit"
 
