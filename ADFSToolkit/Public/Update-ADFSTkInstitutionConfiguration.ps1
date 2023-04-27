@@ -403,35 +403,35 @@
 #endregion
 
 
-function Add-ADFSTkXML {
-    param (
-        $NodeName,
-        $XPathParentNode,
-        $RefNodeName,
-        $Value = [string]::Empty
-    )
+# function Add-ADFSTkXML {
+#     param (
+#         $NodeName,
+#         $XPathParentNode,
+#         $RefNodeName,
+#         $Value = [string]::Empty
+#     )
 
-    $configurationNode = Select-Xml -Xml $config -XPath $XPathParentNode
-    $configurationNodeChild = $config.CreateNode("element", $NodeName, $null)
-    $configurationNodeChild.InnerText = $Value
+#     $configurationNode = Select-Xml -Xml $config -XPath $XPathParentNode
+#     $configurationNodeChild = $config.CreateNode("element", $NodeName, $null)
+#     $configurationNodeChild.InnerText = $Value
 
-    #$configurationNode.Node.AppendChild($configurationNodeChild) | Out-Null
-    $refNode = Select-Xml -Xml $config -XPath "$XPathParentNode/$RefNodeName"
-    if ($refNode -is [Object[]]) {
-        $refNode = $refNode[-1]
-    }
-    $configurationNode.Node.InsertAfter($configurationNodeChild, $refNode.Node) | Out-Null
-}
+#     #$configurationNode.Node.AppendChild($configurationNodeChild) | Out-Null
+#     $refNode = Select-Xml -Xml $config -XPath "$XPathParentNode/$RefNodeName"
+#     if ($refNode -is [Object[]]) {
+#         $refNode = $refNode[-1]
+#     }
+#     $configurationNode.Node.InsertAfter($configurationNodeChild, $refNode.Node) | Out-Null
+# }
 
-function Add-ADFSTkXMLNode {
-    param (
-        $XPathParentNode,
-        $Node
-    )
+# function Add-ADFSTkXMLNode {
+#     param (
+#         $XPathParentNode,
+#         $Node
+#     )
     
-    $configurationNode = Select-Xml -Xml $config -XPath $XPathParentNode
-    $configurationNode.Node.AppendChild($config.ImportNode($Node, $true)) | Out-Null
-}
+#     $configurationNode = Select-Xml -Xml $config -XPath $XPathParentNode
+#     $configurationNode.Node.AppendChild($config.ImportNode($Node, $true)) | Out-Null
+# }
 
 function Update-ADFSTkXML {
     param (
