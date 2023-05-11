@@ -42,7 +42,6 @@ function get-ADFSTkLocalManualSPSettings {
     #     ApplyMFAConfiguration = @{AzureMFA = @{ 
     #             phoneconfirmation    = $false       # Call to phone
     #             phoneotp             = $true        # Click on number on phone
-    #             phoneappotp          = $true        # Push and enter number on phone
     #             phoneappnotification = $true       # Push to phone app
     #             smsotp               = $false       # OTP from SMS
     #             otp                  = $true        # OTP from phone app
