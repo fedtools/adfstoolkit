@@ -11,15 +11,27 @@ function Process-ADFSTkFtics {
     $IdP = (Get-AdfsProperties).Identifier.AbsoluteUri 
     $Application = "ADFSToolkitv{0}:" -f (Get-Module ADFSToolkit).Version.ToString()
 
-    foreach ($LoginEvent in $LoginEvents) {
+    $ErrorOccurred = $false
 
-        $FticMessage = New-ADFSTkFticMessage -entityID $LoginEvent.SP -userName $LoginEvent.UserName -IdP $LoginEvent.Host -LoggedTime $LoginEvent.DateTime -AuditResult $LoginEvent.AuditResult -AuthnContextClass $LoginEvent.AuthnContextClass
-        $FticMessage
-        #Send-SyslogMessage -Message $FTicMessage -Server $Server -Severity Information -Facility Auth -Hostname $Hostname -Application $Application -Protocol UDP -Verbose -Port 514
-        
+    foreach ($LoginEvent in $LoginEvents | Sort RecordID) {
+        $LogRecordID = $LoginEvent.RecordID
+        try {
+            $FticMessage = New-ADFSTkFticMessage -entityID $LoginEvent.SP -userName $LoginEvent.UserName -IdP $LoginEvent.Host -LoggedTime $LoginEvent.DateTime -AuditResult $LoginEvent.AuditResult -AuthnContextClass $LoginEvent.AuthnContextClass
+            # $FticMessage
+            Send-SyslogMessage -Message $FTicMessage -Server $Server -Severity Information -Facility Auth -Hostname $Hostname -Application $Application -Protocol UDP -Verbose -Port 514
+
+            $LastRecordID = $LogRecordID #When everything went well, lets save this RecordID in case the next Record fails.
+        }
+        catch {
+            $LogRecordID = $LastRecordID #We don't want to save the current RecordID due to an error. Log the last one.
+
+            #Do some logging
+
+            Exit
+        }
     }
 
     if (![string]::IsNullOrEmpty($LoginEvents)) {
-        Set-ADFSTkConfiguration -FticsLastRecordId ($LoginEvents.RecordID | Sort | Select -Last 1)
+        Set-ADFSTkConfiguration -FticsLastRecordId $LogRecordID
     }
 }

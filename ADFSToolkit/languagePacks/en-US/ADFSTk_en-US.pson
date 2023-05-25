@@ -239,6 +239,10 @@ Please open the file and configure how ADFSToolkit can get them (Active Director
     confSelectInstitutionConfigToDisable = "Select the configuration file(s) you want to disable."
     confNoInstitutionConfigFileSelected = "No configurationfile(s) were selected. Nothing changed!"
 
+    confProcessLoginEvents = "Process Login Events"
+    confThisSchedTaskGetsLoginEventsAndSendAsFtics = "This Scheduled Task reads login events from the Event Log and sends it to a ftics server"
+    confFticsScheduledTaskInfo = "The created Scheduled Task is disabled, but when enabled it will run every 10 minutes, sending login events to the ftics server."
+
     #######################################
     ### Federation cmdlets [federation] ###
     #######################################
