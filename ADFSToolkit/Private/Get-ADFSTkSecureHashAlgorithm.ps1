@@ -56,7 +56,7 @@ if ($sp.EntityId -ne $null)
 {
     
     #First remove http:// or https://
-    $entityDNS = $EntityId.ToLower().Replace('http://','').Replace('https://','')
+    $entityDNS = $sp.EntityId.ToLower().Replace('http://','').Replace('https://','')
 
     #Second get rid of all ending sub paths
     $entityDNS = $entityDNS -split '/' | select -First 1
