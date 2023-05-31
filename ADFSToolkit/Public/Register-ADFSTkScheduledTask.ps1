@@ -29,7 +29,7 @@ function Register-ADFSTkScheduledTask {
         $Task = Register-ScheduledTask -Action $stAction `
             -Trigger $stTrigger `
             -TaskName (Get-ADFSTkLanguageText confImportMetadata) `
-            -Description (Get-ADFSTkLanguageText confTHisSchedTaskWillDoTheImport) `
+            -Description (Get-ADFSTkLanguageText confThisSchedTaskWillDoTheImport) `
             -RunLevel Highest `
             -Settings $stSettings `
             -TaskPath "\ADFSToolkit\"
@@ -44,6 +44,6 @@ function Register-ADFSTkScheduledTask {
         Write-Host (Get-ADFSTkLanguageText confScheduledTaskInfo)
     }
     else {
-        Write-Host (Get-ADFSTkLanguageText cAlreadyPresent -f "Scheduled Task")
+        Write-Host (Get-ADFSTkLanguageText cAlreadyPresent -f "Import Metadata Scheduled Task")
     }
 }

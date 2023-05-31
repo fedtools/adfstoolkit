@@ -1,7 +1,7 @@
 function Initialize-ADFSTk {
     $Global:ADFSTkPaths = Get-ADFSTKPaths
     $Global:ADFSTkCompatibleInstitutionConfigVersion = "1.4"
-    $Global:ADFSTkCompatibleADFSTkConfigVersion = "1.0"
+    $Global:ADFSTkCompatibleADFSTkConfigVersion = "1.1"
     $Global:ADFSTkCompatibleLanguageTableConfigVersion = "2.1"
 
     #region Create main dirs

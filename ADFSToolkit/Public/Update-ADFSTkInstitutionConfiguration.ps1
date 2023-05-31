@@ -101,30 +101,37 @@
             else {
                 Copy-Item $ConfigurationFilePath.FullName $newFileName
             }
-        }
 
-        #Copy the ManualSP file to new location
-        [xml]$selectedConfigSettings = Get-Content $ConfigurationFile
-        $selectedConfigManualSP = $selectedConfigSettings.configuration.LocalRelyingPartyFile
+            #Copy the ManualSP file to new location
+            [xml]$selectedConfigSettings = Get-Content $ConfigurationFile
+            $selectedConfigManualSP = $selectedConfigSettings.configuration.LocalRelyingPartyFile
         
-        $oldManualSPFile = Join-Path $ConfigurationFilePath.Directory.FullName $selectedConfigManualSP
-        $newManualSPFile = Join-Path $Global:ADFSTkPaths.institutionDir $selectedConfigManualSP
+            $oldManualSPFile = Join-Path $ConfigurationFilePath.Directory.FullName $selectedConfigManualSP
+            $newManualSPFile = Join-Path $Global:ADFSTkPaths.institutionDir $selectedConfigManualSP
 
-        if (Test-Path $oldManualSPFile) {
-            if (Test-Path $newManualSPFile) {
-                Write-ADFSTkLog (Get-ADFSTkLanguageText confManualSPFileAlreadyExists -f $oldManualSPFile, $Global:ADFSTkPaths.institutionDir) -EntryType Warning
+            if (Test-Path $oldManualSPFile) {
+                if (Test-Path $newManualSPFile) {
+                    Write-ADFSTkLog (Get-ADFSTkLanguageText confManualSPFileAlreadyExists -f $oldManualSPFile, $Global:ADFSTkPaths.institutionDir) -EntryType Warning
+                }
+                else {
+                    Copy-Item $oldManualSPFile $newManualSPFile
+                    Write-ADFSTkLog (Get-ADFSTkLanguageText confManualSPFileCopied -f $oldManualSPFile, $Global:ADFSTkPaths.institutionDir) -EntryType Information
+                }
             }
             else {
-                Copy-Item $oldManualSPFile $newManualSPFile
-                Write-ADFSTkLog (Get-ADFSTkLanguageText confManualSPFileCopied -f $oldManualSPFile, $Global:ADFSTkPaths.institutionDir) -EntryType Information
+                Write-ADFSTkHost confLocalManualSettingsMessage -Style Info -AddLinesOverAndUnder
+                Copy-item -Path $Global:ADFSTkPaths.defaultInstitutionLocalSPFile -Destination $newManualSPFile
             }
+
+            $selectedConfigs += Add-ADFSTkConfigurationItem -ConfigurationItem $newFileName -PassThru
         }
         else {
-            Write-ADFSTkHost confLocalManualSettingsMessage -Style Info -AddLinesOverAndUnder
-            Copy-item -Path $Global:ADFSTkPaths.defaultInstitutionLocalSPFile -Destination $newManualSPFile
-        }
+            $selectedConfigs = Get-ADFSTkConfiguration -ConfigFilesOnly | ? ConfigFile -eq $ConfigurationFile
 
-        $selectedConfigs += Add-ADFSTkConfigurationItem -ConfigurationItem $newFileName -PassThru 
+            if ([string]::IsNullOrEmpty(($selectedConfigs ))) {
+                Write-ADFSTkLog (Get-ADFSTkLanguageText confNoInstConfigFileSelectedborting) -MajorFault
+            }
+        }
     }
     else {
         $allCurrentConfigs = Get-ADFSTkConfiguration -ConfigFilesOnly
@@ -258,7 +265,7 @@
                     Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText confUpdatingInstConfigFromTo -f $currentVersion, $newVersion)
                     
                     if ($config.configuration.LocalRelyingPartyFile -eq $null) {
-                        Add-ADFSTkXML -XPathParentNode "configuration" -NodeName "LocalRelyingPartyFile" -RefNodeName "MetadataCacheFile"
+                        Add-ADFSTkXML -Xml $config -XPathParentNode "configuration" -NodeName "LocalRelyingPartyFile" -RefNodeName "MetadataCacheFile"
                     }
                    
                     Update-ADFSTkXML -XPath "configuration/LocalRelyingPartyFile" -ExampleValue 'get-ADFSTkLocalManualSPSettings.ps1'
@@ -274,7 +281,7 @@
                     Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText confUpdatingInstConfigFromTo -f $currentVersion, $newVersion)
                     
                     if ($config.configuration.eduPersonPrincipalNameRessignable -eq $null) {
-                        Add-ADFSTkXML -XPathParentNode "configuration" -NodeName "eduPersonPrincipalNameRessignable" -RefNodeName "MetadataPrefixSeparator"
+                        Add-ADFSTkXML -Xml $config -XPathParentNode "configuration" -NodeName "eduPersonPrincipalNameRessignable" -RefNodeName "MetadataPrefixSeparator"
                     }
                    
                     Update-ADFSTkXML -XPath "configuration/eduPersonPrincipalNameRessignable" -ExampleValue 'true/false'
@@ -333,11 +340,9 @@
                     }
 
                     $commonName = $config.configuration.attributes.attribute | ? type -eq "http://schemas.xmlsoap.org/claims/CommonName"
-                    if ($commonName.store -eq "Active Directory" -and $commonName.name -eq "cn")
-                    {
+                    if ($commonName.store -eq "Active Directory" -and $commonName.name -eq "cn") {
                         Write-ADFSTkHost confChangeCommonNameToDisplayName
-                        if (Get-ADFSTkAnswer (Get-ADFSTkLanguageText confDoYouWantToChangeCommonName) -DefaultYes)
-                        {
+                        if (Get-ADFSTkAnswer (Get-ADFSTkLanguageText confDoYouWantToChangeCommonName) -DefaultYes) {
                             $commonName.name = "displayname"
                             Write-ADFSTkLog (Get-ADFSTkLanguageText confCommonNameChangedFromCnToDisplayName)
                         }

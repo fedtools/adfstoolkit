@@ -44,6 +44,6 @@ function Register-ADFSTkFTicsScheduledTask {
         Write-Host (Get-ADFSTkLanguageText confFticsScheduledTaskInfo)
     }
     else {
-        Write-Host (Get-ADFSTkLanguageText cAlreadyPresent -f "Scheduled Task")
+        Write-Host (Get-ADFSTkLanguageText cAlreadyPresent -f "F-Tics Scheduled Task")
     }
 }
