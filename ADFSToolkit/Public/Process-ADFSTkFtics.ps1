@@ -1,6 +1,7 @@
 function Process-ADFSTkFtics {
 
     $LoginEvents = Get-ADFSTkLoginEvents -LatestRecordsOnly
+    Write-ADFSTkLog -Message (Get-ADFSTkLanguageText fticsProcessStarted -f $LoginEvents.Count) -EventID 300 -EntryType Information
 
     if ([string]::IsNullOrEmpty($Global:ADFSTkConfiguration)) {
         $Global:ADFSTkConfiguration = Get-ADFSTkConfiguration
@@ -16,9 +17,9 @@ function Process-ADFSTkFtics {
     foreach ($LoginEvent in $LoginEvents | Sort RecordID) {
         $LogRecordID = $LoginEvent.RecordID
         try {
-            $FticMessage = New-ADFSTkFticMessage -entityID $LoginEvent.SP -userName $LoginEvent.UserName -IdP $LoginEvent.Host -LoggedTime $LoginEvent.DateTime -AuditResult $LoginEvent.AuditResult -AuthnContextClass $LoginEvent.AuthnContextClass
+            $FticMessage = New-ADFSTkFticMessage -entityID $LoginEvent.SP -userName $LoginEvent.UserName -IdP $IdP -LoggedTime $LoginEvent.DateTime -AuditResult $LoginEvent.AuditResult -AuthnContextClass $LoginEvent.AuthnContextClass
             # $FticMessage
-            Send-SyslogMessage -Message $FTicMessage -Server $Server -Severity Information -Facility Auth -Hostname $Hostname -Application $Application -Protocol UDP -Verbose -Port 514
+            Send-SyslogMessage -Message $FTicMessage -Server $Server -Severity Information -Facility Auth -Hostname $Hostname -Application $Application -Protocol UDP -Port 514
 
             $LastRecordID = $LogRecordID #When everything went well, lets save this RecordID in case the next Record fails.
         }
@@ -26,7 +27,7 @@ function Process-ADFSTkFtics {
             $LogRecordID = $LastRecordID #We don't want to save the current RecordID due to an error. Log the last one.
 
             #Do some logging
-
+            Write-ADFSTkLog -Message (Get-ADFSTkLanguageText fticsProcessStarted -f $_) -EventID 310 -EntryType Warning
             Exit
         }
     }
@@ -34,4 +35,5 @@ function Process-ADFSTkFtics {
     if (![string]::IsNullOrEmpty($LoginEvents)) {
         Set-ADFSTkConfiguration -FticsLastRecordId $LogRecordID
     }
+    Write-ADFSTkLog -Message (Get-ADFSTkLanguageText fticsProcessFinished) -EventID 301 -EntryType Information
 }

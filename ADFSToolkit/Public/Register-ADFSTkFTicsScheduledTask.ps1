@@ -18,7 +18,7 @@ function Register-ADFSTkFTicsScheduledTask {
     }
 
     if ([string]::IsNullOrEmpty($schedTask)) {
-        Write-ADFSTkLog (Get-ADFSTkLanguageText cCreating -f "Scheduled Task")
+        Write-ADFSTkLog (Get-ADFSTkLanguageText cCreating -f "F-Tics Scheduled Task")
 
         $stAction = New-ScheduledTaskAction -Execute 'Powershell.exe' `
             -Argument "-NoProfile -WindowStyle Hidden -Command &{Process-ADFSTkFtics}"

@@ -18,7 +18,7 @@ function New-ADFSTkFticMessage {
     $Salt = $Global:ADFSTkConfiguration.Ftics.Salt
 
     #Get the timestamp
-    $Timestamp = ($LoggedTime).ToUniversalTime()
+    $Timestamp = $LoggedTime.ToUniversalTime()
     $FormattedTimestamp = [System.Math]::Truncate((Get-Date -Date $Timestamp -UFormat %s))
 
     $hashmaker = [Security.Cryptography.HashAlgorithm]::Create("SHA256");
@@ -34,9 +34,6 @@ function New-ADFSTkFticMessage {
         $Result = "FAIL"
     }
 
-    #OK/FAIL beroende på eventID
-    $FTicksMessage = 'ADFS-F-TICKS/{0}/1.0#TS={1}#RP={2}#AP={3}#PN={4}#AM={5}#RESULT={6}#' -f $FederationName, $FormattedTimestamp, $entityID, $IdP, $userID, $AuthnContextClass, $Result
-    $FTicksMessage
-    
-
+    $FTicksMessage = 'ADFS-FTICKS F-TICKS/{0}/1.0#TS={1}#RP={2}#AP={3}#PN={4}#AM={5}#RESULT={6}#' -f $FederationName, $FormattedTimestamp, $entityID, $IdP, $userID, $AuthnContextClass, $Result
+    return $FTicksMessage
 }

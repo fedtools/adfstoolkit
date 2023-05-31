@@ -134,19 +134,19 @@ Sync-ADFSTkAggregates
 Do you want to create a scheduled task that executes this command every hour?
 The scheduled task will be disabled when created and you can change triggers as you like.
 "@
-    confCreateScheduledTask = "Create ADFSToolkit scheduled task?"  
-    confCheckIfScheduledTaskIsPresent = "Checking if the cheduled task already is present..."
-    confRemoveScheduledTask = "Scheduled task found and will be removed due to -Force parameter."
+    confCreateScheduledTask = "Create ADFSToolkit Import Metadata scheduled task?"  
+    confCheckIfScheduledTaskIsPresent = "Checking if the Import Metadata scheduled task already is present..."
+    confRemoveScheduledTask = "The Import Metadata scheduled task was found and will be removed due to -Force parameter."
     confScheduledTaskInfo = @"
 
-The created Scheduled Task is disabled, but when enabled it will run every hour to update the ADFS with new/changed SP's.
+The created Import Metadata Scheduled Task is disabled, but when enabled it will run every hour to update the ADFS with new/changed SP's.
 Before enabling it, change the task to run whether user is logged on or not and change the user to a service account with the right privileges.
 
 After enabeling the Scheduled Task, the Institution Config also needs to be enabled.
 Use Enable-ADFSTkInstitutionConfiguration to do that.
 "@
     confImportMetadata = "Import Federated Metadata with ADFSToolkit"
-    confTHisSchedTaskWillDoTheImport = "This scheduled task imports the Federated Metadata with ADFSToolkit"
+    confThisSchedTaskWillDoTheImport = "This scheduled task imports the Federated Metadata with ADFSToolkit"
     confFederationDefaultConfigNotFoundQuestion = "Default config file for {0} could not be found! Do you want to use the ADFSToolkit default one?"
     confFederationDefaultConfigNotFound = "Default federation config file for {0} could not be found. Aborting!"
     confCouldNotOpenFederationDefaultConfig = "Could not open default configuration file '{0}'. Error: {1}"
@@ -241,7 +241,7 @@ Please open the file and configure how ADFSToolkit can get them (Active Director
 
     confProcessLoginEvents = "Process Login Events"
     confThisSchedTaskGetsLoginEventsAndSendAsFtics = "This Scheduled Task reads login events from the Event Log and sends it to a ftics server"
-    confFticsScheduledTaskInfo = "The created Scheduled Task is disabled, but when enabled it will run every 10 minutes, sending login events to the ftics server."
+    confFticsScheduledTaskInfo = "The created F-Tics Scheduled Task is disabled, but when enabled it will run every 10 minutes, sending login events to the ftics server."
 
     #######################################
     ### Federation cmdlets [federation] ###
@@ -490,24 +490,28 @@ If you don't know why this occurred, reinstallation of ADFS Toolkit is recommend
     healthCheckConfigVersionVerifyingVersionSucceeded = "Compatible version succeeded!"
     healthCheckConfigVersionPass = "Versioncheck PASSED!"
     healthCheckConfigVersionFail = "Versioncheck FAILED!"
+    healthCheckMFAAccessPolicyStartMessage = "Checking if MFA Adapter is installed and Access Control Policy is present..."
     healthMFAAccesControlPolicyInstalledACPMissing = "MFA Adapter installed but Access Control Policy is missing!"
     healthMFAAccesControlPolicyInstalledACPPresent = "MFA Adapter installed and Access Control Policy present"
     healthMFAAccesControlPolicyNotInstalled = "MFA Adapter not installed"
     healthMFAAccesControlPolicyPass = "MFA Access Control Policy test PASSED!"
     healthMFAAccesControlPolicyFail = "MFA Access Control Policy test FAILED!"
+    healthCheckRemovedSPsStillInSPHashSPHashStartMessage = "Checking if any removed SP's still are present in the SPHashFile..."
     healthCheckRemovedSPsStillInSPHashSPHashCorrupt = "The SP Hash file '{0}' is corrupt!"
     healthCheckRemovedSPsStillInSPHashMissingInMetadata = "{0} SP's found in the SP Hash file that are missing in the Federation metadata"
     healthCheckRemovedSPsStillInSPHashNoSPsMissingInMetadata = "No SP's found in the SP Hash file that are missing in the Federation metadata"
     healthCheckRemovedSPsStillInSPHashAllSPsWillBeImported = "SP Hash file '{0}' missing. All SP's will be imported from the Federation metadata"
+    healthMissingSPsInADFSStartMessage = "Checking if any SP's in the SPShashFile are missing in ADFS..."
     healthMissingSPsInADFSSPsMissingInADFS = "{0} SP's found in the SP Hash file that are missing in ADFS"
     healthMissingSPsInADFSNoSPsMissingInADFS = "No SP's found in the SP Hash file that are missing in ADFS"
-    healthScheduledTaskPresentScheduledTaskPresent = "Scheduled Task present"
-    healthScheduledTaskPresentScheduledTaskNotPresent = "Scheduled Task not present"
+    healthScheduledTaskPresentStartMessage = "Checking if {0} Scheduled Task is present"
+    healthScheduledTaskPresentScheduledTaskPresent = "{0} Scheduled Task present"
+    healthScheduledTaskPresentScheduledTaskNotPresent = "{0} Scheduled Task not present"
     healthMFAAccesControlPolicyRegisterACP = "Do you want to create the missing Access Control Policy?"
     healthRemoveSPsFromSPHashFileRemoveSPsNotInMetadata = "Do you want to remove the SP's from the SP Hash file '{0}' that doesn't exists in the Metadata?"
     healthDeleteSPHashFileDeleteCorruptSPHashFile = "Do you want to delete the corrupt SP Hash file '{0}'?"
     healthAddMissingSPsInADFSRemoveMissingSPs = "Do you want to remove SP's from the SP Hash file '{0}' that doesn't exists in ADFS?"
-    healthRegisterScheduledTaskCreateSchedTask = "Do you want to create the Scheduled Task?"
+    healthRegisterScheduledTaskCreateSchedTask = "Do you want to create the {0} Scheduled Task?"
     healthFailed = "ADFSTkHealth FAILED"
     healthPassedWithWarnings = "ADFSTkHealth PASSED with warnings"
     healthPassed =  "ADFSTkHealth PASSED" 
@@ -617,4 +621,18 @@ Run Get-ADFSTkStore to check installed version vs version included in ADFSToolki
     storeIsNotInstalled = "ADFSTkStore is NOT installed!"
     storeInstalledDllVersion = "Installed Dll version is: {0}"
     storeSourceDllVersion = "Dll version included in ADFSToolkit is: {0}"
+
+    ##############################
+    ### F-Tics cmdlets [ftics] ###
+    ##############################
+
+    fticsProcessStarted = @"
+F-Tics process started.
+{0} new event(s) found!
+"@
+    fticsProcessFinished = "F-Tics process finished."
+    fticsErrorProcessing = @"
+Could not process event due to the following error:
+{0}
+"@
 }
