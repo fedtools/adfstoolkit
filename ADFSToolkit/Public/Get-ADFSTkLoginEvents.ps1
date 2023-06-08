@@ -8,7 +8,7 @@ function Get-ADFSTkLoginEvents {
         if ([string]::IsNullOrEmpty($Global:ADFSTkConfiguration)) {
             $Global:ADFSTkConfiguration = Get-ADFSTkConfiguration
         }
-        $LastRecordID = $Global:ADFSTkConfiguration.Ftics.LastRecordId
+        $LastRecordID = $Global:ADFSTkConfiguration.Fticks.LastRecordId
         if ([string]::IsNullOrEmpty($LastRecordID)) {
             $LastRecordID = 0
         }

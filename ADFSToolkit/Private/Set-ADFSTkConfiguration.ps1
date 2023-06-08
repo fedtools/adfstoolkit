@@ -2,9 +2,9 @@ function Set-ADFSTkConfiguration {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param (
         $OutputLanguage,
-        $FticsServer,
-        $FticsSalt,
-        $FticsLastRecordId
+        $FticksServer,
+        $FticksSalt,
+        $FticksLastRecordId
     )
 
     if (!(Test-Path $Global:ADFSTKPaths.mainConfigFile)) {
@@ -29,43 +29,43 @@ function Set-ADFSTkConfiguration {
         }
     }
     
-    #Ftics
-    if ($PSBoundParameters.ContainsKey('FticsServer') -or $PSBoundParameters.ContainsKey('FticsSalt') -or $PSBoundParameters.ContainsKey('FticsLastRecordId')) {
-        if ($config.Configuration.Ftics -eq $null) {
-            Add-ADFSTkXML -NodeName "Ftics" -XPathParentNode "Configuration" -RefNodeName "OutputLanguage"
+    #Fticks
+    if ($PSBoundParameters.ContainsKey('FticksServer') -or $PSBoundParameters.ContainsKey('FticksSalt') -or $PSBoundParameters.ContainsKey('FticksLastRecordId')) {
+        if ($config.Configuration.Fticks -eq $null) {
+            Add-ADFSTkXML -NodeName "Fticks" -XPathParentNode "Configuration" -RefNodeName "OutputLanguage"
         }
     }
 
-    #FticsServer
-    if ($PSBoundParameters.ContainsKey('FticsServer')) {
-        if ($config.Configuration.Ftics.Server -eq $null) {
-            Add-ADFSTkXML -NodeName "Server" -XPathParentNode "Configuration/Ftics" -Value $FticsServer
+    #FticksServer
+    if ($PSBoundParameters.ContainsKey('FticksServer')) {
+        if ($config.Configuration.Fticks.Server -eq $null) {
+            Add-ADFSTkXML -NodeName "Server" -XPathParentNode "Configuration/Fticks" -Value $FticksServer
         }
         else {
-            $OutpuLanguageNode = Select-Xml -Xml $config -XPath "Configuration/Ftics/Server"
-            $OutpuLanguageNode.Node.innerText = $FticsServer
+            $OutpuLanguageNode = Select-Xml -Xml $config -XPath "Configuration/Fticks/Server"
+            $OutpuLanguageNode.Node.innerText = $FticksServer
         }
     }
 
-    #FticsSalt
-    if ($PSBoundParameters.ContainsKey('FticsSalt')) {
-        if ($config.Configuration.Ftics.Salt -eq $null) {
-            Add-ADFSTkXML -NodeName "Salt" -XPathParentNode "Configuration/Ftics" -Value $FticsSalt
+    #FticksSalt
+    if ($PSBoundParameters.ContainsKey('FticksSalt')) {
+        if ($config.Configuration.Fticks.Salt -eq $null) {
+            Add-ADFSTkXML -NodeName "Salt" -XPathParentNode "Configuration/Fticks" -Value $FticksSalt
         }
         else {
-            $OutpuLanguageNode = Select-Xml -Xml $config -XPath "Configuration/Ftics/Salt"
-            $OutpuLanguageNode.Node.innerText = $FticsSalt
+            $OutpuLanguageNode = Select-Xml -Xml $config -XPath "Configuration/Fticks/Salt"
+            $OutpuLanguageNode.Node.innerText = $FticksSalt
         }
     }
 
-    #FticsLastRecordId
-    if ($PSBoundParameters.ContainsKey('FticsLastRecordId')) {
-        if ($config.Configuration.Ftics.LastRecordId -eq $null) {
-            Add-ADFSTkXML -NodeName "LastRecordId" -XPathParentNode "Configuration/Ftics" -Value $FticsLastRecordId
+    #FticksLastRecordId
+    if ($PSBoundParameters.ContainsKey('FticksLastRecordId')) {
+        if ($config.Configuration.Fticks.LastRecordId -eq $null) {
+            Add-ADFSTkXML -NodeName "LastRecordId" -XPathParentNode "Configuration/Fticks" -Value $FticksLastRecordId
         }
         else {
-            $OutpuLanguageNode = Select-Xml -Xml $config -XPath "Configuration/Ftics/LastRecordId"
-            $OutpuLanguageNode.Node.innerText = $FticsLastRecordId
+            $OutpuLanguageNode = Select-Xml -Xml $config -XPath "Configuration/Fticks/LastRecordId"
+            $OutpuLanguageNode.Node.innerText = $FticksLastRecordId
         }
     }
 

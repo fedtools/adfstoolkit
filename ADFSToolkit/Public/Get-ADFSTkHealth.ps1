@@ -18,7 +18,7 @@
         RemovedSPsStillInSPHash       = ($HealthCheckMode -eq "Full") #Only run in Full mode
         ScheduledTaskPresent          = ($HealthCheckMode -eq "Full") #Checks if the Import Metadata Scheduled Task is present
         MissingSPsInADFS              = ($HealthCheckMode -eq "Full") #Only run in Full mode
-        FticsScheduledTaskPresent     = ($HealthCheckMode -eq "Full") #Checks if the F-tics Scheduled Task is present
+        FticksScheduledTaskPresent     = ($HealthCheckMode -eq "Full") #Checks if the F-ticks Scheduled Task is present
     }
 
     enum Result {
@@ -495,18 +495,18 @@
     }
     #endregion
 
-    #region Check if F-Tics Scheduled Task is present
-    if ($healthChecks.FticsScheduledTaskPresent) {
-        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthScheduledTaskPresentStartMessage -f "F-Tics")
+    #region Check if F-Ticks Scheduled Task is present
+    if ($healthChecks.FticksScheduledTaskPresent) {
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthScheduledTaskPresentStartMessage -f "F-Ticks")
 
         if (!$Silent) {
             $numberOfHealthChecksDone++
-            Write-Progress -Activity "Processing Health Checks..." -Status "$numberOfHealthChecksDone/$numberOfHealthChecks" -CurrentOperation (Get-ADFSTkLanguageText healthScheduledTaskPresentStartMessage -f "F-Tics") -PercentComplete ($numberOfHealthChecksDone / $numberOfHealthChecks * 100)
+            Write-Progress -Activity "Processing Health Checks..." -Status "$numberOfHealthChecksDone/$numberOfHealthChecks" -CurrentOperation (Get-ADFSTkLanguageText healthScheduledTaskPresentStartMessage -f "F-Ticks") -PercentComplete ($numberOfHealthChecksDone / $numberOfHealthChecks * 100)
         }
 
         $resultObject = [PSCustomObject]@{
-            CheckID       = "FticsScheduledTaskPresent"
-            CheckName     = "F-Tics Scheduled Task present"
+            CheckID       = "FticksScheduledTaskPresent"
+            CheckName     = "F-Ticks Scheduled Task present"
             ResultValue   = [Result]::None
             ResultText    = ""
             ResultData    = @()
@@ -518,12 +518,12 @@
 
         if (![string]::IsNullOrEmpty($schedTask)) {
             $resultObject.ResultValue = [Result]::Pass
-            $resultObject.ResultText = Get-ADFSTkLanguageText healthScheduledTaskPresentScheduledTaskPresent -f "F-Tics"
+            $resultObject.ResultText = Get-ADFSTkLanguageText healthScheduledTaskPresentScheduledTaskPresent -f "F-Ticks"
         }
         else {
             $resultObject.ResultValue = [Result]::Warning
-            $resultObject.ResultText = Get-ADFSTkLanguageText healthScheduledTaskPresentScheduledTaskNotPresent -f "F-Tics"
-            $resultObject.FixID = "RegisterFticsScheduledTask"
+            $resultObject.ResultText = Get-ADFSTkLanguageText healthScheduledTaskPresentScheduledTaskNotPresent -f "F-Ticks"
+            $resultObject.FixID = "RegisterFticksScheduledTask"
         }
         $healthResults += $resultObject
     }
@@ -670,13 +670,13 @@
     }
     #endregion
 
-    #region Add F-Tics Scheduled Task
+    #region Add F-Ticks Scheduled Task
     #Only if run manually
     if (!$Silent) {
-        $resultObject = $healthResults | ? FixID -eq "RegisterFticsScheduledTask"
+        $resultObject = $healthResults | ? FixID -eq "RegisterFticksScheduledTask"
         if (![String]::IsNullOrEmpty($resultObject)) {
-            if ((Get-ADFSTkAnswer (Get-ADFSTkLanguageText healthRegisterScheduledTaskCreateSchedTask -f "F-Tics"))) {
-                Register-ADFSTkFTicsScheduledTask
+            if ((Get-ADFSTkAnswer (Get-ADFSTkLanguageText healthRegisterScheduledTaskCreateSchedTask -f "F-Ticks"))) {
+                Register-ADFSTkFTicksScheduledTask
                 
                 $resultObject.ResultText = (Get-ADFSTkLanguageText healthFixed) + $resultObject.ResultText
                 $resultObject.ResultValue = [Result]::Pass 

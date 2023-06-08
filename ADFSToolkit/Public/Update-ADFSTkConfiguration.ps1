@@ -38,22 +38,22 @@
     if ($mainConfiguration.Configuration.ConfigVersion -eq $currentVersion) {
         Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText confUpdatingADFSTkConfigFromTo -f $currentVersion, $newVersion)
                     
-        Add-ADFSTkXML -XML $mainConfiguration -XPathParentNode "Configuration" -RefNodeName "OutputLanguage" -NodeName "Ftics" 
-        Add-ADFSTkXML -XML $mainConfiguration -XPathParentNode "Configuration/Ftics" -NodeName "Server"
-        Add-ADFSTkXML -XML $mainConfiguration -XPathParentNode "Configuration/Ftics" -NodeName "Salt"
-        Add-ADFSTkXML -XML $mainConfiguration -XPathParentNode "Configuration/Ftics" -NodeName "LastRecordId"
+        Add-ADFSTkXML -XML $mainConfiguration -XPathParentNode "Configuration" -RefNodeName "OutputLanguage" -NodeName "Fticks" 
+        Add-ADFSTkXML -XML $mainConfiguration -XPathParentNode "Configuration/Fticks" -NodeName "Server"
+        Add-ADFSTkXML -XML $mainConfiguration -XPathParentNode "Configuration/Fticks" -NodeName "Salt"
+        Add-ADFSTkXML -XML $mainConfiguration -XPathParentNode "Configuration/Fticks" -NodeName "LastRecordId"
 
         $mainConfiguration.Configuration.ConfigVersion = $newVersion
         $mainConfiguration.Save($mainConfigurationFile);
 
-        if (Get-ADFSTkAnswer -Message (Get-ADFSTkLanguageText confRegisterFtics)) {
-            #Register Ftics info
-            $FticsServer = Read-Host  (Get-ADFSTkLanguageText fticsServerNameNeeded)
-            Set-ADFSTkFticsServer -Server $FticsServer
+        if (Get-ADFSTkAnswer -Message (Get-ADFSTkLanguageText confRegisterFticks)) {
+            #Register Fticks info
+            $FticksServer = Read-Host  (Get-ADFSTkLanguageText fticksServerNameNeeded)
+            Set-ADFSTkFticksServer -Server $FticksServer
 
-            #Register the Scheduled Task for F-Tics
-            if (Get-ADFSTkAnswer -Message (Get-ADFSTkLanguageText confRegisterFticsScheduledTask)) {
-                Register-ADFSTkFTicsScheduledTask
+            #Register the Scheduled Task for F-Ticks
+            if (Get-ADFSTkAnswer -Message (Get-ADFSTkLanguageText confRegisterFticksScheduledTask)) {
+                Register-ADFSTkFTicksScheduledTask
             }
         }
     }

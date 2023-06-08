@@ -240,11 +240,11 @@ Please open the file and configure how ADFSToolkit can get them (Active Director
     confNoInstitutionConfigFileSelected = "No configurationfile(s) were selected. Nothing changed!"
 
     confProcessLoginEvents = "Process Login Events"
-    confThisSchedTaskGetsLoginEventsAndSendAsFtics = "This Scheduled Task reads login events from the Event Log and sends it to a ftics server"
-    confFticsScheduledTaskInfo = "The created F-Tics Scheduled Task is disabled, but when enabled it will run every 10 minutes, sending login events to the ftics server."
+    confThisSchedTaskGetsLoginEventsAndSendAsFticks = "This Scheduled Task reads login events from the Event Log and sends it to a fticks server"
+    confFticksScheduledTaskInfo = "The created F-Ticks Scheduled Task is disabled, but when enabled it will run every 10 minutes, sending login events to the fticks server."
 
     confUpdatingADFSTkConfigFromTo = "Updating ADFS Toolkit config from {0} to {1}"
-    confRegisterFtics = "This version supports F-Tics. Do you want to configure that now?"
+    confRegisterFticks = "This version supports F-Ticks. Do you want to configure that now?"
 
     #######################################
     ### Federation cmdlets [federation] ###
@@ -636,23 +636,23 @@ Run Get-ADFSTkStore to check installed version vs version included in ADFSToolki
     storeInstalledDllVersion = "Installed Dll version is: {0}"
     storeSourceDllVersion = "Dll version included in ADFSToolkit is: {0}"
 
-    ##############################
-    ### F-Tics cmdlets [ftics] ###
-    ##############################
+    ################################
+    ### F-Ticks cmdlets [fticks] ###
+    ################################
 
-    fticsProcessStarted = @"
-F-Tics process started.
+    fticksProcessStarted = @"
+F-Ticks process started.
 {0} new event(s) found!
 "@
-    fticsProcessFinished = "F-Tics process finished."
-    fticsErrorProcessing = @"
+    fticksProcessFinished = "F-Ticks process finished."
+    fticksErrorProcessing = @"
 Could not process event due to the following error:
 {0}
 "@
-    fticsServerAndSaltUpdated = @"
-The F-Tics server was updated to {0}.
+    fticksServerAndSaltUpdated = @"
+The F-Ticks server was updated to {0}.
 A new salt was generated.
 "@
-    fticsServerNameNeeded = "Please provide the DNS name of the F-Tics server"
-    confRegisterFticsScheduledTask = "Do you want to register a Scheduled Task to process login events and create F-Tics every 10 minute?"
+    fticksServerNameNeeded = "Please provide the DNS name of the F-Ticks server"
+    confRegisterFticksScheduledTask = "Do you want to register a Scheduled Task to process login events and create F-Ticks every 10 minute?"
 }

@@ -1,4 +1,4 @@
-function New-ADFSTkFticMessage {
+function New-ADFSTkFtickMessage {
     param (
         $entityID, #The current SP
         $userName, #The UserName of the person logged in
@@ -15,7 +15,7 @@ function New-ADFSTkFticMessage {
     }
 
     $FederationName = $Global:ADFSTkConfiguration.FederationConfig.Federation.FederationName #The name of the federation
-    $Salt = $Global:ADFSTkConfiguration.Ftics.Salt
+    $Salt = $Global:ADFSTkConfiguration.Fticks.Salt
 
     #Get the timestamp
     $Timestamp = $LoggedTime.ToUniversalTime()

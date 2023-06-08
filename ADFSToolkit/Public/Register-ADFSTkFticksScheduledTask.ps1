@@ -1,4 +1,4 @@
-function Register-ADFSTkFTicsScheduledTask {
+function Register-ADFSTkFTicksScheduledTask {
     [cmdletbinding()]
     param ([switch]$Force)
     
@@ -18,10 +18,10 @@ function Register-ADFSTkFTicsScheduledTask {
     }
 
     if ([string]::IsNullOrEmpty($schedTask)) {
-        Write-ADFSTkLog (Get-ADFSTkLanguageText cCreating -f "F-Tics Scheduled Task")
+        Write-ADFSTkLog (Get-ADFSTkLanguageText cCreating -f "F-Ticks Scheduled Task")
 
         $stAction = New-ScheduledTaskAction -Execute 'Powershell.exe' `
-            -Argument "-NoProfile -WindowStyle Hidden -Command &{Process-ADFSTkFtics}"
+            -Argument "-NoProfile -WindowStyle Hidden -Command &{Process-ADFSTkFticks}"
 
         $stTrigger = New-ScheduledTaskTrigger -Daily -DaysInterval 1 -At (Get-Date)
         $stSettings = New-ScheduledTaskSettingsSet -Disable -MultipleInstances IgnoreNew -ExecutionTimeLimit ([timespan]::FromHours(12))
@@ -29,7 +29,7 @@ function Register-ADFSTkFTicsScheduledTask {
         $Task = Register-ScheduledTask -Action $stAction `
             -Trigger $stTrigger `
             -TaskName (Get-ADFSTkLanguageText confProcessLoginEvents) `
-            -Description (Get-ADFSTkLanguageText confThisSchedTaskGetsLoginEventsAndSendAsFtics) `
+            -Description (Get-ADFSTkLanguageText confThisSchedTaskGetsLoginEventsAndSendAsFticks) `
             -RunLevel Highest `
             -Settings $stSettings `
             -TaskPath "\ADFSToolkit\"
@@ -41,9 +41,9 @@ function Register-ADFSTkFTicsScheduledTask {
         Write-Host " "
         
         Write-ADFSTkLog (Get-ADFSTkLanguageText cDone)
-        Write-Host (Get-ADFSTkLanguageText confFticsScheduledTaskInfo)
+        Write-Host (Get-ADFSTkLanguageText confFticksScheduledTaskInfo)
     }
     else {
-        Write-Host (Get-ADFSTkLanguageText cAlreadyPresent -f "F-Tics Scheduled Task")
+        Write-Host (Get-ADFSTkLanguageText cAlreadyPresent -f "F-Ticks Scheduled Task")
     }
 }
