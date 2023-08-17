@@ -85,7 +85,8 @@ function Copy-ADFSTkDll {
             Start-Sleep -Seconds 1
         } 
         until((Get-Service adfssrv).Status -eq [System.ServiceProcess.ServiceControllerStatus]::Stopped)
-            
+        Start-Sleep -Seconds 5
+        
         ## Copy binary to ADFS
         Copy-Item -Path $ADFSTkStoreObject.dllSourceLocation -Destination $ADFSTkStoreObject.dllDestination -Force
         
