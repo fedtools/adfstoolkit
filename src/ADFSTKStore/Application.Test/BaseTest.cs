@@ -64,7 +64,7 @@ namespace Urn.Adfstk.Application.Test
         {
             InitParams = new Dictionary<string, string>();
             InitParams.Add("IDPSALT", IDPSALT);
-            InitParams.Add("SPLITPARAM", SPLITPARAM);
+            //InitParams.Add("SPLITPARAM", SPLITPARAM);
         }
 
         protected void PrintResult(string[] types, TypedAsyncResult<string[][]> typedResult)
