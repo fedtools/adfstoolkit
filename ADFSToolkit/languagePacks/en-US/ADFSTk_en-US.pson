@@ -240,11 +240,20 @@ Please open the file and configure how ADFSToolkit can get them (Active Director
     confNoInstitutionConfigFileSelected = "No configurationfile(s) were selected. Nothing changed!"
 
     confProcessLoginEvents = "Process Login Events"
-    confThisSchedTaskGetsLoginEventsAndSendAsFticks = "This Scheduled Task reads login events from the Event Log and sends it to a fticks server"
-    confFticksScheduledTaskInfo = "The created F-Ticks Scheduled Task is disabled, but when enabled it will run every 10 minutes, sending login events to the fticks server."
+    confThisSchedTaskGetsLoginEventsAndSendAsFticks = "This Scheduled Task reads login events from the Event Log and sends it to a f-ticks server"
+    confFticksScheduledTaskInfo = @"
+The created F-Ticks Scheduled Task is currently disabled. Start Task Scheduler and enable it to start sending f-ticks. When enabled, it will run every 10 minutes.
+It's rekommended to change the running user to a service account with privileges to read the Event Log.
+"@
 
     confUpdatingADFSTkConfigFromTo = "Updating ADFS Toolkit config from {0} to {1}"
-    confRegisterFticks = "This version supports F-Ticks. Do you want to configure that now?"
+    confRegisterFticks = @"
+This version supports F-Ticks. Do you want to configure that now?
+
+If you skip this step now you can configure it manually later by running:
+Set-ADFSTkFticksServer -Server [mysyslogserver.institution.edu]
+Register-ADFSTkFTicksScheduledTask
+"@
 
     #######################################
     ### Federation cmdlets [federation] ###
