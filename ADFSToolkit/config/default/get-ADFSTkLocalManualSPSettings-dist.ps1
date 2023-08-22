@@ -55,7 +55,7 @@ function get-ADFSTkLocalManualSPSettings {
 
     #    EntityCategories = @("http://www.geant.net/uri/dataprotection-code-of-conduct/v1")
     #    SamlResponseSignature = 'MessageAndAssertion' #Valid SamlResponseSignatures: AssertionOnly, MessageAndAssertion, MessageOnly
-    #    CustomAccessControlPolicyName = "ForceMFAIfInGroup" #The ACP needs to exist before use
+    #    CustomAccessControlPolicyName = "Permit everyone and require MFA" #The ACP needs to exist before use
     # }
 
     #endregion
