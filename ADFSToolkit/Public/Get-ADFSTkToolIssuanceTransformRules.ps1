@@ -156,5 +156,13 @@
         $rpParams.IssuanceTransformRules = $IssuanceTransformRuleObject.Stores + $IssuanceTransformRuleObject.MFARules + $IssuanceTransformRuleObject.Rules
     }
 
+    #region Custom Access Control Policy
+    $CustomACPName = Get-ADFSTkCustomACPConfiguration -EntityId $entityID
+    if (![string]::IsNullOrEmpty($CustomACPName))
+    {
+        $rpParams.AccessControlPolicyName = $CustomACPName
+    }
+    #endregion
+
     return $rpParams
 }

@@ -329,6 +329,7 @@ Please open the file and configure how ADFSToolkit can get them (Active Director
     addRPSuccefullyAddedRP = "Successfully added '{0}'!"
     addRPCouldNotAddRP = "Could not add '{0}' as SP! Error: {1}"
     addRPRPAlreadyExists = "'{0}' already exists as SP!"
+    addCustomAccessControlPolicyNameMissing = "The Access Control Policy '{0}' is missing. Please add it to the ADFS Configuration and try again!"
 
     ##############################################
     ### Process Relying Party Trust [processRP] ###
