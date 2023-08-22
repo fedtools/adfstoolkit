@@ -16,12 +16,13 @@ namespace ADFSTk
 {
     public class ADFSTkStore : IAttributeStore
     {
-        //private const string EventSource = "ADFSTkTool";
         private const string IDPSALT = "IDPSALT";
-        //private const string IDPENTITYID = "IDPENTITYID";
+        private const string SPLITPARAM = "SPLITPARAM";
+
         private string salt;
         private string entityId;
-        
+        public string[] separators = new string[] { ",", ";", "|" };
+
         private IHashService _hashService;
         
         public IAsyncResult BeginExecuteQuery(string query, string[] parameters, AsyncCallback callback, object state)
@@ -57,8 +58,9 @@ namespace ADFSTk
                 string shacHome = parameters[2];
                 
                 ClaimDto c = null;
-                foreach (var param in queryParams)
-                {
+                string param = queryParams.First();
+                //foreach (var param in queryParams)
+                //{
                     switch (param.ToLower())
                     {
                         case "base32":
@@ -113,10 +115,21 @@ namespace ADFSTk
                             outputValues.Add(c = new ClaimDto() { Name = param, Values = new List<string>() { string.IsNullOrEmpty(upn) ? null : upn.ToUpper() } });
                             Log.WriteEntry("Transforming ToUpper (output=" + outputValues[0].Values.First() + ")" , EventLogEntryType.Information, 335);
                             break;
+                        case "split":
+                            Log.WriteEntry("Spliting into multiple claims", EventLogEntryType.Information, 335);
+                            foreach(string s in separators)
+                            {
+                                if (upn.Contains(s))
+                                {
+                                    string[] temp = upn.Split(new char[] { s.FirstOrDefault() });
+                                    outputValues.Add(new ClaimDto() { Name = param, Values = temp.ToList() });
+                                }
+                            }
+                            break;
                         default:
                             break;
                     }
-                }
+                //foreach}
             }
             catch (Exception ex)
             {
@@ -154,6 +167,15 @@ namespace ADFSTk
             }
             _hashService = new HashService();
             Log.WriteEntry("ADFSTkStore :: started ...", EventLogEntryType.Information, 335);
+            if (config.ContainsKey(SPLITPARAM)){
+                //read each splitchar into array
+                var temp = new List<string>();
+                foreach(char c in config[SPLITPARAM].ToCharArray())
+                {
+                    temp.Add(c.ToString());
+                }
+                separators = temp.ToArray();
+            }
 
         }
         #region HelperMethods
