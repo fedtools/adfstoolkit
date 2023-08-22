@@ -37,7 +37,8 @@ param(
         if ([System.Diagnostics.EventLog]::Exists($LogName) -and [System.Diagnostics.EventLog]::SourceExists($Source))
         {
             # This is good, both log and source exist, and logging is activatated
-            Write-EventLog -LogName $LogName -Source $Source -EventId 1 -Message (Get-ADFSTkLanguageText logEventLogUsed)
+            #Only logg as verbose
+            #Write-EventLog -LogName $LogName -Source $Source -EventId 1 -Message (Get-ADFSTkLanguageText logEventLogUsed)
                 
             $EventLogEnabled = $true
         }

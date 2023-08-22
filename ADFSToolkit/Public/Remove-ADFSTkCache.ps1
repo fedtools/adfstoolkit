@@ -44,6 +44,7 @@ function Remove-ADFSTkCache {
         $Global:ADFSTkLanguageTables = $null
         $Global:ADFSTkSelectedLanguage = $null
         $Global:ADFSTkCurrentInstitutionConfig = $null
+        $Global:ADFSTkConfiguration = $null
         $anyCacheCleared = $true
         
         Write-ADFSTkHost cacheCleared -f "Full Memory Cache" -Style Info -ForegroundColor Green

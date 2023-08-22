@@ -10,13 +10,15 @@
         [switch]$Silent
     )
 
-    $healtChecks = @{
-        CheckSignature          = ($HealthCheckMode -ne "CriticalOnly") #Don't run i CriticalOnly
-        CheckConfigVersion      = $true
-        MFAAccesControlPolicy   = $true
-        RemovedSPsStillInSPHash = ($HealthCheckMode -eq "Full") #Only run in Full mode
-        MissingSPsInADFS        = ($HealthCheckMode -eq "Full") #Only run in Full mode
-        ScheduledTaskPresent    = ($HealthCheckMode -eq "Full") #Checks if there are a Scheduled Task with the name 'Import Federated Metadata with ADFSToolkit'
+    $healthChecks = @{
+        CheckSignature                = ($HealthCheckMode -ne "CriticalOnly") #Don't run i CriticalOnly
+        CheckADFSTkConfigVersion      = $true
+        CheckInstitutionConfigVersion = $true
+        MFAAccesControlPolicy         = $true
+        RemovedSPsStillInSPHash       = ($HealthCheckMode -eq "Full") #Only run in Full mode
+        ScheduledTaskPresent          = ($HealthCheckMode -eq "Full") #Checks if the Import Metadata Scheduled Task is present
+        MissingSPsInADFS              = ($HealthCheckMode -eq "Full") #Only run in Full mode
+        FticksScheduledTaskPresent     = ($HealthCheckMode -eq "Full") #Checks if the F-ticks Scheduled Task is present
     }
 
     enum Result {
@@ -34,18 +36,32 @@
     }
 
     #region get config file(s)
+    $ADFSTkConfig = Get-ADFSTkConfiguration
+
     $configFiles = @()
     if ($PSBoundParameters.ContainsKey('configFile')) {
         $configFiles += $configFile
     }
     else {
-        $configFiles = Get-ADFSTkConfiguration -ConfigFilesOnly | ? Enabled -eq $true | select -ExpandProperty ConfigFile
+        $configFiles = $ADFSTkConfig.ConfigFiles.ConfigFile | ? enabled -eq $true | select -ExpandProperty '#text'
     }
     #endregion
 
+    if (!$Silent) {
+        $numberOfHealthChecks = ($healthChecks.Values | ? { $_ -eq $true }).Count
+        $numberOfHealthChecksDone = 0
+        Write-Progress -Activity "Processing Health Checks..."
+    }
+
     #region check script signatures
-    if ($healtChecks.CheckSignature) {
+    if ($healthChecks.CheckSignature) {
         Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckSignatureStartMessage)
+
+        if (!$Silent) {
+            $numberOfHealthChecksDone++
+            Write-Progress -Activity "Processing Health Checks..." -Status "$numberOfHealthChecksDone/$numberOfHealthChecks" -CurrentOperation (Get-ADFSTkLanguageText healthCheckMissingSignaturesName) -PercentComplete ($numberOfHealthChecksDone / $numberOfHealthChecks * 100)
+        }
+        
         $Signatures = Get-ChildItem -Path $Global:ADFSTkPaths.modulePath -Filter *.ps1 -Recurse | Get-AuthenticodeSignature
         $validSignatures = $Signatures | ? Status -eq Valid | Select -ExpandProperty Path
         $invalidSignatures = $Signatures | ? Status -eq HashMismatch | Select -ExpandProperty Path
@@ -75,8 +91,8 @@
             }
             else {
                 $resultObject.ResultValue = [Result]::Fail
-                $resultObject.ResultText    = Get-ADFSTkLanguageText healthCheckSignatureMissingSignaturesResult -f $missingSignatures.Count
-                $resultObject.ResultData    = $missingSignatures
+                $resultObject.ResultText = Get-ADFSTkLanguageText healthCheckSignatureMissingSignaturesResult -f $missingSignatures.Count
+                $resultObject.ResultData = $missingSignatures
                 
                 Write-ADFSTkLog (Get-ADFSTkLanguageText healthCheckSignatureMissingSignaturesMessage -f ($missingSignatures | Out-String)) -EntryType Warning
 
@@ -98,9 +114,9 @@
             FixID         = ""
         }
         if ($invalidSignatures.Count -gt 0) {
-            $resultObject.ResultValue   = [Result]::Fail
-            $resultObject.ResultText    = Get-ADFSTkLanguageText healthCheckSignatureInvalidSignaturesMessage -f ($invalidSignatures | Out-String)
-            $resultObject.ResultData    = $invalidSignatures
+            $resultObject.ResultValue = [Result]::Fail
+            $resultObject.ResultText = Get-ADFSTkLanguageText healthCheckSignatureInvalidSignaturesMessage -f ($invalidSignatures | Out-String)
+            $resultObject.ResultData = $invalidSignatures
 
             Write-ADFSTkVerboseLog $resultObject.ResultText -EntryType Warning
 
@@ -119,15 +135,67 @@
     }
     #endregion
 
-    #region check config version
-    if ($healtChecks.CheckConfigVersion) {
+    #region check ADFS Toolkit config version
+    if ($healthChecks.CheckADFSTkConfigVersion) {
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckADFSTkConfigVersionStartMessage)
+    
+        if (!$Silent) {
+            $numberOfHealthChecksDone++
+            Write-Progress -Activity "Processing Health Checks..." -Status "$numberOfHealthChecksDone/$numberOfHealthChecks" -CurrentOperation (Get-ADFSTkLanguageText healthCheckADFSTkConfigVersionStartMessage) -PercentComplete ($numberOfHealthChecksDone / $numberOfHealthChecks * 100)
+        }
+    
+        $resultObject = [PSCustomObject]@{
+            CheckID       = "CheckADFSTkConfigVersion"
+            CheckName     = "ADFS Toolkit Configuration Version control"
+            ResultValue   = [Result]::None
+            ResultText    = ""
+            ResultData    = @()
+            ReferenceFile = ""
+            FixID         = ""
+        }
+         
+        #Check against compatible version
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionVerifyingVersionStart)
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionVerifyingVersionCompareVersions -f $ADFSTkConfig.ConfigVersion, $Global:ADFSTkCompatibleADFSTkConfigVersion)
+        if ([float]$ADFSTkConfig.ConfigVersion -eq [float]$Global:ADFSTkCompatibleADFSTkConfigVersion) {
+            $resultObject.ResultValue = [Result]::Pass
+            $resultObject.ResultText = Get-ADFSTkLanguageText healthCheckConfigVersionVerifyingVersionSucceeded
+    
+            Write-ADFSTkVerboseLog $resultObject.ResultText
+        }
+        else {
+            $resultObject.ResultValue = [Result]::Fail
+            $resultObject.ResultText = Get-ADFSTkLanguageText healthIncompatibleADFSTkConfigVersion -f $ADFSTkConfig.ConfigVersion, $Global:ADFSTkCompatibleADFSTkConfigVersion
+            $resultObject.FixID = "FixADFSTkConfigVersion"
+    
+            Write-ADFSTkLog $resultObject.ResultText -EntryType Warning
+        }
+        
+        $healthResults += $resultObject
+    
+        if ($resultObject.ResultValue -eq [Result]::Pass) {
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionPass)
+        }
+        else {
+            Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionFail)
+        }
+    }
 
-        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionStartMessage)
+    #endregion
+
+    #region check institution config version
+    if ($healthChecks.CheckInstitutionConfigVersion) {
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckInstitutionConfigVersionStartMessage)
+
+        if (!$Silent) {
+            $numberOfHealthChecksDone++
+            Write-Progress -Activity "Processing Health Checks..." -Status "$numberOfHealthChecksDone/$numberOfHealthChecks" -CurrentOperation (Get-ADFSTkLanguageText healthCheckInstitutionConfigVersionStartMessage) -PercentComplete ($numberOfHealthChecksDone / $numberOfHealthChecks * 100)
+        }
 
         foreach ($cf in $configFiles) {
             $resultObject = [PSCustomObject]@{
-                CheckID       = "CheckConfigVersion"
-                CheckName     = "Version control"
+                CheckID       = "CheckInstitutionConfigVersion"
+                CheckName     = "Institution Configuration Version control"
                 ResultValue   = [Result]::None
                 ResultText    = ""
                 ResultData    = @()
@@ -145,7 +213,7 @@
                     #Check against compatible version
                     Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionVerifyingVersionStart)
                     Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckConfigVersionVerifyingVersionCompareVersions -f $xmlCf.configuration.ConfigVersion, $Global:ADFSTkCompatibleInstitutionConfigVersion)
-                    if ([float]$xmlCf.configuration.ConfigVersion -ge [float]$Global:ADFSTkCompatibleInstitutionConfigVersion) {
+                    if ([float]$xmlCf.configuration.ConfigVersion -eq [float]$Global:ADFSTkCompatibleInstitutionConfigVersion) {
                         $resultObject.ResultValue = [Result]::Pass
                         $resultObject.ResultText = Get-ADFSTkLanguageText healthCheckConfigVersionVerifyingVersionSucceeded
 
@@ -155,6 +223,7 @@
                         $resultObject.ResultValue = [Result]::Fail
                         $resultObject.ResultText = Get-ADFSTkLanguageText healthIncompatibleInstitutionConfigVersion -f $xmlCf.configuration.ConfigVersion, $Global:ADFSTkCompatibleInstitutionConfigVersion
                         $resultObject.ResultData = $xmlCf.configuration.ConfigVersion
+                        $resultObject.FixID = "FixInstitutionConfigVersion"
 
                         Write-ADFSTkLog $resultObject.ResultText -EntryType Warning
                     }
@@ -187,7 +256,14 @@
     #endregion
 
     #region check Access Control Policy if MFA Adapter is installed
-    if ($healtChecks.MFAAccesControlPolicy) {
+    Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckMFAAccessPolicyStartMessage)
+
+    if (!$Silent) {
+        $numberOfHealthChecksDone++
+        Write-Progress -Activity "Processing Health Checks..." -Status "$numberOfHealthChecksDone/$numberOfHealthChecks" -CurrentOperation (Get-ADFSTkLanguageText healthCheckMFAAccessPolicyStartMessage) -PercentComplete ($numberOfHealthChecksDone / $numberOfHealthChecks * 100)
+    }
+
+    if ($healthChecks.MFAAccesControlPolicy) {
         $resultObject = [PSCustomObject]@{
             CheckID       = "MFAAccesControlPolicy"
             CheckName     = "MFA Access Control Policy"
@@ -232,8 +308,14 @@
     #endregion
 
     #region check removedSPsStillInSPHash
-    if ($healtChecks.removedSPsStillInSPHash) {
+    if ($healthChecks.removedSPsStillInSPHash) {
         #Automatically remove SP's from SPHash File that's not in the Metadata
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthCheckRemovedSPsStillInSPHashSPHashStartMessage)
+
+        if (!$Silent) {
+            $numberOfHealthChecksDone++
+            Write-Progress -Activity "Processing Health Checks..." -Status "$numberOfHealthChecksDone/$numberOfHealthChecks" -CurrentOperation (Get-ADFSTkLanguageText healthCheckRemovedSPsStillInSPHashSPHashStartMessage) -PercentComplete ($numberOfHealthChecksDone / $numberOfHealthChecks * 100)
+        }
 
         foreach ($cf in $configFiles) {
             $resultObject = [PSCustomObject]@{
@@ -305,8 +387,14 @@
 
     #region remove/rerun missing SP's
     
-    if ($healtChecks.MissingSPsInADFS) {
+    if ($healthChecks.MissingSPsInADFS) {
         #Automatically remove SP's from SPHash File that's not in the Metadata
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthMissingSPsInADFSStartMessage)
+
+        if (!$Silent) {
+            $numberOfHealthChecksDone++
+            Write-Progress -Activity "Processing Health Checks..." -Status "$numberOfHealthChecksDone/$numberOfHealthChecks" -CurrentOperation (Get-ADFSTkLanguageText healthMissingSPsInADFSStartMessage) -PercentComplete ($numberOfHealthChecksDone / $numberOfHealthChecks * 100)
+        }
 
         foreach ($cf in $configFiles) {
             $resultObject = [PSCustomObject]@{
@@ -373,13 +461,52 @@
     }
     #endregion
 
-    #region Check if Scheduled Task is present
-    if ($healtChecks.ScheduledTaskPresent) {
-        #Automatically remove SP's from SPHash File that's not in the Metadata
+    #region Check if the Import Metadata Scheduled Task is present
+    if ($healthChecks.ScheduledTaskPresent) {
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthScheduledTaskPresentStartMessage -f "Import Metadata")
+
+        if (!$Silent) {
+            $numberOfHealthChecksDone++
+            Write-Progress -Activity "Processing Health Checks..." -Status "$numberOfHealthChecksDone/$numberOfHealthChecks" -CurrentOperation (Get-ADFSTkLanguageText healthScheduledTaskPresentStartMessage -f "Import Metadata") -PercentComplete ($numberOfHealthChecksDone / $numberOfHealthChecks * 100)
+        }
 
         $resultObject = [PSCustomObject]@{
             CheckID       = "ScheduledTaskPresent"
-            CheckName     = "Scheduled Task present"
+            CheckName     = "Import Metadata Scheduled Task present"
+            ResultValue   = [Result]::None
+            ResultText    = ""
+            ResultData    = @()
+            ReferenceFile = ""
+            FixID         = ""
+        }
+        
+        $schedTask = Get-ScheduledTask -TaskName (Get-ADFSTkLanguageText confImportMetadata) -TaskPath "\ADFSToolkit\" -ErrorAction SilentlyContinue
+
+        if (![string]::IsNullOrEmpty($schedTask)) {
+            $resultObject.ResultValue = [Result]::Pass
+            $resultObject.ResultText = Get-ADFSTkLanguageText healthScheduledTaskPresentScheduledTaskPresent -f "Import Metadata"
+        }
+        else {
+            $resultObject.ResultValue = [Result]::Warning
+            $resultObject.ResultText = Get-ADFSTkLanguageText healthScheduledTaskPresentScheduledTaskNotPresent -f "Import Metadata"
+            $resultObject.FixID = "RegisterScheduledTask"
+        }
+        $healthResults += $resultObject
+    }
+    #endregion
+
+    #region Check if F-Ticks Scheduled Task is present
+    if ($healthChecks.FticksScheduledTaskPresent) {
+        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText healthScheduledTaskPresentStartMessage -f "F-Ticks")
+
+        if (!$Silent) {
+            $numberOfHealthChecksDone++
+            Write-Progress -Activity "Processing Health Checks..." -Status "$numberOfHealthChecksDone/$numberOfHealthChecks" -CurrentOperation (Get-ADFSTkLanguageText healthScheduledTaskPresentStartMessage -f "F-Ticks") -PercentComplete ($numberOfHealthChecksDone / $numberOfHealthChecks * 100)
+        }
+
+        $resultObject = [PSCustomObject]@{
+            CheckID       = "FticksScheduledTaskPresent"
+            CheckName     = "F-Ticks Scheduled Task present"
             ResultValue   = [Result]::None
             ResultText    = ""
             ResultData    = @()
@@ -387,16 +514,16 @@
             FixID         = ""
         }
 
-        $schedTask = Get-ScheduledTask -TaskName 'Import Federated Metadata with ADFSToolkit' -TaskPath "\ADFSToolkit\" -ErrorAction SilentlyContinue
+        $schedTask = Get-ScheduledTask -TaskName (Get-ADFSTkLanguageText confProcessLoginEvents) -TaskPath "\ADFSToolkit\" -ErrorAction SilentlyContinue
 
         if (![string]::IsNullOrEmpty($schedTask)) {
             $resultObject.ResultValue = [Result]::Pass
-            $resultObject.ResultText = Get-ADFSTkLanguageText healthScheduledTaskPresentScheduledTaskPresent
+            $resultObject.ResultText = Get-ADFSTkLanguageText healthScheduledTaskPresentScheduledTaskPresent -f "F-Ticks"
         }
         else {
             $resultObject.ResultValue = [Result]::Warning
-            $resultObject.ResultText = Get-ADFSTkLanguageText healthScheduledTaskPresentScheduledTaskNotPresent
-            $resultObject.FixID = "RegisterScheduledTask"
+            $resultObject.ResultText = Get-ADFSTkLanguageText healthScheduledTaskPresentScheduledTaskNotPresent -f "F-Ticks"
+            $resultObject.FixID = "RegisterFticksScheduledTask"
         }
         $healthResults += $resultObject
     }
@@ -404,15 +531,52 @@
 
     #region Show result
     if (!$Silent) {
+        Write-Progress -Activity "Processing Health Checks..." -PercentComplete 100 -Completed
         $healthResults | Select CheckName, ResultValue, ResultText, ReferenceFile | sort ResultValue, CheckName, ReferenceFile | ft -AutoSize -Wrap
     }
 
     #endregion
 
-
     #region Correct fixable errors
     $FixedAnything = $false
     
+    
+     #region Fix incorrect Institution Config Version(s)
+    #Only if run manually
+    if (!$Silent) {
+        $resultObject = $healthResults | ? FixID -eq "FixADFSTkConfigVersion"
+            if (![String]::IsNullOrEmpty($resultObject)) {
+                if ((Get-ADFSTkAnswer (Get-ADFSTkLanguageText healthUpdateADFSTkConfigVersion))) {
+                    Update-ADFSTkConfiguration
+                
+                    $resultObject.ResultText = (Get-ADFSTkLanguageText healthFixed) + $resultObject.ResultText
+                    $resultObject.ResultValue = [Result]::Pass 
+
+                    $FixedAnything = $true
+                }
+            }
+    }
+    #endregion
+
+    #region Fix incorrect Institution Config Version(s)
+    #Only if run manually
+    if (!$Silent) {
+        $resultObjects = $healthResults | ? FixID -eq "FixInstitutionConfigVersion"
+        foreach ($resultObject in $resultObjects) {
+            if (![String]::IsNullOrEmpty($resultObject)) {
+                if ((Get-ADFSTkAnswer (Get-ADFSTkLanguageText healthUpdateInstitutionConfigVersion -f $resultObject.ReferenceFile))) {
+                    Update-ADFSTkInstitutionConfiguration -ConfigurationFile $resultObject.ReferenceFile
+                
+                    $resultObject.ResultText = (Get-ADFSTkLanguageText healthFixed) + $resultObject.ResultText
+                    $resultObject.ResultValue = [Result]::Pass 
+
+                    $FixedAnything = $true
+                }
+            }
+        }
+    }
+    #endregion
+
     #region MFAAccesControlPolicy
     #createACP
     $MFAAccesControlPolicy = $healthResults | ? FixID -eq "CreateACP"
@@ -489,13 +653,30 @@
 
     #endregion
         
-    #region Add Scheduled Task
+    #region Add Import Metadata Scheduled Task
     #Only if run manually
     if (!$Silent) {
-        $addMissingSPs = $healthResults | ? FixID -eq "RegisterScheduledTask"
-        if (![String]::IsNullOrEmpty($addMissingSPs)) {
-            if ((Get-ADFSTkAnswer (Get-ADFSTkLanguageText healthRegisterScheduledTaskCreateSchedTask))) {
+        $resultObject = $healthResults | ? FixID -eq "RegisterScheduledTask"
+        if (![String]::IsNullOrEmpty($resultObject)) {
+            if ((Get-ADFSTkAnswer (Get-ADFSTkLanguageText healthRegisterScheduledTaskCreateSchedTask -f "Import Metadata"))) {
                 Register-ADFSTkScheduledTask
+                
+                $resultObject.ResultText = (Get-ADFSTkLanguageText healthFixed) + $resultObject.ResultText
+                $resultObject.ResultValue = [Result]::Pass 
+
+                $FixedAnything = $true
+            }
+        }
+    }
+    #endregion
+
+    #region Add F-Ticks Scheduled Task
+    #Only if run manually
+    if (!$Silent) {
+        $resultObject = $healthResults | ? FixID -eq "RegisterFticksScheduledTask"
+        if (![String]::IsNullOrEmpty($resultObject)) {
+            if ((Get-ADFSTkAnswer (Get-ADFSTkLanguageText healthRegisterScheduledTaskCreateSchedTask -f "F-Ticks"))) {
+                Register-ADFSTkFTicksScheduledTask
                 
                 $resultObject.ResultText = (Get-ADFSTkLanguageText healthFixed) + $resultObject.ResultText
                 $resultObject.ResultValue = [Result]::Pass 
@@ -524,7 +705,7 @@
             Write-ADFSTkLog -Message (Get-ADFSTkLanguageText healthPassed) -EntryType Information -ForegroundColor Green
         }
     }
-<#
+    <#
 .SYNOPSIS
     Use this cmdlet to check the health of your installation of ADFS Toolkit
 .DESCRIPTION
