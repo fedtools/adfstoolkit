@@ -32,7 +32,7 @@ namespace ADFSTk
             public const string markerChoiceFail = "%ChoiceFail%";
             public const string markerUserChoice = "%UserChoice%";
             public const string markerLoginPageUsername = "%Username%";
-            public const string markerLoginPagePasswordLabel = "%LoginPagePasswordLabel%";
+            public const string markerLoginPagePasswordLabel = "%PagePasswordLabel%";
 
         }
 
@@ -44,6 +44,7 @@ namespace ADFSTk
             public const string FriendlyName = "FriendlyName";//saknas i resources
             public const string PageIntroductionTitle = "PageIntroductionTitle";
             public const string PageIntroductionText = "PageIntroductionText";
+            public const string PagePasswordLabel = "PagePasswordLabel";
             public const string AuthPageTemplate = "LoginPasswordHtml";
             public const string PageTitle = "PageTitle";
             public const string SubmitButtonLabel = "SubmitButtonLabel";

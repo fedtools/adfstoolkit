@@ -72,7 +72,7 @@ namespace ADFSTk
                 [Constants.DynamicContentLabels.markerPageTitle] = GetPageTitle(lcid),
                 [Constants.DynamicContentLabels.markerSubmitButton] =
                 GetPresentationResource(Constants.ResourceNames.SubmitButtonLabel, lcid),
-                [Constants.DynamicContentLabels.markerLoginPagePasswordLabel] = string.Empty
+                [Constants.DynamicContentLabels.markerLoginPagePasswordLabel] = GetPresentationResource(Constants.ResourceNames.PagePasswordLabel, lcid)
             };
 
             if (_ex != null)
