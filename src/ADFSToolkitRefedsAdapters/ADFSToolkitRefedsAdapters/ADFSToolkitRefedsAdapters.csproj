@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="LangText.cs" />
     <Compile Include="LsaLogonUserHelper.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="PasswordValidator.cs" />
@@ -101,6 +102,7 @@
     <Content Include="Lib\2016\Microsoft.IdentityServer.Web.dll" />
     <Content Include="Lib\2019\Microsoft.IdentityServer.Web.dll" />
     <Content Include="LoginPasswordHtml.txt" />
+    <Content Include="XMLFile1.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
