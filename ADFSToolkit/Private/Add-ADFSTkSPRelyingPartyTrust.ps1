@@ -16,7 +16,7 @@ function Add-ADFSTkSPRelyingPartyTrust {
         SigningCertificateRevocationCheck    = 'None'
         ClaimsProviderName                   = @("Active Directory")
         ErrorAction                          = 'Stop'
-        SignatureAlgorithm                   = Get-ADFSTkSecureHashAlgorithm -EntityId $entityID -CertificateSignatureAlgorithm $SigningCertificate.SignatureAlgorithm.Value
+        SignatureAlgorithm                   = Get-ADFSTkSecureHashAlgorithm -sp $sp
         SamlResponseSignature                = Get-ADFSTkSamlResponseSignature -EntityId $entityID
     }
 
