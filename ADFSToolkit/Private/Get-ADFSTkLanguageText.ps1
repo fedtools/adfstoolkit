@@ -78,36 +78,7 @@ param (
 
             $Global:ADFSTkSelectedLanguage = $selectedLanguage
 
-            ### ToDo: Add the selected language to ADFSTK Config file! ###
-            if (Test-Path $Global:ADFSTkPaths.mainConfigFile)
-            {
-                [xml]$config = Get-Content $Global:ADFSTkPaths.mainConfigFile
-        
-                if ($config.Configuration.OutputLanguage -eq $null)
-                {
-                    Add-ADFSTkXML -NodeName "OutputLanguage" -XPathParentNode "Configuration" -RefNodeName "ConfigVersion" -Value $selectedLanguage
-                }
-                else
-                {
-                    $OutpuLanguageNode = Select-Xml -Xml $config -XPath "Configuration/OutputLanguage"
-                    $OutpuLanguageNode.Node.innerText = $selectedLanguage
-                }
-                
-                  
-                #Don't save the configuration file if -WhatIf is present
-                if($PSCmdlet.ShouldProcess($Global:ADFSTkPaths.mainConfigFile,"Save"))
-                {
-                    try 
-                    {
-                        $config.Save($Global:ADFSTkPaths.mainConfigFile)
-                        Write-ADFSTkVerboseLog (Get-ADFSTkLanguageText mainconfChangedSuccessfully -f $Global:ADFSTkPaths.mainConfigFile)
-                    }
-                    catch
-                    {
-                        throw $_
-                    }
-                }
-            }
+            Set-ADFSTkConfiguration -OutputLanguage $selectedLanguage
         }
         else
         {
@@ -189,22 +160,4 @@ param (
         }
     }
         
-}
-
-function Add-ADFSTkXML {
-param (
-    $NodeName,
-    $XPathParentNode,
-    $RefNodeName,
-    $Value = [string]::Empty
-)
-
-    $configurationNode = Select-Xml -Xml $config -XPath $XPathParentNode
-    $configurationNodeChild = $config.CreateNode("element",$NodeName,$null)
-    $configurationNodeChild.InnerText = $Value
-
-    #$configurationNode.Node.AppendChild($configurationNodeChild) | Out-Null
-    $refNode = Select-Xml -Xml $config -XPath "$XPathParentNode/$RefNodeName"
-    $configurationNode.Node.InsertAfter($configurationNodeChild, $refNode.Node) | Out-Null
-
 }

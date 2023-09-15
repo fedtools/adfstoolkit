@@ -233,10 +233,10 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://testingblobforadobeconf.blob.core.windows.net/adfstoolkitlab/Install-Roles.ps1",
-                        "https://testingblobforadobeconf.blob.core.windows.net/adfstoolkitlab/Install-ADDS.ps1",
-                        "https://testingblobforadobeconf.blob.core.windows.net/adfstoolkitlab/Install-ADFS.ps1",
-                        "https://testingblobforadobeconf.blob.core.windows.net/adfstoolkitlab/Install-ADFSToolkit.ps1"
+                        "https://raw.githubusercontent.com/canariecaf/adfstoolkit/master/Tests/ADFSToolkitAzureTemplate/PowerShellScripts/Install-Roles.ps1",
+                        "https://raw.githubusercontent.com/canariecaf/adfstoolkit/master/Tests/ADFSToolkitAzureTemplate/PowerShellScripts/Install-ADDS.ps1",
+                        "https://raw.githubusercontent.com/canariecaf/adfstoolkit/master/Tests/ADFSToolkitAzureTemplate/PowerShellScripts/Install-ADFS.ps1",
+                        "https://raw.githubusercontent.com/canariecaf/adfstoolkit/master/Tests/ADFSToolkitAzureTemplate/PowerShellScripts/Install-ADFSToolkit.ps1"
                     ],
                     "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File Install-Roles.ps1"
                 }

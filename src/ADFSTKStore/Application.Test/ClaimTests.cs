@@ -149,6 +149,33 @@ namespace Urn.Adfstk.Application.Test
                 Assert.Fail();
             }
         }
+
+        [TestMethod]
+        public void SplitTest()
+        {
+            var input = "AL1|AL2|AL3";
+            var cs = new ADFSTkStore();
+            cs.Initialize(this.InitParams);
+            var issue = new string[] { "urn:oid:2.5.4.42" };
+            IAsyncResult asyncRes =
+                cs.BeginExecuteQuery(";Split;{0}",
+                new string[] { "someentityid", input, "umu.se" }, null, null);
+
+            var x = (string[][])cs.EndExecuteQuery(asyncRes);
+
+            if (asyncRes.IsCompleted)
+            {
+                var xx = (TypedAsyncResult<string[][]>)asyncRes;
+                PrintResult(issue, xx);
+                Assert.IsNotNull(x[0][0],"Split not working");
+                Assert.AreEqual(3, x.Length);
+                Assert.AreEqual("AL1", x[0][0]);
+            }
+            else
+            {
+                Assert.Fail();
+            }
+        }
         
     }
 }

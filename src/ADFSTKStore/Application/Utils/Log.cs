@@ -16,8 +16,8 @@ namespace ADFSTk.Utils
         /// </summary>
         static Log()
         {
-            if (!EventLog.SourceExists(Log.EventLogSource))
-                EventLog.CreateEventSource(Log.EventLogSource, Log.EventLogGroup);
+            //if (!EventLog.SourceExists(Log.EventLogSource))
+            //    EventLog.CreateEventSource(Log.EventLogSource, Log.EventLogGroup);
         }
 
         /// <summary>

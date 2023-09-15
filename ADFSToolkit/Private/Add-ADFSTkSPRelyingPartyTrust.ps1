@@ -16,7 +16,7 @@ function Add-ADFSTkSPRelyingPartyTrust {
         SigningCertificateRevocationCheck    = 'None'
         ClaimsProviderName                   = @("Active Directory")
         ErrorAction                          = 'Stop'
-        SignatureAlgorithm                   = Get-ADFSTkSecureHashAlgorithm -EntityId $entityID -CertificateSignatureAlgorithm $SigningCertificate.SignatureAlgorithm.Value
+        SignatureAlgorithm                   = Get-ADFSTkSecureHashAlgorithm -sp $sp
         SamlResponseSignature                = Get-ADFSTkSamlResponseSignature -EntityId $entityID
     }
 
@@ -172,17 +172,16 @@ function Add-ADFSTkSPRelyingPartyTrust {
     
     # Filter Entity Categories that shouldn't be released together
     $filteredEntityCategories = @()
-    $filteredEntityCategories += foreach ($entityCategory in $EntityCategories)
-    {
+    $filteredEntityCategories += foreach ($entityCategory in $EntityCategories) {
         if ($entityCategory -eq 'https://refeds.org/category/personalized') {
             if (-not ($EntityCategories.Contains('https://refeds.org/category/pseudonymous') -or `
-                 $EntityCategories.Contains('https://refeds.org/category/anonymous'))) {
-                 $entityCategory
+                        $EntityCategories.Contains('https://refeds.org/category/anonymous'))) {
+                $entityCategory
             }
         }
         elseif ($entityCategory -eq 'https://refeds.org/category/pseudonymous') {
-        if (-not $EntityCategories.Contains('https://refeds.org/category/anonymous')) {
-                 $entityCategory
+            if (-not $EntityCategories.Contains('https://refeds.org/category/anonymous')) {
+                $entityCategory
             }
         }
         else {
@@ -221,6 +220,14 @@ function Add-ADFSTkSPRelyingPartyTrust {
     else {
         $rpParams.AccessControlPolicyName = 'ADFSTk:Permit everyone and force MFA'
         $rpParams.IssuanceTransformRules = $IssuanceTransformRuleObject.Stores + $IssuanceTransformRuleObject.MFARules + $IssuanceTransformRuleObject.Rules
+    }
+    #endregion
+
+    #region Custom Access Control Policy
+    $CustomACPName = Get-ADFSTkCustomACPConfiguration -EntityId $entityID
+    if (![string]::IsNullOrEmpty($CustomACPName))
+    {
+        $rpParams.AccessControlPolicyName = $CustomACPName
     }
     #endregion
 

@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="LangText.cs" />
     <Compile Include="LsaLogonUserHelper.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="PasswordValidator.cs" />

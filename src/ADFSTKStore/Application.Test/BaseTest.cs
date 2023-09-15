@@ -15,6 +15,7 @@ namespace Urn.Adfstk.Application.Test
         public Dictionary<string,string> InitParams { get; set; }
         //public const string IDPSALT = "f1nd1ngn3m0";
         public const string IDPSALT = "BoelEXUb2qNGNbP7KHy4/q9gHh6ZRc4wvW0lg0Xd";
+        public string SPLITPARAM = ",|";
         public BaseTest()
         {
             LoadAttributes();
@@ -63,6 +64,7 @@ namespace Urn.Adfstk.Application.Test
         {
             InitParams = new Dictionary<string, string>();
             InitParams.Add("IDPSALT", IDPSALT);
+            //InitParams.Add("SPLITPARAM", SPLITPARAM);
         }
 
         protected void PrintResult(string[] types, TypedAsyncResult<string[][]> typedResult)
