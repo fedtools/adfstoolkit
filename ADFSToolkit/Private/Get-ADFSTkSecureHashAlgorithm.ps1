@@ -11,8 +11,8 @@ param (
 $SignatureAlgorithm = "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
 
 #check if md:extentions is not null
-if(![string]::IsNullOrEmpty($sp.Extension) -and [string]::IsNullOrEmpty($sp.Extensions.SigningMethod)){
-    $SigningMethods = $sp.Extension.SigningMethod
+if(![string]::IsNullOrEmpty($sp.Extensions) -and ![string]::IsNullOrEmpty($sp.Extensions.SigningMethod)){
+    $SigningMethods = $sp.Extensions.SigningMethod
     if(($SigningMethods -is [string]) -and $SigningMethods -eq "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256" ){
         $SignatureAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"
     }
